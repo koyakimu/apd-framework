@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.3.2] - 2026-07-05
+
+### Changed — リポジトリ名を実態に合わせて変更
+
+- **リポジトリを `autopilot-development-boilerplate` → `apd-framework` にリネーム**: 実態は boilerplate（コピーして使う雛形）ではなく Claude Code プラグインとして配布されるフレームワークのため。GitHub が旧名からのリダイレクトを張るので、既存のインストール・`git clone`・`/plugin update` は動き続ける
+- `plugin.json` の `repository`、`marketplace.json` の `homepage`、README のインストールコマンド、MIGRATION.md の issue URL を新名に更新
+- 新しいマーケットプレイス追加コマンド: `/plugin marketplace add koyakimu/apd-framework`
+
 ## [3.3.1] - 2026-07-05
 
 ### Fixed — リポジトリ監査で見つかった不整合の一括修正
