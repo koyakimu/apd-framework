@@ -3,8 +3,6 @@
 
 ---
 version: 1
-cycle_ref: "C-{NNN}"
-created_at: "YYYY-MM-DDTHH:MM:SSZ"
 ---
 
 ## Scenario XC-001: {シナリオタイトル}

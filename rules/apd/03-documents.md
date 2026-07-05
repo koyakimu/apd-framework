@@ -22,6 +22,7 @@ docs/apd/
 - ファイルが増えるのは **新機能を作るとき** だけ（本質的な増加なので許容）
 - 機能が削除されたら、その機能の Spec も削除する（これが唯一の「削除」）
 - 成果物プレビューを作る場合のみ `docs/apd/preview-{feature}/` を追加（任意。`05-deliverable-preview.md` 参照）
+- コンテキスト間のデータフローが複雑な場合のみ `docs/apd/cross-context-scenarios.md` を追加（任意。`spec-*.md` とは別名にし、ビルド対象の Spec と混同させない）
 
 ### 命名の指針
 
@@ -109,7 +110,7 @@ decision_refs: []
 
 ## decisions.md フォーマット
 
-技術選定・設計判断は単一の `docs/apd/decisions.md` に追記する。新しい判断ほど上に積む（or 下に追記、プロジェクトで統一）。
+技術選定・設計判断は単一の `docs/apd/decisions.md` に追記する。新しい判断ほど上に積む。フォーマットの正本は `templates/decision.md`。
 
 ````markdown
 # Decisions
@@ -117,7 +118,11 @@ decision_refs: []
 ## D-002: {判断のタイトル}
 - **Date**: YYYY-MM-DD
 - **Context**: {なぜこの判断が必要だったか}
-- **Decision**: {何を選んだか}
+- **Options**:
+  - A: {選択肢A（AIが提案）}
+  - B: {選択肢B（AIが提案）}
+- **AI Recommendation**: {AIが推奨するOption}: {推奨理由の概要}
+- **Decision**: {何を選んだか — ユーザーが記入}
 - **Reason**: {理由・トレードオフ}
 - **Refs**: {関連 spec / issue}
 

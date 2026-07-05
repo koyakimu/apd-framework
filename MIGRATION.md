@@ -56,7 +56,7 @@
 
 ```bash
 cd /path/to/your/project
-git checkout -b chore/apd-1.x-migration
+git checkout -b chore/apd-3.x-migration
 ```
 
 未コミットの変更があれば commit / stash しておく。
@@ -117,7 +117,7 @@ PASS / FAIL を表示し、FAIL があれば exit 1。
 
 ```bash
 ls docs/apd/
-# 期待: design.md, spec-*.md, decision-*.md, preview-*/, todo.md (gh 未使用なら)
+# 期待: design.md, decisions.md, spec-*.md, preview-*/ (任意), todo.md (gh 未使用なら)
 ```
 
 新フローでサイクルを通す:
@@ -149,7 +149,7 @@ mv CLAUDE.md.apd-backup-{timestamp} CLAUDE.md   # CLAUDE.md を掃除した場�
 git checkout -- .claude/rules/apd/ .  # rules 更新や Edit が staged されている場合
 ```
 
-または `/plugin install apd@apd-marketplace --version 0.5.1` で旧プラグインに戻す。
+または `/plugin install apd@apd-marketplace --version 2.0.0` のように旧バージョンを指定して戻す。
 
 ## トラブルシューティング
 
@@ -168,11 +168,7 @@ git checkout -- .claude/rules/apd/ .  # rules 更新や Edit が staged され�
 
 ### backup から特定のファイルを救出したい
 
-```bash
-cp docs/apd.backup-{timestamp}/cycles/C-001.md docs/apd/decision-historical-C-001.md
-```
-
-過去サイクルの意思決定で重要なものは、Decision Record 形式に救出できる。
+過去サイクルの意思決定で重要なものは、backup の中身（例: `docs/apd.backup-{timestamp}/cycles/C-001.md`）を読み、`docs/apd/decisions.md` に `## D-{NNN}: ...` セクションとして追記して救出する。per-file の `decision-*.md` を作ると `verify-migration.sh` の Check 2 で FAIL になるので、単一の `decisions.md` に集約すること。
 
 ## 関連スクリプトの責務分担
 

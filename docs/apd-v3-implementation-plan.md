@@ -1,5 +1,10 @@
 # APD v3 実装計画
 
+> **⚠️ 歴史的文書（実行済み・アーカイブ）**: この計画は v3.0.0 で実行完了した（チェックボックスは未更新のまま）。
+> ここに登場する `hooks/hooks.json`・`hooks/suggest-next.sh`・`agents/peer-review.md` 等は
+> **その後 3.0.1〜3.2 で廃止され、現在のリポジトリには存在しない**。この手順を再実行しないこと。
+> 現行仕様の正本は `rules/apd/` と各 `skills/*/SKILL.md`。
+>
 > **実行者向け:** この計画は superpowers:subagent-driven-development または
 > superpowers:executing-plans でタスク単位に実行する。ステップは `- [ ]` で進捗管理する。
 

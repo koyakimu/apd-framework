@@ -20,7 +20,7 @@ Spec フェーズの担当として、Design 文書から Spec を生成、ま�
 
 以下を読み込む:
 
-1. `CLAUDE.md` — プロジェクト設定（デフォルト Spec フォーマット、エスカレーションポリシー等）
+1. `CLAUDE.md` — プロジェクト設定（技術スタック、プロジェクト固有の規約等）
 2. `docs/apd/design.md` — Design 文書
 3. `docs/apd/spec-*.md` — 既存 Spec（あれば）
 4. `docs/apd/decisions.md` — 既存の判断ログ（あれば）
@@ -64,7 +64,7 @@ Design 文書の **What** セクションに記載された全機能を確認し
    - **テスト戦略**（AC Coverage テーブル）
    - **成果物プレビュー記述**（任意。必要なときだけ）
    - **非機能要件**：測定可能なものは AC（AC-NFR-xxx）として Given/When/Then 形式で書く。測定可能な形で書けないもの（セキュリティ等）は「委譲する非機能要件」セクションに委譲先（/security-review 等）を明記する
-4. コンテキスト間のデータフローが複雑な場合は `docs/apd/spec-cross-context.md` にまとめる
+4. コンテキスト間のデータフローが複雑な場合は `docs/apd/cross-context-scenarios.md` にまとめる（`spec-*.md` とは別名にし、ビルド対象の Spec と混同させない）
 5. 判断が必要だった箇所は `docs/apd/decisions.md` に追記する
 
 ### 出力
@@ -83,7 +83,7 @@ Design 文書の **What** セクションに記載された全機能を確認し
 1. 既存 Spec との整合性を確認し、矛盾があれば報告する
 2. 新機能は **新規 Spec ファイル** として作成する（`docs/apd/spec-{slug}.md`）
 3. 既存 Spec に影響がある場合は、その**既存 Spec を直接編集**して `version` を上げる（別ファイルの差分を作らない）
-4. コンテキスト間データフローに影響がある場合、`spec-cross-context.md` を編集する
+4. コンテキスト間データフローに影響がある場合、`cross-context-scenarios.md` を編集する
 
 ### 出力
 
@@ -137,13 +137,16 @@ Spec 生成と並行して、主要な技術選定を `docs/apd/decisions.md` �
 ## D-{NNN}: {判断のタイトル}
 - **Date**: YYYY-MM-DD
 - **Context**: {なぜこの判断が必要か}
-- **Options**: {検討した選択肢とトレードオフ}
+- **Options**:
+  - A: {選択肢A（AIが提案）}
+  - B: {選択肢B（AIが提案）}
+- **AI Recommendation**: {AIが推奨するOption}: {推奨理由の概要}
 - **Decision**: {何を選んだか — ユーザーが記入}
 - **Reason**: {理由 — ユーザーが記入}
 - **Refs**: {関連 spec / issue}
 ```
 
-AI Recommendation を付記してよいが、決定権は人間にある。
+フォーマットの正本は `templates/decision.md`。AI Recommendation は参考情報で、決定権は人間にある。
 
 ### ユーザーへの提示と承認
 

@@ -10,6 +10,6 @@ project_name: "{プロジェクト名}"
 
 ## T-001: {タイトル}
 - **status**: open
-- **起源**: {Phase 0 Design対話中 / Phase 1 Spec生成中 / Phase 2 Build中 など}
+- **起源**: {Intent 対話中 / Spec 生成中 / Build 中 など}
 - **経緯**: {なぜこのToDoが生まれたか。対話や作業の中での文脈}
 - **resolved_by**: null

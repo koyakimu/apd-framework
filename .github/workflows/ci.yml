@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON manifests
+        run: |
+          jq empty .claude-plugin/plugin.json
+          jq empty .claude-plugin/marketplace.json
+
+      - name: Check version consistency (plugin.json / marketplace.json / CHANGELOG)
+        run: |
+          PLUGIN_VER=$(jq -r '.version' .claude-plugin/plugin.json)
+          MARKET_VER=$(jq -r '.plugins[] | select(.name == "apd") | .version' .claude-plugin/marketplace.json)
+          CHANGELOG_VER=$(grep -m1 -oE '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | tr -d '#[] ')
+          echo "plugin.json=$PLUGIN_VER marketplace.json=$MARKET_VER CHANGELOG=$CHANGELOG_VER"
+          [[ "$PLUGIN_VER" == "$MARKET_VER" ]] || { echo "::error::plugin.json と marketplace.json の version が不一致"; exit 1; }
+          [[ "$PLUGIN_VER" == "$CHANGELOG_VER" ]] || { echo "::error::CHANGELOG.md の先頭エントリが version と不一致"; exit 1; }
+
+      - name: Check SKILL.md frontmatter
+        run: |
+          fail=0
+          for f in skills/*/SKILL.md; do
+            head -1 "$f" | grep -q '^---$' || { echo "::error file=$f::frontmatter がない"; fail=1; }
+            grep -q '^name:' "$f" || { echo "::error file=$f::'name:' がない"; fail=1; }
+            grep -q '^description:' "$f" || { echo "::error file=$f::'description:' がない"; fail=1; }
+          done
+          exit $fail
+
+      - name: Check templates match current frontmatter model
+        run: |
+          # verify-migration.sh が FAIL 判定する旧フィールドが同梱テンプレートに残っていないこと
+          if grep -nE '^(cycle_ref|created_at|amendment_id|patch_id):' templates/*.md; then
+            echo "::error::templates/ に旧 frontmatter フィールドが残っている（verify-migration.sh と矛盾）"
+            exit 1
+          fi
+
+      - name: ShellCheck
+        run: shellcheck scripts/*.sh
+
+      - name: Scripts are executable
+        run: |
+          for f in scripts/*.sh; do
+            [[ -x "$f" ]] || { echo "::error file=$f::実行権限がない (chmod +x)"; exit 1; }
+          done

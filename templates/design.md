@@ -3,8 +3,6 @@
 ---
 project_name: "{プロジェクト名}"
 version: 1
-created_at: "YYYY-MM-DDTHH:MM:SSZ"
-cycle_ref: "C-001"
 ---
 
 # {プロジェクト名}

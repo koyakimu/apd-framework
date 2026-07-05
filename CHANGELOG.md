@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.3.1] - 2026-07-05
+
+### Fixed — リポジトリ監査で見つかった不整合の一括修正
+
+- **同梱テンプレートを現行 frontmatter モデルへ更新**: `templates/spec.md` / `design.md` / `cross-context-scenarios.md` に残っていた v2 の `cycle_ref` / `created_at` を除去し、`issue_ref` モデルに統一。従来はテンプレートから作った Spec が `verify-migration.sh` に「未移行」と FAIL 判定される自己矛盾があった
+- **`templates/todo.md` の旧フェーズ表記を修正**: `Phase 0/1/2` → 現行の `Intent / Spec / Build`
+- **cross-context ファイルの命名を統一**: `/apd:spec` が作るファイルを `spec-cross-context.md` → `cross-context-scenarios.md` に変更（テンプレート名と一致させ、`spec-*.md` glob によるビルド対象 Spec との混同を解消）。`rules/apd/03-documents.md` に任意ファイルとして明記
+- **decisions.md フォーマットを三者統一**: `rules/apd/03-documents.md` / `templates/decision.md` / `skills/spec/SKILL.md` で食い違っていたフォーマット（Options / AI Recommendation の有無）と追記順序（「新しい判断ほど上に積む」に確定）を `templates/decision.md` を正本として統一
+- **`skills/spec/SKILL.md` の v2 残骸を除去**: 廃止済み「エスカレーションポリシー」を CLAUDE.md から読む指示を削除
+- **`scripts/bump-version.sh` を堅牢化**: 実行権限を付与（`./` 起動が permission denied だった）、非 semver バージョンでのエラーメッセージ追加、marketplace.json に plugin が見つからない場合のサイレント no-op を修正
+- **`scripts/verify-migration.sh` の grep バグ修正**: ブラケット式 `[^\n]`（POSIX では「n と \ 以外」の意味）を `.` に修正
+- **`MIGRATION.md` の陳腐化を修正**: 期待ファイル一覧の `decision-*.md` → `decisions.md`、実在しないロールバック先 `--version 0.5.1` → `2.0.0`、backup 救出手順が verify に FAIL する per-file Decision を作らないよう decisions.md 追記方式に変更、例示ブランチ名を 3.x に
+- **歴史的文書にアーカイブ注記を追加**: `docs/apd-v3-redesign.md` / `docs/apd-v3-implementation-plan.md` / `docs/research/harness-engineering-2026-04-29.md` に「実装完了済み・現行仕様の正本は rules/apd と skills」の注記を付与（存在しない hooks 等への dangling 参照の誤読防止）
+- **`examples/templates/` を削除**: どこからも参照されない `templates/` の古い複製（NFR セクション欠落）だった
+- **`README.md` の構成表に `migrate` skill を追加**（同 README 内のスキル表と不一致だった）
+- **`.gitignore` に `.serena/` を追加**
+- **CI を追加**: `.github/workflows/ci.yml` — JSON 妥当性、version 三点一致（plugin.json / marketplace.json / CHANGELOG）、SKILL.md frontmatter、テンプレートの旧 frontmatter 混入、shellcheck、スクリプト実行権限を PR ごとに検査
+
 ## [3.3.0] - 2026-06-29
 
 ### Changed — マイグレーションを完全化（CLAUDE.md 掃除・rules 最新化・3.x 刷新）
