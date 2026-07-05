@@ -1,12 +1,12 @@
 {
   "name": "apd",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "description": "APD (Autopilot Development) Framework - AI自律開発フレームワーク。人間は意思決定だけ、AIが自律で完走する。",
   "author": {
     "name": "koyakimu",
     "url": "https://github.com/koyakimu"
   },
-  "repository": "https://github.com/koyakimu/autopilot-development-boilerplate",
+  "repository": "https://github.com/koyakimu/apd-framework",
   "license": "MIT",
   "keywords": [
     "apd",

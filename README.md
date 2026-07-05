@@ -20,7 +20,7 @@ Build      ← AI 自律完走（途中で止まらない）
 
 ```bash
 # マーケットプレース追加
-/plugin marketplace add koyakimu/autopilot-development-boilerplate
+/plugin marketplace add koyakimu/apd-framework
 
 # プラグインインストール
 /plugin install apd@apd-marketplace

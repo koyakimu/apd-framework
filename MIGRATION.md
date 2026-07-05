@@ -179,4 +179,4 @@ git checkout -- .claude/rules/apd/ .  # rules 更新や Edit が staged され�
 
 ## 不明点
 
-スクリプトや移行で想定外のケースを踏んだら GitHub issue を切ってください: https://github.com/koyakimu/autopilot-development-boilerplate/issues
+スクリプトや移行で想定外のケースを踏んだら GitHub issue を切ってください: https://github.com/koyakimu/apd-framework/issues
