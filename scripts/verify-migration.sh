@@ -182,7 +182,7 @@ echo "Check 5: CLAUDE.md cleanliness (APD cruft removed)"
 if [[ -f "CLAUDE.md" ]]; then
   # Injected banner line: "APD ... フレームワーク x.y.z ... で開発"
   if grep -qE 'APD.*(フレームワーク|Framework).*[0-9]+\.[0-9]+\.[0-9]+.*(で開発|powered by|built with)' CLAUDE.md 2>/dev/null \
-     || grep -qE 'フレームワーク[^\n]*[0-9]+\.[0-9]+\.[0-9]+[^\n]*で開発' CLAUDE.md 2>/dev/null; then
+     || grep -qE 'フレームワーク.*[0-9]+\.[0-9]+\.[0-9]+.*で開発' CLAUDE.md 2>/dev/null; then
     fail "CLAUDE.md still has an injected APD version banner (remove it)"
   else
     pass "CLAUDE.md has no injected APD version banner"

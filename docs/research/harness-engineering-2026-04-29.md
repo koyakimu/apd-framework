@@ -1,5 +1,10 @@
 # Harness Engineering 取り込み調査
 
+> **⚠️ 注記（アーカイブ）**: 本調査で「取り込んだ」とする成果（Checkpoint 構造・Peer Review・
+> handoff/evidence の cycles 配下配置・3点突合・APD-FRAMEWORK.md への節追加）は、
+> **その後 v1.0〜v3.0 の再設計で全て撤回・置換済み**。現行仕様の正本は `rules/apd/` と各 `skills/*/SKILL.md`。
+> 本書は調査時点の記録として残す。
+
 Anthropic「Harness design for long-running apps」のAPDフレームワークへの取り込み検討（2026-04-29実施）
 
 ## 背景

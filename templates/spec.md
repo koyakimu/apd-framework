@@ -5,8 +5,7 @@
 spec_id: "{CONTEXT_ID}-{NNN}"   # 例: OM-001
 context: "{コンテキスト名}"       # 例: order-management
 version: 1
-cycle_ref: "C-{NNN}"
-created_at: "YYYY-MM-DDTHH:MM:SSZ"
+issue_ref: "{GitHub issue 番号、なければ null}"
 title: "{機能タイトル}"
 decision_refs: []
 # - D-001
