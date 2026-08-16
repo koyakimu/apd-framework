@@ -15,3 +15,6 @@ Thumbs.db
 
 # Tool metadata
 .serena/
+
+# Claude Code worktrees
+.claude/worktrees/
