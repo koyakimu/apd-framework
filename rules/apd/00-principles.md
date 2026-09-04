@@ -7,7 +7,7 @@
 - **ドキュメントは生きた 1 枚として編集し続ける。** 差分を別ファイルで積まない。履歴は git が正史として持つ
 - **人間の確認面は GitHub（PR + issue）。** `docs/apd/` は AI の作業材料であって、人間が日常的にスキャンする場所ではない
 - **判断に迷ったら自己判断せずリーダーエージェント（AI）に聞く。** 人間への問い合わせではない（Build 中は人間に問い合わせない）。聞きすぎるほうが暴走するより安全
-- **薄い規約レイヤに留める。** APD は Design / Spec / Decision の規約と最小限のスキルだけを提供する。ループ・並列化・タスク管理・GitHub 連携は Claude Code 本体の機能（`/goal`, agent teams, subagents, hooks, TaskCreate）に委譲する
+- **薄い規約レイヤに留める。** APD は Design / Spec / Decision の規約と最小限のスキルだけを提供する。ループ・並列化・タスク管理・GitHub 連携は Claude Code 本体の機能（`/goal`, subagent, agent teams, dynamic workflows, hooks, Task ツール）に委譲する
 - **APD はユーザーの CLAUDE.md を書き換えない。** APD の規約は `.claude/rules/apd/`（自動ロード）に置く。CLAUDE.md に「APD で開発」等の使用宣言・バージョンを書き込まない（腐る・二重管理になる）。CLAUDE.md はプロジェクト固有のことだけ
 
 ## 判断の優先順位（Build 中）

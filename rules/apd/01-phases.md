@@ -28,9 +28,10 @@ Build フェーズに人間は介入しない。
 
 ## Build の収束判定
 
-Build は Claude Code の `/goal` の評価器が、condition（Spec の AC、テスト pass、PR の Handoff 記載）の達成を毎ターン後に判定する。
+Build は Claude Code の `/goal` の評価器が、condition（Spec の AC、テスト pass、PR の Handoff 記載）の達成をターン終了ごとに判定する。
 
 - **評価器はツールを呼ばない**。Claude が turn 内で test 実行ログ・PR diff・実装内容を会話に surface する必要がある
+- **バックグラウンド作業がある turn は評価がスキップされる**。subagent やバックグラウンドシェルが動いたまま turn が終わると、その turn は評価されず、バックグラウンド作業のない次の turn 終了時に判定される。並列化した Build では収束が遅れて見えることがあるが、異常ではない
 - 同一論点でループした場合は condition に明記した上限（turn 数や時間）で停止して報告する
 - AI が自動検証できない AC（実機限定・人間の主観評価等）は、実装と「試し方」ドキュメント化をもって Build 側の完了とみなす（実際の判定は完成後の実機確認に委ねる）
 
@@ -38,13 +39,16 @@ Build は Claude Code の `/goal` の評価器が、condition（Spec の AC、�
 
 実装中はエスカレーションしない。新しいビジネスルールや外部インターフェース変更など Spec にない判断が必要な場合は、**Spec に先出し**（Spec フェーズで人間が確認済み）するか、**完成後の実機確認で気づき次サイクルで Spec を修正する**。
 
-Build の番人は `/goal` の評価器と、`/apd:go` が condition に組み込む Spec チェック。AC 準拠・テスト pass・Handoff 記載を毎ターン後に判定し、ビルド AI が照合結果を surface して自律修正する。
+Build を無人で完走させるなら auto mode で `/goal` を実行する。`/goal` は permission mode を変えないため、Manual mode では許可されていないツール呼び出しのたびに人間の確認が入り、「Build 中は止まらない」が成立しない。
+
+Build の番人は `/goal` の評価器と、`/apd:go` が condition に組み込む Spec チェック。AC 準拠・テスト pass・Handoff 記載をターン終了ごとに判定し、ビルド AI が照合結果を surface して自律修正する。
 
 ## 並列実行
 
 複数タスクを並列実行したい場合は Claude Code の以下を使う:
 - **subagent**: 単一セッション内のサイドタスク委譲（`isolation: "worktree"` でファイル隔離可能）
-- **agent teams** (experimental): リーダー + teammates + 共有 task list で複数セッションを協調
-- **`/batch`**: 大規模変更を 5〜30 の worktree 隔離 subagent に分割
+- **agent teams** (experimental): リーダー + teammates で複数セッションを協調。既定で無効で `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` が要る。共有 task list は Task ツールを持つセッションでのみ使われ、無い場合はメッセージで協調する。teammate の許可プロンプトはリーダーセッションに出るため、Build フェーズの「止まらない」前提とは相性が悪い
+- **dynamic workflows**: JavaScript のスクリプトが計画を持つ大規模ファンアウト。監査・大量移行・相互検証向き。1 run あたり最大 1,000 エージェント・同時実行は最大 16 で、run の途中ではユーザーの入力を受け付けない（run を止めうるのはエージェントの許可プロンプトだけ）。起動時は Manual / accept edits mode だと毎回承認プロンプトが出る（auto mode は初回のみ）
+- **`/batch`**: 大規模変更を 5〜30 の worktree 隔離 subagent に分割し、各 subagent が実装・テスト実行・PR 作成まで行う（git リポジトリ必須。分解後に計画の承認を求めて一度止まる）
 
 APD はこれらの選択を強制しない。Build の規模に応じてリーダーが判断する。
