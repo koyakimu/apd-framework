@@ -24,7 +24,7 @@
 ③ Build
    └→ /apd:go <spec ファイル> で /goal condition を組み立て
    └→ ユーザーが /goal に condition を貼って実行 → AI 自律ループ開始（途中で止まらない）
-   └→ 無人で完走させるなら auto mode で実行する（/goal は permission mode を変えない）
+   └→ auto mode で /goal を実行する（規約。/goal は permission mode を変えない）
    └→ 並列化が必要なら subagent / agent teams / dynamic workflows / /batch を使う
    └→ 完了時に PR 本文に「試し方」が記載される
 

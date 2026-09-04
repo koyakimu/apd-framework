@@ -87,7 +87,7 @@ condition は `/goal` の制約 (4000 字以内) に収めつつ、以下の責�
 
 あわせて次の 2 点を添える:
 
-- **無人で完走させるなら auto mode で `/goal` を実行する。** `/goal` は permission mode を変えないため、Manual mode では許可されていないツール呼び出しのたびに人間の確認が入り、「Build 中は止まらない」が成立しない
+- **auto mode で `/goal` を実行する（APD の規約）。** ステータスバーが `⏵⏵ auto mode on` であることを確認してから貼るよう案内する。Manual mode なら Shift+Tab で切り替える。`/goal` は permission mode を変えないため、Manual のままでは許可されていないツール呼び出しのたびに人間の確認が入り「Build 中は止まらない」が成立しない。auto mode でも classifier の連続ブロック・`permissions.ask`・作業ディレクトリ外の初回読み取りでは止まることを一言添える
 - **提示した condition の文面は手元に残しておく。** 認証失敗・クレジット切れ・auto-compaction で解消できないコンテキスト超過・モデル利用不可のいずれかで turn が落ちると、`/goal` は notice を出して自動的にクリアされる。原因を解消したうえで同じ condition を貼り直して再開する（レート制限などの一時的なエラーでは goal は維持される）
 
 ## 5. 事前チェックの warning (任意)
@@ -111,5 +111,6 @@ warning は提示するだけで、ユーザーの判断を待つ。skill 側で
 
 - 評価器が永遠に no を返す → condition が抽象的すぎる。AC の文言を引用するなど具体化する
 - token 消費が膨大 → condition に turn / 時間の上限を含める
+- Build 中に許可プロンプトで止まる → Manual mode のまま `/goal` を貼っている。Shift+Tab で auto mode に切り替える。goal はセッションに残っているので貼り直しは不要（`/goal` で状態を確認できる）
 - ツールを使わない turn が数回続く（評価器に返事するだけで進捗がない）→ Claude Code がループを止めて warning を出し、goal はセットされたまま制御がユーザーに戻る。次のプロンプトを送ると評価が再開する
 - `/goal` が利用できない → 評価器は hooks の仕組みの上に載っているため、(1) Claude Code のバージョン、(2) workspace が trust されているか、(3) `disableAllHooks` が有効になっていないか、(4) managed settings で `allowManagedHooksOnly` が設定されていないか を確認する。いずれの場合もコマンド自身が理由を表示する

@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.5.0] - 2026-09-05
+
+### Changed — Build を auto mode 前提として規約化
+
+- **「Build は auto mode で `/goal` を実行する」を規約にした**: 3.4.0 では「`/goal` は permission mode を変えない」という事実の提示に留めていたが、これは APD の中核主張である「Build 中は人間の介入ゼロ」の成立条件そのものなので、選択肢ではなく規約に組み込むと決定した。`/goal` はターンの継続を、auto mode はツール呼び出しの許可を担い、両方を揃えて初めて実装中の介入がゼロになる。auto mode への切り替えは Shift+Tab、起動時の `--permission-mode auto`、またはユーザー設定の `permissions.defaultMode`（ほかに Bash の許可プロンプトの **Yes, and switch to auto mode**）で行うが、プロジェクト設定（`.claude/settings.json`）では `auto` が効かず、プラグインが同梱できる `settings.json` のキーは `agent` と `subagentStatusLine` だけなので **APD 側からは強制できない**。そのため担保は `/apd:go` と `/apd:spec` の案内で人間に確認を促す形にした。`rules/apd/01-phases.md`（フェーズ図と「Build 中は止まらない」）、`rules/apd/00-principles.md`（介入ゼロの原則）、`skills/go/SKILL.md`（提示ステップ）、`skills/spec/SKILL.md`（承認後の案内）、`QUICKREF.md`（Build のフロー）、`APD-FRAMEWORK.md`（設計原理・機能表・Build の動作）、`README.md`、`MIGRATION.md` を更新した
+- **auto mode でも止まる場面を明記**: classifier が 3 回連続または累計 20 回ブロックすると auto mode が一時停止して通常の許可プロンプトに戻る（閾値は変更不可）、`permissions.ask` に合致する操作は常に確認が入る、作業ディレクトリ外の初回読み取りは確認が入る。これらは「止まって当然の場面」として扱い、condition の文言で回避しようとしない方針を `rules/apd/01-phases.md` と `APD-FRAMEWORK.md` に書いた。あわせて `skills/go/SKILL.md` の「失敗時の手がかり」に「Build 中に許可プロンプトで止まる → Manual mode のまま `/goal` を貼っている」を追加した（公式の goal クリア条件は Met / Impossible / unrecoverable error / `/goal clear` / `/clear` で、permission mode の切り替えは含まれないため、Shift+Tab で切り替えるだけでよく貼り直しは不要）
+- **調査ノートに auto mode の節と見送り判断 2 件を追記**: `docs/research/claude-code-refresh-2026-09-04.md` に §7「auto mode の要件と残る停止点」を追加し、既定の permission mode・プラン/組織/モデルの利用条件・有効化の経路・残る停止点・`-p` での挙動・subagent への適用を公式ドキュメントの原文とともに記録した。§6 には「並列 Build を dynamic workflow として同梱する」（`/goal` の評価器が使えず収束判定を再実装することになり、中間結果が会話に載らないため検証モデルが成り立たない）と「CI に `claude plugin validate --strict` を入れる」（プラグインルートの CLAUDE.md への警告で落ち、既存 CI への上積みが小さい）の見送り判断を追加した
+
 ## [3.4.0] - 2026-09-04
 
 ### Changed — Claude Code 2.1.260 に合わせて仕様記述を更新
