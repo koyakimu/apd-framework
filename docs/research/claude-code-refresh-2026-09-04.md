@@ -34,6 +34,8 @@ APD の既存記述（`skills/go/SKILL.md`、`rules/apd/01-phases.md`）のう�
 
 APD の「Build 中の人間の介入をゼロにする」は、`/goal` を auto mode で走らせて初めて成立する。ターンの継続は `/goal` が、ツール許可は permission mode が担当しており、両者は別物。
 
+→ 3.5.0 で「Build は auto mode で `/goal` を実行する」を規約化した（2026-09-04 決定）。
+
 ### 1.2 バックグラウンド作業があると評価が繰り延べられる
 
 > If a subagent or a background shell command is still running when a turn ends, Claude Code skips the evaluation for that turn. It evaluates at the end of the next turn that finishes with no background work running.
@@ -190,3 +192,102 @@ subagent はセッションが持っている場合のみ Task ツールを持�
 | APD が hooks を同梱する | 3.2.0 で Stop フックを廃止した判断（毎 Stop の起動コスト）を覆すことになる。プラグインの hooks はセッション全体に効くため、Build 中だけに限定できない |
 | `/apd:go` から agent teams を推奨する | 既定で無効なうえ、teammate の許可プロンプトがリーダーセッションに出て Build が止まる |
 | ルールに `paths:` フロントマターを付けて条件ロードにする | `rules/apd/*.md` はフェーズ・プロセスの規約でファイル種別に紐づかない。特に `04-testing.md` をテストファイルに限定すると、Spec フェーズ（Test Strategy を書く場面）で読まれなくなる |
+| 並列 Build を dynamic workflow として同梱する（`/apd:build-all` 等） | 見送り（2026-09-04 決定）。`/goal` の評価器が使えず収束判定をスクリプト側で再実装することになり「ループは本体に委譲する」原則に反する。中間結果が会話に載らず「surface された証拠で判定する」検証モデルが成り立たない。エージェントの許可プロンプトで run が止まる・Pro は `/config` での有効化が要る・組織設定で無効化されうる、と前提が多い。Workflow API への追随コストが使われないまま残る。現状は `/goal` セッション内で Spec ごとに worktree 隔離の subagent を立てれば並列化でき、評価器は surface された結果で判定できる。1 サイクルに独立した Spec が常時 3 つ以上並ぶ運用が出たら再検討 |
+| CI に `claude plugin validate --strict` を入れる | 見送り（2026-09-04 決定、低優先度）。リポジトリ直下を指定すると marketplace.json しか検査せず、plugin.json はファイルパス指定が要る。plugin.json を検査すると開発用 CLAUDE.md への警告「CLAUDE.md at the plugin root is not loaded as project context」が出て `--strict` では落ちる。得られるのは未知フィールド検査だけで、既存 CI の JSON 妥当性 + version 三点一致への上積みが小さい。入れるなら `--strict` なしで両マニフェストを検査する |
+
+---
+
+## 7. auto mode の要件と残る停止点（3.5.0 の規約化の根拠）
+
+§1.1 のとおり `/goal` は permission mode を変えない。APD が「Build 中は人間の介入ゼロ」を掲げる以上、auto mode は併用を勧める選択肢ではなく前提条件なので、3.5.0 で規約化した。その前提が成り立つ条件と、auto mode でも残る停止点を公式ドキュメントで確認した記録。
+
+### 7.1 auto mode とは何か
+
+> Auto mode lets Claude execute without routine permission prompts. A separate classifier model reviews actions before they run, blocking anything that escalates beyond your request, targets unrecognized infrastructure, or appears driven by hostile content Claude read. Explicit ask rules still force a prompt.
+
+判定は人間の代わりに classifier（別モデル）が行う。読み取り専用の操作と作業ディレクトリ内のファイル編集は classifier を経由せず自動承認され（例外は protected paths への書き込みと §7.5 の作業ディレクトリ外の初回読み取り）、shell コマンドとネットワーク操作が主な検査対象になる。
+
+ターンの挙動にも影響がある:
+
+> Auto mode also nudges Claude to keep working without stopping for clarifying questions, though Claude still asks when your prompt or a skill explicitly relies on it.
+
+APD の「実装中はエスカレーションしない」と方向が一致する。ただし `/goal` のターン継続とは別の機能で、両者は互いを代替しない。
+
+安全性についての公式の但し書き:
+
+> Auto mode reduces permission prompts but does not guarantee safety. Use it for tasks where you trust the general direction, not as a replacement for review on sensitive operations.
+
+APD が Build の成果物を PR 経由で人間の実機確認に渡す構成は、この但し書きと整合している（auto mode は Build 中の許可プロンプトを消すだけで、受け入れ判断を代替しない）。
+
+### 7.2 既定の permission mode
+
+> On Pro, Max, and Team plans, auto mode is the built-in starting permission mode.
+
+Pro / Max / Team では既定で auto mode から始まるため、多くの利用者は追加の設定なしで規約を満たす。ただし Amazon Bedrock / Google Cloud の Agent Platform / Microsoft Foundry / Claude apps gateway では auto mode は `Shift+Tab` の循環に現れるだけで、セッションの開始 mode は `defaultMode`（変更しなければ Manual）のまま。
+
+### 7.3 利用条件
+
+| 項目 | 現行仕様 |
+|------|---------|
+| プラン | 全プラン（"**Plan**: All plans."） |
+| 組織 | Team / Enterprise では既定で利用可。管理者は managed settings の `permissions.disableAutoMode` を `"disable"` にして組織全体で無効化できる |
+| モデル（Anthropic API / Claude Platform on AWS） | Claude Opus 4.6 以降、Sonnet 4.6 以降、または Fable 系 |
+| モデル（Bedrock / Agent Platform / Foundry / Claude apps gateway） | Claude Sonnet 5、Opus 4.7 以降、Fable 系のみ |
+| 非対応モデル | Sonnet 4.5、Opus 4.5、Haiku、claude-3 系はどのプロバイダでも非対応 |
+
+管理者が無効化した場合の挙動:
+
+> This removes `auto` from the `Shift+Tab` cycle, and a session started with `--permission-mode auto` starts in Manual instead.
+
+サーバー側で auto mode が切られることもあり、その回答を受けたセッションは終了まで auto mode を使えない（新しいセッションを開始する必要がある）。
+
+### 7.4 有効化の経路
+
+- **`Shift+Tab`** — セッション中に permission mode を循環させる。auto mode への切り替えに確認プロンプトは出ない。ステータスバーに `⏵⏵ auto mode on` と表示される
+- **`--permission-mode auto`** — 起動時のフラグ。`-p`（非対話実行）でも同じフラグが使える
+- **`permissions.defaultMode`** — `"permissions": {"defaultMode": "auto"}` を **ユーザー設定または managed settings** に置く。プロジェクト設定からは効かない:
+
+> If you set `defaultMode: "auto"` in settings and a terminal session starts in Manual mode with no error, the setting is likely in `.claude/settings.json` or `.claude/settings.local.json`. `auto` doesn't take effect from those files. Move it to `~/.claude/settings.json`.
+
+- **Bash の許可プロンプトから** — Manual / `acceptEdits` で auto mode が使えるとき、Bash コマンドの許可プロンプトに **Yes, and switch to auto mode** が追加される（2.1.247 以降）
+
+**APD からは強制できない。** プロジェクト設定（`.claude/settings.json`）では `auto` が効かず、プラグインが同梱できる `settings.json` のキーは `agent` と `subagentStatusLine` の 2 つだけ（§4）。したがって規約の担保は「`/apd:go` が `/goal` を貼る直前に人間へ確認を促す」という案内の形にするしかない。
+
+### 7.5 auto mode でも止まる場面
+
+| 場面 | 挙動 |
+|------|------|
+| 連続 3 回 / 累計 20 回のブロック | auto mode が一時停止し、通常の許可プロンプトに戻る。プロンプトを承認すると auto mode が再開する。閾値は変更不可 |
+| `permissions.ask` に合致する操作 | 常に許可プロンプトが出る（`Bash(git push *)` のようにコマンドの内容で照合する ask ルールを含む） |
+| 作業ディレクトリ外の初回読み取り | Read / Grep / Glob が working directories 外のパスに初めて触れたとき、以降も許可するかを確認される |
+| MCP の `requiresUserInteraction` ツール、組織が `ask` にしたコネクタツール | allow ルールがあっても直接プロンプトが出る |
+
+連続 / 累計ブロックの公式記述:
+
+> if the classifier blocks an action 3 times in a row or 20 times total, auto mode pauses and Claude Code resumes prompting. Approving the prompted action resumes auto mode. These thresholds are not configurable. Any allowed action resets the consecutive counter, while the total counter persists for the session and resets only when its own limit triggers a fallback.
+
+作業ディレクトリ外の初回読み取り:
+
+> The first time Claude uses the Read, Grep, or Glob tool on a path outside them, Claude Code asks you whether to keep allowing those reads.
+
+これらは「classifier が想定外の操作を検知した」「人間が明示的に確認したいと宣言した」場面なので、止まって当然として扱う。condition の文言で回避しようとしない。
+
+### 7.6 プロンプトを出せないセッション
+
+> a non-interactive `-p` run without a `--permission-prompt-tool` has no prompt to fall back to. When repeated blocks reach a threshold, the action doesn't run and Claude keeps working.
+
+`claude -p "/goal <condition>"` で Build を回す場合、閾値に達したブロックは**停止ではなく拒否**になり、Claude はその操作を諦めて作業を続ける。セッションは止まらないが、必要な操作が黙って落ちる可能性がある。
+
+作業ディレクトリ外の初回読み取りのプロンプトも同様に出ない:
+
+> The prompt doesn't appear in non-interactive `-p` runs or background sessions; reads there run as before.
+
+### 7.7 subagent と auto mode
+
+APD は Build の並列化に subagent を勧めているため、次が効いてくる:
+
+> While the subagent runs, each of its actions goes through the classifier with the same rules as the parent session, and any `permissionMode` in the subagent's frontmatter is ignored.
+
+subagent は起動前（タスク記述の評価）・実行中（各操作）・終了時（行動履歴のレビュー）の 3 点で classifier を通る。subagent 側で permission mode を上書きすることはできない。
+
+**出典**: https://code.claude.com/docs/en/permission-modes ／ https://code.claude.com/docs/en/goal

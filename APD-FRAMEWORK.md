@@ -12,6 +12,8 @@ Autopilot Development（APD）は、AI エージェントが自律的にソフ�
 
 AI フェーズの途中では人間の介入をゼロにする。モック・ユーザーストーリー・テストを含め、人間が意図した通りの機能実装が AI で完走する。人間の介入が必要で実装が止まることを避ける。
 
+Build は auto mode で `/goal` を実行する。`/goal` はターンの継続を、auto mode はツール許可を担い、両方を揃えて初めて実装中の介入がゼロになる。auto mode でも止まる場面（classifier の連続ブロック、`permissions.ask`、作業ディレクトリ外の初回読み取り）は残り、それは止まって当然の場面として扱う。
+
 ### 「人間の時間」と「AI の時間」の分離
 
 - **Intent / Spec = 人間の時間**: 対話し、意思決定を注入する
@@ -30,7 +32,7 @@ APD は **Design / Spec / Decision の規約と最小限のスキル** だけを
 
 | やりたいこと | 使う Claude Code 機能 |
 |------|-----------|
-| Build の自律ループ | `/goal`（session-scoped、condition 達成までターン継続。permission mode は変えないので、無人で回すなら auto mode を併用する） |
+| Build の自律ループ | `/goal`（session-scoped、condition 達成までターン継続。permission mode は変えないので、auto mode で実行する） |
 | サイドタスク分離 | subagent（`isolation: "worktree"` でファイル隔離可） |
 | 複数セッション協調 | agent teams（experimental・既定で無効。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` で有効化。teammate の許可プロンプトはリーダーセッションに出る） |
 | 大規模並列化 | `/batch`（5〜30 ユニット、各 subagent が worktree 隔離で実装・テスト・PR まで。git リポジトリ必須。分解後に計画の承認を求めて一度止まる） |
@@ -90,7 +92,7 @@ Spec から実装する。Claude Code の `/goal` に処理を委譲し、APD �
   1. Spec を読み、AC・テスト戦略・成果物プレビュー要件を抽出
   2. `/goal` 用 condition を組み立てる（AC 全充足 + テスト pass + PR に「試し方」記載）
   3. ユーザーに condition を提示（そのまま `/goal` に貼れる形）
-  4. ユーザーが `/goal` を実行 → 評価器がターン終了ごとに達成判定・AI は途中で止まらず完走（バックグラウンド作業がある turn は評価が繰り延べられる。詳細は「テスト方針」§）
+  4. ユーザーが auto mode で `/goal` を実行 → 評価器がターン終了ごとに達成判定・AI は途中で止まらず完走（バックグラウンド作業がある turn は評価が繰り延べられる。詳細は「テスト方針」§）
 - 並列化: 必要なら subagent / agent teams / dynamic workflows / `/batch` を選ぶ（APD は強制しない）
 - 収束判定: 評価器は会話に surface された情報のみ判定するため、AI が turn 内でテスト実行ログ・PR diff を会話に出すことが前提
 

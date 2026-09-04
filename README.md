@@ -14,7 +14,7 @@ Build      ← AI 自律完走（途中で止まらない）
 実機確認   ← 人間が実機で触って受け入れ
 ```
 
-人間は **意図を決める**（Intent / Spec 承認）と **完成後の実機確認** の2点のみ担当する。Build 中の進行管理・並列化・タスク追跡・品質ゲートは Claude Code 本体の機能（`/goal`、subagent、dynamic workflows、hooks、および experimental で既定無効の agent teams）に委譲する。APD は薄い規約レイヤに留まる。
+人間は **意図を決める**（Intent / Spec 承認）と **完成後の実機確認** の2点のみ担当する。Build 中の進行管理・並列化・タスク追跡・品質ゲートは Claude Code 本体の機能（`/goal`、subagent、dynamic workflows、hooks、および experimental で既定無効の agent teams）に委譲する。APD は薄い規約レイヤに留まる。Build は auto mode で `/goal` を実行する（`/goal` は permission mode を変えないため）。
 
 ## インストール
 

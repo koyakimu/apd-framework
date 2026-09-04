@@ -9,6 +9,7 @@
 - 人間の確認面は GitHub（PR + issue）
 - 用語・コマンド・フックは 3.x: **完成後の実機確認** / `/apd:go` / プラグインは Stop・SessionStart フックを持たない
 - **CLAUDE.md はプロジェクト固有のことだけ**。APD 汎用ルールの正本は `.claude/rules/apd/`（自動ロード）に一本化
+- Build は auto mode で `/goal` を実行する（3.5.0 で規約化。`/goal` は permission mode を変えない）
 
 ## アプローチ
 
