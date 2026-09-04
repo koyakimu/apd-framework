@@ -1,5 +1,24 @@
 # Changelog
 
+## [3.4.0] - 2026-09-04
+
+### Changed — Claude Code 2.1.260 に合わせて仕様記述を更新
+
+- **`/goal` は permission mode を変えないことを明記**: APD の看板である「Build 中は人間の介入ゼロ」は `/goal` 単体では成立せず、auto mode との併用が前提。`/goal` はターンの継続だけを自動化し、ツール呼び出しの許可は permission mode の責務のままで、Manual mode では許可されていないツール呼び出しのたびに人間の確認が入る。`skills/go/SKILL.md` の提示ステップ、`rules/apd/01-phases.md` の「Build 中は止まらない」、`skills/spec/SKILL.md` の承認後の案内、`QUICKREF.md` のフロー、`APD-FRAMEWORK.md` の機能表に追記した
+- **`/goal` の評価タイミングを「毎ターン後」から実際の仕様に修正**: subagent やバックグラウンドシェルが動いたまま turn が終わると、その turn の評価はスキップされ、バックグラウンド作業のない次の turn 終了時に判定される。APD は Build の並列化に subagent を推奨しているため日常的に踏む条件で、知らないと「評価器が動いていない」と誤診して condition をいじる方向に走る。バックグラウンド待ちが 30 分を超えると自動 check-in が入ること（30分 → 1h → 以降 2h ごとで初回間隔の 4 倍が上限。回数制限があるのは対話セッションの idle check-in だけで、1 goal あたりユーザーのプロンプト間で最大 3 回）も併記した
+- **unrecoverable error での goal 自動クリアを `/apd:go` に追記**: 認証失敗・クレジット切れ・auto-compaction で解消できないコンテキスト超過・モデル利用不可のいずれかで turn が落ちると `/goal` は自動的にクリアされる。復旧後に貼り直せるよう、condition の文面を手元に残すことをユーザーに案内するようにした（レート制限などの一時的なエラーでは goal は維持される）
+- **`/goal` が使えないときの確認項目を追加**: 評価器は hooks の仕組みの上に載っているため、Claude Code のバージョンだけでなく workspace の trust、`disableAllHooks`、managed settings の `allowManagedHooksOnly` も利用可否を左右する
+- **進捗なしでのループ停止を `/apd:go` の失敗時の手がかりに追加**: ツールを使わない turn が数回続くと Claude Code がループを止めて warning を出す。goal はセットされたまま制御がユーザーに戻り、次のプロンプトで評価が再開するため、goal を貼り直す必要はない
+- **Task ツールの提供条件を明記**: Claude Code 2.1.233 以降、`TaskCreate` などの Task ツール（TaskCreate/Get/Update/List・TodoWrite）は Opus 4.8 / Sonnet 5 / Fable 5 / Mythos 5 およびそれ以降のモデルでは既定で提供されず（`CLAUDE_CODE_ENABLE_TODO_TOOLS=1` で戻せる）、モデル自身が多段作業を追跡する。「in-session todo は `TaskCreate`」という指示が現行モデルで空振りしていた（`QUICKREF.md` / `APD-FRAMEWORK.md` / `rules/apd/00-principles.md`）
+- **並列化の選択肢に dynamic workflows を追加**: 公式は subagents / agent view / agent teams / dynamic workflows の 4 本立てで整理しており、APD の一覧は 3 本のままだった。あわせて各手段の「人間の介入が入る箇所」を判断材料として併記した —— agent teams は既定で無効（`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` が要る）で teammate の許可プロンプトはリーダーセッションに出る、`/batch` は分解後に計画の承認を求めて一度止まる、dynamic workflows は run 中にユーザーの入力を受け付けず、run を止めうるのはエージェントの許可プロンプトだけ（無人で回すなら auto mode か allow ルールで事前に許可しておく）
+- **`scripts/verify-migration.sh` に 3.4.0 以前のルール文言の検査を追加**: `.claude/rules/apd/` に「毎ターン後」「TaskCreate」が残っていれば FAIL にする（3.2.0 の Stop フック検査と同じ方式。`/apd:migrate` か `/apd:init` で最新版に更新する）
+- **調査ノートを追加**: `docs/research/claude-code-refresh-2026-09-04.md` —— 2.1.218 → 2.1.260 の照合結果、現行仕様のスナップショット、および検討して採用しなかった案とその理由
+
+### Fixed
+
+- **`MIGRATION.md` のロールバック手順を実行可能な形に修正**: `/plugin install apd@apd-marketplace --version 2.0.0` は存在しないオプションで実行できなかった。`/plugin install` にバージョン指定は無く、marketplace の git URL に `#<ref>` を付けて ref を固定する方式が正しい。APD は過去リリース（v0.1.0〜）にも `v{version}` 形式のタグが付いている（3.3.1 で遡及付与し、以降は CI が自動付与）ので、戻したいバージョンのタグをそのまま指定できる
+- **`docs/research/contract-abolishment-2026-03-15.md` にアーカイブ注記を追加**: `docs/` 配下のアーカイブ文書のうちこの 1 本だけ注記が無く（3.3.1 で他 3 本には付与済み）、現行に存在しない Phase 番号で書かれた本文が現行仕様と誤読されうる状態だった
+
 ## [3.3.2] - 2026-07-05
 
 ### Changed — リポジトリ名を実態に合わせて変更

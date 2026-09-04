@@ -234,6 +234,12 @@ if [[ -d ".claude/rules/apd" ]]; then
   else
     pass ".claude/rules/apd/ has no stale Stop-hook wording"
   fi
+  # Stale rule content: goal/Task-tool wording removed in 3.4.0
+  if grep -rqE '毎ターン後|TaskCreate）' .claude/rules/apd/ 2>/dev/null; then
+    fail ".claude/rules/apd/ has pre-3.4.0 wording (毎ターン後 / TaskCreate) — re-copy from the plugin / run /apd:migrate"
+  else
+    pass ".claude/rules/apd/ has no pre-3.4.0 goal/Task-tool wording"
+  fi
   # Compare against the installed plugin rules when available
   if [[ -n "${CLAUDE_PLUGIN_ROOT:-}" && -d "${CLAUDE_PLUGIN_ROOT}/rules/apd" ]]; then
     drift=0

@@ -12,7 +12,7 @@ argument-hint: "<spec-file or issue#>"
 
 このスキルは APD の Build フェーズのエントリーポイント。**自前で実装ループを回さず、Claude Code の `/goal` 機能に処理を委譲する**。
 
-`/goal` は session-scoped な「条件達成までターン継続」機能。小型評価モデルが毎ターン後に condition 達成を判定する。APD はこの評価器に渡す condition の組み立て役に徹する。
+`/goal` は session-scoped な「条件達成までターン継続」機能。小型評価モデル（既定 Haiku）がターン終了ごとに condition 達成を判定する。subagent やバックグラウンドシェルが動いたまま turn が終わった場合は、その turn の評価はスキップされ、バックグラウンド作業のない次の turn 終了時に判定される。APD はこの評価器に渡す condition の組み立て役に徹する。
 
 ## 責務
 
@@ -83,7 +83,12 @@ condition は `/goal` の制約 (4000 字以内) に収めつつ、以下の責�
 
 ## 4. ユーザーに提示する
 
-組み立てた condition と、それを `/goal` で送信するための文面をユーザーに渡す。並列化 (agent team) や worktree 隔離が必要な場合はその選択肢も補足として伝える。
+組み立てた condition と、それを `/goal` で送信するための文面をユーザーに渡す。並列化 (subagent / agent teams / dynamic workflows / `/batch`) や worktree 隔離が必要な場合はその選択肢も補足として伝える。
+
+あわせて次の 2 点を添える:
+
+- **無人で完走させるなら auto mode で `/goal` を実行する。** `/goal` は permission mode を変えないため、Manual mode では許可されていないツール呼び出しのたびに人間の確認が入り、「Build 中は止まらない」が成立しない
+- **提示した condition の文面は手元に残しておく。** 認証失敗・クレジット切れ・auto-compaction で解消できないコンテキスト超過・モデル利用不可のいずれかで turn が落ちると、`/goal` は notice を出して自動的にクリアされる。原因を解消したうえで同じ condition を貼り直して再開する（レート制限などの一時的なエラーでは goal は維持される）
 
 ## 5. 事前チェックの warning (任意)
 
@@ -106,4 +111,5 @@ warning は提示するだけで、ユーザーの判断を待つ。skill 側で
 
 - 評価器が永遠に no を返す → condition が抽象的すぎる。AC の文言を引用するなど具体化する
 - token 消費が膨大 → condition に turn / 時間の上限を含める
-- `/goal` が利用できない → Claude Code のバージョンが要件を満たしているか確認する (要件は公式ドキュメント参照)
+- ツールを使わない turn が数回続く（評価器に返事するだけで進捗がない）→ Claude Code がループを止めて warning を出し、goal はセットされたまま制御がユーザーに戻る。次のプロンプトを送ると評価が再開する
+- `/goal` が利用できない → 評価器は hooks の仕組みの上に載っているため、(1) Claude Code のバージョン、(2) workspace が trust されているか、(3) `disableAllHooks` が有効になっていないか、(4) managed settings で `allowManagedHooksOnly` が設定されていないか を確認する。いずれの場合もコマンド自身が理由を表示する

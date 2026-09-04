@@ -149,7 +149,15 @@ mv CLAUDE.md.apd-backup-{timestamp} CLAUDE.md   # CLAUDE.md を掃除した場�
 git checkout -- .claude/rules/apd/ .  # rules 更新や Edit が staged されている場合
 ```
 
-または `/plugin install apd@apd-marketplace --version 2.0.0` のように旧バージョンを指定して戻す。
+または旧バージョンのタグに固定したマーケットプレースを追加し直して戻す。`/plugin install` にバージョン指定オプションは無く、git URL に `#<ref>` を付けて ref を固定する:
+
+```
+/plugin marketplace remove apd-marketplace
+/plugin marketplace add https://github.com/koyakimu/apd-framework.git#v2.0.0
+/plugin install apd@apd-marketplace
+```
+
+`remove` はそのマーケットプレース由来のプラグインをアンインストールするので、ロールバック時はその挙動でよい。APD は v{version} 形式のリリースタグを CI が自動付与しているので、戻したいバージョンのタグをそのまま指定できる。なお追加したマーケットプレースは指定した ref に固定されたままなので、この状態では `/plugin update` を実行しても最新版には上がらない。最新に戻すときは同じ手順で `/plugin marketplace remove apd-marketplace` してから、ref を付けずに `/plugin marketplace add koyakimu/apd-framework` を追加し直す。
 
 ## トラブルシューティング
 

@@ -30,11 +30,12 @@ APD は **Design / Spec / Decision の規約と最小限のスキル** だけを
 
 | やりたいこと | 使う Claude Code 機能 |
 |------|-----------|
-| Build の自律ループ | `/goal`（session-scoped、condition 達成までターン継続） |
+| Build の自律ループ | `/goal`（session-scoped、condition 達成までターン継続。permission mode は変えないので、無人で回すなら auto mode を併用する） |
 | サイドタスク分離 | subagent（`isolation: "worktree"` でファイル隔離可） |
-| 複数セッション協調 | agent teams |
-| 大規模並列化 | `/batch` |
-| in-session todo | `TaskCreate` |
+| 複数セッション協調 | agent teams（experimental・既定で無効。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` で有効化。teammate の許可プロンプトはリーダーセッションに出る） |
+| 大規模並列化 | `/batch`（5〜30 ユニット、各 subagent が worktree 隔離で実装・テスト・PR まで。git リポジトリ必須。分解後に計画の承認を求めて一度止まる） |
+| スクリプト化した大規模ファンアウト | dynamic workflows（監査・大量移行・相互検証。1 run 最大 1,000 エージェント・同時実行は最大 16・run 中はユーザーの入力を受け付けず、run を止めうるのはエージェントの許可プロンプトだけ） |
+| in-session todo | Task ツール（`TaskCreate` 等）。Opus 4.8 / Sonnet 5 / Fable 5 / Mythos 5 以降では既定で提供されず、モデル自身が多段作業を追跡する |
 | 累積知識 | auto memory |
 | ファイル変更追跡・rewind | checkpointing |
 | GitHub 連携 | `gh` CLI（ローカル中心、十分）。チーム運用や非同期トリガーが必要なら GitHub Actions / routines を任意で追加 |
@@ -89,8 +90,8 @@ Spec から実装する。Claude Code の `/goal` に処理を委譲し、APD �
   1. Spec を読み、AC・テスト戦略・成果物プレビュー要件を抽出
   2. `/goal` 用 condition を組み立てる（AC 全充足 + テスト pass + PR に「試し方」記載）
   3. ユーザーに condition を提示（そのまま `/goal` に貼れる形）
-  4. ユーザーが `/goal` を実行 → 評価器が毎ターン後に達成判定・AI は途中で止まらず完走
-- 並列化: 必要なら subagent / agent teams / `/batch` を選ぶ（APD は強制しない）
+  4. ユーザーが `/goal` を実行 → 評価器がターン終了ごとに達成判定・AI は途中で止まらず完走（バックグラウンド作業がある turn は評価が繰り延べられる。詳細は「テスト方針」§）
+- 並列化: 必要なら subagent / agent teams / dynamic workflows / `/batch` を選ぶ（APD は強制しない）
 - 収束判定: 評価器は会話に surface された情報のみ判定するため、AI が turn 内でテスト実行ログ・PR diff を会話に出すことが前提
 
 ### 完成後の実機確認
@@ -230,3 +231,5 @@ Build で複数タスクを並列実行する場合は git worktree を使う。
 - PR diff や PR 本文を surface する
 
 これにより評価器が AC 達成・テスト pass・Handoff 記載を判定できる。
+
+評価のタイミングには例外がある。subagent やバックグラウンドシェルが動いたまま turn が終わった場合、その turn は評価されず、バックグラウンド作業のない次の turn 終了時に判定される。バックグラウンド作業が 30 分以上 goal を待たせると Claude Code が自動で check-in を入れる（既定では 30 分 → 1 時間 → 以降 2 時間ごとで、初回間隔の 4 倍が上限）。turn 終端で配送される check-in に回数制限はないが、対話セッションで Claude Code が自らターンを起こして配送する idle check-in は 1 goal あたりユーザーのプロンプト間で最大 3 回で、3 回目に「次のプロンプトまで停止する」と告知される。

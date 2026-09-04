@@ -24,7 +24,8 @@
 ③ Build
    └→ /apd:go <spec ファイル> で /goal condition を組み立て
    └→ ユーザーが /goal に condition を貼って実行 → AI 自律ループ開始（途中で止まらない）
-   └→ 並列化が必要なら subagent / agent teams / /batch を使う
+   └→ 無人で完走させるなら auto mode で実行する（/goal は permission mode を変えない）
+   └→ 並列化が必要なら subagent / agent teams / dynamic workflows / /batch を使う
    └→ 完了時に PR 本文に「試し方」が記載される
 
 ④ 実機確認
@@ -91,9 +92,10 @@ docs/apd/
 |------|---------|
 | Build の自律ループ | `/goal` |
 | サイドタスクの分離 | subagent（必要なら `isolation: "worktree"`） |
-| 複数セッション協調 | agent teams（experimental） |
-| 大規模並列化 | `/batch` |
-| in-session todo | `TaskCreate` |
+| 複数セッション協調 | agent teams（experimental・既定で無効。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` が要る） |
+| 大規模並列化 | `/batch`（分解後に計画の承認を求めて一度止まる。git リポジトリ必須） |
+| スクリプト化した大規模ファンアウト | dynamic workflows（プロンプトに `ultracode` を含めるか「workflow で」と頼んで起動。走っている run の確認は `/workflows`） |
+| in-session todo | Task ツール（`TaskCreate` 等）。Opus 4.8 / Sonnet 5 / Fable 5 / Mythos 5 以降では既定で提供されず、モデル自身が多段作業を追跡する |
 | 累積知識 | auto memory |
 | backlog | GitHub issue（`gh` 環境）or `docs/apd/todo.md` |
 | GitHub 連携 | ローカルの `gh` CLI で十分。GitHub Actions/routines は任意 |
