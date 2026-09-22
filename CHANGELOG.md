@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.1] - 2026-09-22
+
+### Changed — 常時ロードされる `rules/apd/` を 329 行から 199 行へ
+
+- **重複と説明文を削り、規則は 1 つも落としていない**: `rules/apd/*.md` は `paths` frontmatter を持たないため、導入先の全セッションで起動時にまるごと読み込まれる（Claude Code の memory ドキュメント: rules without `paths` are loaded at launch）。公式の目安「1 ファイル 200 行未満」に対し 8 本合計で 329 行あり、CLAUDE.md の数倍を占めていた。「Build 中は人間に介入・問い合わせしない」は `00-principles.md` / `01-phases.md` / `02-cycle-flow.md` の 3 か所に書かれていたので `01-phases.md` に 1 回だけ残し、他は参照にした。`03-documents.md` の decisions.md 書式ブロックは `templates/decision.md` への参照に、Spec 書式は骨格だけ残して `templates/spec.md` を定義元にした。`07-next-step.md` のフロー図と現在地判定は `/apd:status` が持つ判定表と同じ内容だったので削り、案内の原則だけ残した。`01-phases.md` の並列実行の節は auto mode の規約（3.5.0）を保ったまま 1 段落に圧縮した
+- 導入先は `/apd:migrate` で取り込む。`scripts/verify-migration.sh` Check 6 の文言検査（`毎ターン後` / `TaskCreate）` / `Stop フック`）は新しい 8 本で通ることを確認した
+
 ## [3.5.0] - 2026-09-05
 
 ### Changed — Build を auto mode 前提として規約化
