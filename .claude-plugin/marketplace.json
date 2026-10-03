@@ -11,7 +11,7 @@
       "name": "apd",
       "source": "./",
       "description": "APD (Autopilot Development) Framework - 人間は意思決定だけ、AIが自律で完走する",
-      "version": "3.6.1",
+      "version": "3.6.2",
       "author": {
         "name": "koyakimu"
       },

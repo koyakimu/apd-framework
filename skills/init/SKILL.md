@@ -11,7 +11,7 @@ description: >
 
 # APD Init — プロジェクト初期化
 
-APD フレームワークをプロジェクトに初期化する。ルールファイルのコピーとドキュメントディレクトリの作成を行う。
+ルールファイルをコピーし、ドキュメントディレクトリを作る。CLAUDE.md は変更しない。
 
 ## 手順
 
@@ -36,7 +36,7 @@ cp "${CLAUDE_PLUGIN_ROOT}/rules/apd/"*.md .claude/rules/apd/
 
 ### 3. ドキュメントディレクトリの作成
 
-フラット構造で `docs/apd/` を作成する。サブディレクトリは作らない（必要になった時点で作る）:
+`docs/apd/` を作る。サブディレクトリは作らない:
 
 ```bash
 mkdir -p docs/apd
@@ -44,7 +44,7 @@ mkdir -p docs/apd
 
 ### 4. backlog の初期化
 
-`gh auth status` が成功した環境では GitHub issue を一次 backlog として使う方針なので `docs/apd/todo.md` は作らない。`gh` が使えない環境ではフォールバックとして `todo.md` を作成する:
+`gh auth status` が失敗する環境でだけ `docs/apd/todo.md` を作る（成功する環境では GitHub issue を backlog にする）:
 
 ```bash
 if ! gh auth status >/dev/null 2>&1; then
@@ -76,13 +76,10 @@ backlog の運用:
   {gh 不在時: }
   - docs/apd/todo.md に append-only で追記する
 
-次のステップ:
-  /apd:design で Design 文書を作成（既にあれば /apd:spec へ）
 ```
 
-## 注意事項
+### 6. 元の流れに戻る
 
-- ルールファイルは `.claude/rules/apd/` にコピーされ、Claude Code が自動でコンテキストにロードする
-- `docs/apd/` はフラット構造。サブディレクトリは「必要になったら作る」原則
-- 次回のセッションから APD フレームワークのルールが自動適用される
-- **CLAUDE.md は変更しない。** APD の使用宣言やバージョンを CLAUDE.md に書き込まない（APD の存在は `.claude/rules/apd/` と `docs/apd/` で判る。バージョン入りの行は腐る）。CLAUDE.md はユーザーのもの
+Spec や Design の作成から初期化を提案した場合は、そのまま元の手順（`apd:spec` / `apd:design`）に戻る。初期化だけを頼まれた場合は、Design から始めるかをユーザーに聞く。ユーザーにコマンドの入力を求めない。
+
+`.claude/rules/apd/` のルールは次のセッションから自動で読み込まれる。

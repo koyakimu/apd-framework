@@ -6,15 +6,15 @@ description: >
   single decisions.md, flattens old subdirectories, updates frontmatter,
   cleans APD cruft out of CLAUDE.md (injected banners, duplicated/stale
   rules, deprecated commands), and refreshes .claude/rules/apd/ to the
-  installed version. Use when the user asks to migrate APD, upgrade APD,
-  run /apd:migrate, or has just updated the APD plugin.
+  installed version. Run with /apd:migrate after updating the APD
+  plugin.
 disable-model-invocation: true
 argument-hint: "[--dry-run]"
 ---
 
 # APD Migrate — 既存プロジェクトを現行モデルへ移行
 
-このスキルは **AI 判断ベースで** 既存 APD プロジェクトを現行モデルに揃える。対象は `docs/apd/` の構造だけでなく、**CLAUDE.md と `.claude/rules/apd/`** も含む。現行モデルの要点:
+既存 APD プロジェクトの `docs/apd/`・CLAUDE.md・`.claude/rules/apd/` を現行モデルに揃える。現行モデルの要点:
 
 - ドキュメントは生きた 1 枚（差分を別ファイルで積まない、git が正史）
 - 3 ファイル種別: `design.md` / `decisions.md` / `spec-{feature}.md`
@@ -27,6 +27,15 @@ argument-hint: "[--dry-run]"
 
 検証は `scripts/verify-migration.sh` で行う（プラグイン同梱）。
 
+## 常に守ること（安全原則）
+
+- **バックアップを取らずに変更しない**（docs/apd/ も CLAUDE.md も）
+- **判断に迷ったら手動レビュー項目に倒す**
+- **CLAUDE.md はプロジェクト固有を必ず残す**: 汎用 APD ルールだけを除き、固有の規約・設定・状態は消さない
+- **rules の上書きは差分確認後**: 独自カスタムを握り潰さない
+- **Patch 畳み込みは内容を読んでから**、**Decision 集約は順序を保つ**
+- **冪等**: 再実行しても安全。既に現行のものはスキップする
+
 ## 移行元のパターン
 
 プロジェクトの現状を見て、該当するもの（複数可）を適用する:
@@ -37,7 +46,7 @@ argument-hint: "[--dry-run]"
   - 「Acceptance」「Human Checkpoint」→ **完成後の実機確認**
   - `/apd:build` / `/apd:start` → `/apd:go`、`/apd:cycle` / `/apd:progress` は廃止（会話 + `gh`）
   - `apd:peer-review` / `apd:checkpoint` エージェント → 廃止
-  - **Spec チェック Stop フック**（3.0〜3.1）→ 廃止。Build の達成条件でビルド AI 自身が AC を照合する
+  - **Spec チェック Stop フック**（3.0〜3.1）→ 廃止。Build の達成条件で AI が AC を照合する
   - **状態サジェストフック**（3.1）→ 廃止。案内はメイン AI の常駐ルール（`07-next-step.md`）+ `/apd:status`
 
 ## 責務
@@ -76,7 +85,7 @@ Glob + Read + Bash で以下を把握する:
 
 1. **バックアップ**: `cp -R docs/apd docs/apd.backup-{timestamp}`、`cp CLAUDE.md CLAUDE.md.apd-backup-{timestamp}`（絶対消さない。専用ブランチがあればそれも保険）
 2. **サブディレクトリ flat 化**（0.x の場合）: `git mv` でファイル移動
-3. **Patch 畳み込み**: 各 patch を Read → 親 Spec の該当 AC を Edit で統合 + `version` 加算 → patch を `git rm`（機械的な末尾追記はしない。二重定義を避ける）
+3. **Patch 畳み込み**: 各 patch を Read → 親 Spec の該当 AC を Edit で統合 + `version` 加算 → patch を `git rm`（末尾への機械的な追記はしない）
 4. **Decision 集約**: 各 `decision-*.md` を Read → `decisions.md` に番号降順で追記 → 元を `git rm`
 5. **frontmatter 更新**: `cycle_ref` → `issue_ref`、`amendment_id` / `patch_id` は畳み込みで除去
 6. **CLAUDE.md の掃除**（下記）
@@ -84,14 +93,14 @@ Glob + Read + Bash で以下を把握する:
 
 #### CLAUDE.md の掃除（APD 由来の注入・重複・陳腐化の除去）
 
-CLAUDE.md には APD 由来の記述が紛れ込みやすい。汎用の APD ルールは `.claude/rules/apd/`（自動ロード）が正本なので、CLAUDE.md からは除く。**プロジェクト固有の内容は必ず残す**（技術スタック・命名規約・テストランナー・CI・配信・セキュリティ・プロジェクト状態など）。AI が節・行ごとに「汎用 APD ルールか / プロジェクト固有か」を判断する。
+汎用の APD ルールは CLAUDE.md から除き、**プロジェクト固有の内容は必ず残す**（技術スタック・命名規約・テストランナー・CI・配信・セキュリティ・プロジェクト状態など）。節・行ごとに「汎用 APD ルールか / プロジェクト固有か」を判断する。
 
 除去・修正の対象:
 
-- **宣伝行**: 「**APD（Autopilot Development）フレームワーク x.y.z …で開発。詳細ルール: `.claude/rules/apd/`**」のような APD 使用宣言・バージョン入りの行 → **削除**（バージョンは腐る。APD の存在は `.claude/rules/apd/` と `docs/apd/` で判る）
+- **宣伝行**: 「**APD（Autopilot Development）フレームワーク x.y.z …で開発。詳細ルール: `.claude/rules/apd/`**」のような APD 使用宣言・バージョン入りの行 → **削除**
 - **汎用ルールの丸写し**: `.claude/rules/apd/` の内容を CLAUDE.md に重複させた節 → **削除**。典型: 「APD 準拠ルール」「並列実行・Git 戦略（…準拠）」、テスト方針の汎用部分、「Build の収束判定」、Decision 参照の一般則、生きたドキュメントの一般則。固有部分（テストランナー・モック禁止領域・ブランチ運用の独自規則など）があればそこだけ残す
 - **陳腐化した記述**:
-  - 「**Spec チェック Stop フック**」への言及 → 廃止済み。「Build の達成条件でビルド AI が AC を照合」に書き換え or 削除
+  - 「**Spec チェック Stop フック**」への言及 → 廃止済み。「Build の達成条件で AI が AC を照合」に書き換え or 削除
   - 「**Build 中のエスカレーションポリシー**」の二分リスト（人間に渡す / Build 内で完結）→ 旧モデル。削除（現行は「実装中ゼロ介入・完成後の実機確認で次サイクル」）
   - 状態サジェストフックへの言及 → 削除（常駐ルール + `/apd:status`）
 - **旧コマンド・旧エージェント名**: `/apd:build` `/apd:start` `/apd:cycle` `/apd:progress` `apd:checkpoint` `apd:peer-review` → 現行（`/apd:go` 等）に書き換え or 削除
@@ -148,15 +157,6 @@ FAIL があれば修正する。
 2. git add -A && git commit -m "chore: migrate to current APD model"
 3. 動作確認後、別 PR で backup を削除
 ````
-
-## 安全原則
-
-- **バックアップを取らずに変更しない**（docs/apd/ も CLAUDE.md も）
-- **判断に迷ったら手動レビュー項目に倒す**
-- **CLAUDE.md はプロジェクト固有を必ず残す**: 汎用 APD ルールだけを除き、固有の規約・設定・状態は消さない
-- **rules の上書きは差分確認後**: 独自カスタムを握り潰さない
-- **Patch 畳み込みは内容を読んでから**、**Decision 集約は順序を保つ**
-- **冪等**: 再実行しても安全。既に現行のものはスキップする
 
 ## このスキルが意図的にやらないこと
 
