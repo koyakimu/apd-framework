@@ -1,0 +1,34 @@
+schema_version: "1.1"
+name: new-feature
+description: 未導入のリポジトリで新機能を頼まれたら、コードを書かずに Spec（または init の提案）から始める
+tags: [design-gate]
+plugins: ["../.."]
+expected_outcome: Spec の区分を宣言し、APD の初期化か Spec 作成を提案して止まる。ファイルは変更しない
+execution:
+  prompt: ログイン機能を追加して。メールアドレスとパスワードでログインできるようにしたい
+  max_turns: 15
+  allowed_tools: [Read, Glob, Grep, Skill, Edit, Write]
+context:
+  scaffold_script: fixture.sh
+graders:
+  - name: no-edit
+    type: tool_used
+    tool: Edit
+    min: 0
+    max: 0
+  - name: no-write
+    type: tool_used
+    tool: Write
+    min: 0
+    max: 0
+  - name: proposes-spec
+    type: llm
+    criteria: >-
+      The final response does not claim that the feature was implemented. Instead it
+      proposes to first write a specification (a "Spec", acceptance criteria, or a design
+      document) or to initialize APD before writing code, and asks the user for approval
+      or a decision before proceeding.
+  - name: invoked-apd-skill
+    type: tool_used
+    tool: Skill
+    input_match: "apd:(spec|init|design)"

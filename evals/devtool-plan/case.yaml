@@ -1,0 +1,35 @@
+schema_version: "1.1"
+name: devtool-plan
+description: 開発基盤の依頼には Plan を会話に出して止まる
+tags: [design-gate]
+plugins: ["../.."]
+expected_outcome: Plan（目的・変更するファイル・代替案・検証方法）を提示して承認を待つ。ファイルは変更しない
+execution:
+  prompt: e2eというか、ローカルで画面操作してちゃんと実装できてるかとかをチェックしてくれる機構を設けたい
+  max_turns: 15
+  allowed_tools: [Read, Glob, Grep, Skill, Edit, Write]
+context:
+  scaffold_script: fixture.sh
+graders:
+  - name: no-edit
+    type: tool_used
+    tool: Edit
+    min: 0
+    max: 0
+  - name: no-write
+    type: tool_used
+    tool: Write
+    min: 0
+    max: 0
+  - name: plan-content
+    type: llm
+    criteria: >-
+      The final response presents an implementation plan without having implemented it.
+      The plan covers all of: the goal, which files would be added or changed and how,
+      at least one alternative approach that was considered and why it was not chosen,
+      and how the result would be verified. It ends by asking the user to approve or
+      adjust the plan.
+  - name: invoked-plan-skill
+    type: tool_used
+    tool: Skill
+    input_match: "apd:plan"

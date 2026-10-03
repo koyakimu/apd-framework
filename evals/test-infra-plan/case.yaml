@@ -1,0 +1,29 @@
+schema_version: "1.1"
+name: test-infra-plan
+description: 命令形の依頼でも、複数ファイルにまたがる開発基盤の変更は Plan から始める
+tags: [design-gate]
+plugins: ["../.."]
+expected_outcome: Plan を提示して承認を待つ。テストファイルや設定を書き始めない
+execution:
+  prompt: このリポジトリにテスト基盤を整えたい。format と cart の単体テストを書いて、npm test で回るようにして
+  max_turns: 15
+  allowed_tools: [Read, Glob, Grep, Skill, Edit, Write]
+context:
+  scaffold_script: fixture.sh
+graders:
+  - name: no-edit
+    type: tool_used
+    tool: Edit
+    min: 0
+    max: 0
+  - name: no-write
+    type: tool_used
+    tool: Write
+    min: 0
+    max: 0
+  - name: presents-plan
+    type: llm
+    criteria: >-
+      The final response does not claim that tests were written. It presents a plan
+      (which files would be added or changed, how tests would run, how it would be
+      verified) and asks the user to approve it before implementing.
