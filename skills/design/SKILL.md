@@ -2,8 +2,11 @@
 name: design
 description: >
   Creates the product Design document (the north star) through
-  interactive dialogue. Writes to `docs/apd/design.md`. Use when
-  the user asks to create a design document, design a product,
+  interactive dialogue. Writes to `docs/apd/design.md`. Use before
+  writing any code when the user asks to build a new product or app,
+  or to change a product's direction, and `docs/apd/design.md` does
+  not exist yet, even if the user did not ask for a design. Also use
+  when the user asks to create a design document, design a product,
   or run /apd:design ("Design 文書を作成", "プロダクトを設計").
 ---
 

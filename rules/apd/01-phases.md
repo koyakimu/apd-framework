@@ -9,9 +9,12 @@ Intent ── 人間 + AI 対話
 Spec ── AI ドラフト + 人間レビュー
   成果物: Spec（AC + 検証方針 + 成果物プレビュー記述）+ Decision Records
 
+Plan ── AI ドラフト + 人間レビュー（Spec を作らない変更）
+  成果物: 会話と PR 本文に残る設計（目的・方針・代替案・検証方法）
+
 Build ── AI 自律（実装中は止まらない自動完走）
   成果物: 実装 + テスト全パス + PR（試し方記載済み）
-  → Claude Code の `/goal` に auto mode で委譲。AC 準拠の Spec チェックは Build の達成条件に組み込み、ビルド AI 自身が照合する
+  → 承認を受けてその場で auto mode のまま実装する。長時間の無人実行には `/goal` を使ってよい。AC 準拠の Spec チェックは Build の達成条件に組み込み、ビルド AI 自身が照合する
   → 実装中は人間に問い合わせない。判断は Spec に先出しするか完成後の実機確認で次サイクルに回す
 
 完成後の実機確認 ── 人間
@@ -21,14 +24,14 @@ Build ── AI 自律（実装中は止まらない自動完走）
 
 ## 人間が関与する場
 - **Intent**: 意図を決める
-- **Spec**: 仕様を確認する
+- **Spec / Plan**: 設計を確認し、承認する
 - **完成後の実機確認**: 動く成果物が意図どおりか確認する
 
 Build フェーズに人間は介入しない。
 
 ## Build の収束判定
 
-Build は Claude Code の `/goal` の評価器が、condition（Spec の AC、テスト pass、PR の Handoff 記載）の達成をターン終了ごとに判定する。
+Build の収束は、達成条件（Spec の AC、テスト pass、PR の Handoff 記載）をビルド AI 自身が照合して判定する。`/goal` で Build する場合は、評価器が同じ条件の達成をターン終了ごとに判定する。以下は主に `/goal` 使用時の注意:
 
 - **評価器はツールを呼ばない**。Claude が turn 内で test 実行ログ・PR diff・実装内容を会話に surface する必要がある
 - **バックグラウンド作業がある turn は評価がスキップされる**。subagent やバックグラウンドシェルが動いたまま turn が終わると、その turn は評価されず、バックグラウンド作業のない次の turn 終了時に判定される。並列化した Build では収束が遅れて見えることがあるが、異常ではない
@@ -39,11 +42,11 @@ Build は Claude Code の `/goal` の評価器が、condition（Spec の AC、�
 
 実装中はエスカレーションしない。新しいビジネスルールや外部インターフェース変更など Spec にない判断が必要な場合は、**Spec に先出し**（Spec フェーズで人間が確認済み）するか、**完成後の実機確認で気づき次サイクルで Spec を修正する**。
 
-**Build は auto mode で `/goal` を実行する（規約）。** `/goal` はターンの継続だけを自動化し、ツール呼び出しの許可は permission mode の責務のままなので、Manual mode では許可されていないツール呼び出しのたびに人間の確認が入り「Build 中は止まらない」が成立しない。auto mode への切り替えは Shift+Tab、起動時の `--permission-mode auto`、またはユーザー設定の `permissions.defaultMode`。プロジェクト設定やプラグインからは強制できないため、`/apd:go` が `/goal` を貼る直前に確認を促す。
+**Build は auto mode で実行する（規約）。** Manual mode では許可されていないツール呼び出しのたびに人間の確認が入り「Build 中は止まらない」が成立しない。`/goal` もターンの継続だけを自動化し、ツール呼び出しの許可は permission mode の責務のまま。auto mode への切り替えは Shift+Tab、起動時の `--permission-mode auto`、またはユーザー設定の `permissions.defaultMode`。プロジェクト設定やプラグインからは強制できないため、`/apd:go` で `/goal` を使う場合は貼る直前に確認を促す。
 
 auto mode でも止まる場面は残る。classifier が 3 回連続または累計 20 回ブロックすると通常のプロンプトに戻る、`permissions.ask` に合致する操作は常に確認が入る、作業ディレクトリ外の初回読み取りは確認が入る。これらは止まって当然の場面として扱い、condition で回避しようとしない。auto mode が使えない環境（組織設定で無効、モデル要件を満たさない）では、Build 中に許可プロンプトで止まることを前提に人間が付き添う。
 
-Build の番人は `/goal` の評価器と、`/apd:go` が condition に組み込む Spec チェック。AC 準拠・テスト pass・Handoff 記載をターン終了ごとに判定し、ビルド AI が照合結果を surface して自律修正する。
+Build の番人は、`/apd:go` が達成条件に組み込む Spec チェック（`/goal` 使用時はその評価器も）。ビルド AI が AC 準拠・テスト pass・Handoff 記載の照合結果を surface し、ずれがあれば自律修正する。
 
 ## 並列実行
 

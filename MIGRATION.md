@@ -9,7 +9,8 @@
 - 人間の確認面は GitHub（PR + issue）
 - 用語・コマンド・フックは 3.x: **完成後の実機確認** / `/apd:go` / プラグインは Stop・SessionStart フックを持たない
 - **CLAUDE.md はプロジェクト固有のことだけ**。APD 汎用ルールの正本は `.claude/rules/apd/`（自動ロード）に一本化
-- Build は auto mode で `/goal` を実行する（3.5.0 で規約化。`/goal` は permission mode を変えない）
+- Build は auto mode で実行する（3.5.0 で規約化）。3.6.0 から既定は承認を受けてその場で実装し、`/goal` は長時間の無人実行用の任意の手段になった
+- 3.6.0 で Plan 区分（`/apd:plan`）と、設計の区分を注入する SessionStart フックを追加した。`.claude/rules/apd/` を最新にするには `/apd:migrate` を実行する
 
 ## アプローチ
 
@@ -33,7 +34,7 @@
 | Decision | `decisions/D-{NNN}.md` (0.x) / `decision-{NNN}.md` (1.0.x) | `docs/apd/decisions.md` (単一の追記ログ) |
 | Preview | 原則必須 | **任意**。作る場合のみ `docs/apd/preview-{feature}/` |
 | Cycle | `docs/apd/cycles/C-{NNN}.md` | **廃止** (GitHub issue で代替) |
-| Build スキル | `/apd:build` / `/apd:start` | `/apd:go <spec>` + `/goal` |
+| Build スキル | `/apd:build` / `/apd:start` | `/apd:go <spec>`（既定はその場で Build、`/goal` は任意） |
 | サイクル開始 | `/apd:cycle` | 会話 + `gh issue create` |
 | 進行確認 | `/apd:progress` | `/apd:status` + `gh issue list` + `ls docs/apd/` |
 | 機械検証 agent | `apd:checkpoint` / `apd:peer-review` | **廃止** (`/goal` 評価器 + Build の Spec チェックステップ) |

@@ -12,11 +12,11 @@ Autopilot Development（APD）は、AI エージェントが自律的にソフ�
 
 AI フェーズの途中では人間の介入をゼロにする。モック・ユーザーストーリー・テストを含め、人間が意図した通りの機能実装が AI で完走する。人間の介入が必要で実装が止まることを避ける。
 
-Build は auto mode で `/goal` を実行する。`/goal` はターンの継続を、auto mode はツール許可を担い、両方を揃えて初めて実装中の介入がゼロになる。auto mode でも止まる場面（classifier の連続ブロック、`permissions.ask`、作業ディレクトリ外の初回読み取り）は残り、それは止まって当然の場面として扱う。
+Build は設計の承認を受けて、その場で auto mode のまま完走する。auto mode がツール許可を担うので実装中の介入はゼロになる。長時間の無人実行には `/goal`（ターンの継続を担う）を併用してよい。auto mode でも止まる場面（classifier の連続ブロック、`permissions.ask`、作業ディレクトリ外の初回読み取り）は残り、それは止まって当然の場面として扱う。
 
 ### 「人間の時間」と「AI の時間」の分離
 
-- **Intent / Spec = 人間の時間**: 対話し、意思決定を注入する
+- **Intent / Spec / Plan = 人間の時間**: 対話し、意思決定を注入する。承認より前にコードを書かない
 - **Build = AI の時間**: 自律実行（途中で止まらない）
 - **実機確認 = 人間の時間（軽量）**: 完成後に動く成果物を実機で触り、受け入れる
 
@@ -24,15 +24,15 @@ Build は auto mode で `/goal` を実行する。`/goal` はターンの継続�
 
 - **上流（Intent / Spec）**: 意図を決める — プロダクトビジョン、仕様、技術選定を判断する
 - **下流（完成後の実機確認）**: 動く成果物が意図通りかを実機で確認する
-- **コードレビューは求めない** — 品質検証は AI 自身のループ（`/goal` 評価器、subagent、テスト）が担保する
+- **コードレビューは求めない** — 品質検証は AI 自身のループ（達成条件の照合、subagent、テスト、`/goal` 使用時はその評価器）が担保する
 
 ### 薄い規約レイヤに留まる
 
-APD は **Design / Spec / Decision の規約と最小限のスキル** だけを提供する。Claude Code 本体に存在する機能は再実装しない:
+APD は **Design / Spec / Plan / Decision の規約と最小限のスキル** だけを提供する。Claude Code 本体に存在する機能は再実装しない:
 
 | やりたいこと | 使う Claude Code 機能 |
 |------|-----------|
-| Build の自律ループ | `/goal`（session-scoped、condition 達成までターン継続。permission mode は変えないので、auto mode で実行する） |
+| 長時間の無人 Build | `/goal`（session-scoped、condition 達成までターン継続。permission mode は変えないので、auto mode で実行する。任意） |
 | サイドタスク分離 | subagent（`isolation: "worktree"` でファイル隔離可） |
 | 複数セッション協調 | agent teams（experimental・既定で無効。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` で有効化。teammate の許可プロンプトはリーダーセッションに出る） |
 | 大規模並列化 | `/batch`（5〜30 ユニット、各 subagent が worktree 隔離で実装・テスト・PR まで。git リポジトリ必須。分解後に計画の承認を求めて一度止まる） |
@@ -54,9 +54,12 @@ Intent     ── 人間 + AI 対話
 Spec       ── AI ドラフト + 人間レビュー・承認
   成果物: Spec（AC + 検証方針 + 成果物プレビュー記述）+ Decision Records
 
+Plan       ── AI ドラフト + 人間レビュー・承認（Spec を作らない変更）
+  成果物: 会話と PR 本文に残る設計（目的・方針・代替案・検証方法）
+
 Build      ── AI 自律完走（途中で止まらない）
   成果物: 実装 + テスト全パス + PR（試し方記載済み）
-  実装: Claude Code の /goal に委譲
+  実装: 承認を受けてその場で実装（長時間の無人実行は /goal に委譲）
 
 完成後の実機確認 ── 人間
   PR の「試し方」に沿って実機で触り、受け入れ判断する
@@ -83,18 +86,30 @@ Design を実装可能な単位に分割し、各機能について受け入れ�
   - **bugfix**: 既存 Spec を直接編集して `version` を上げる
 - 各 Spec の構成: User Story、Acceptance Criteria（Given/When/Then）、UI 記述、Context Boundary、Test Strategy（AC Coverage）、Deliverable Previews
 
+### Plan
+
+Spec を作るほどでない変更（振る舞いが変わらないリファクタ・内部の技術変更・開発基盤・infra・設定・スクリプト・複数ファイルの修正）の軽い設計。ファイルは作らず、会話に出して承認を得たら Build に入り、PR 本文の冒頭に同じ設計を載せる。
+
+- スキル: `/apd:plan`（依頼内容から AI が自分で選ぶ。`/apd:init` していないリポジトリでも使える）
+- 中身: 目的 / 変更するファイルと方針 / 検討した代替案と採らない理由 / 検証方法
+- 技術判断を含む場合は `docs/apd/decisions.md` に追記する
+
+### 区分の判定
+
+何かを作る・変える依頼を受けたら、AI はコードを書く前に Design / Spec / Plan / 設計なし のどれかを判定して宣言する（基準は `rules/apd/02-cycle-flow.md`）。プラグインの SessionStart フックがこの基準を毎セッション context に入れるので、ユーザーがコマンドを打たなくても設計から始まる。
+
 ### Build
 
-Spec から実装する。Claude Code の `/goal` に処理を委譲し、APD は condition 組み立て役に徹する。
+承認済みの Spec または Plan から実装する。
 
-- スキル: `/apd:go <spec ファイル>`
-- 動作:
+- スキル: `/apd:go <spec ファイル>`（Spec の場合。承認の返事だけで AI が選ぶ）
+- 動作（その場で Build・既定）:
   1. Spec を読み、AC・テスト戦略・成果物プレビュー要件を抽出
-  2. `/goal` 用 condition を組み立てる（AC 全充足 + テスト pass + PR に「試し方」記載）
-  3. ユーザーに condition を提示（そのまま `/goal` に貼れる形）
-  4. ユーザーが auto mode で `/goal` を実行 → 評価器がターン終了ごとに達成判定・AI は途中で止まらず完走（バックグラウンド作業がある turn は評価が繰り延べられる。詳細は「テスト方針」§）
+  2. 達成条件を組み立てる（AC 全充足 + テスト pass + PR に「試し方」記載）
+  3. 達成条件を要約して会話に出し、そのまま実装に入る。全条件を満たして PR を出したら完了
+- 動作（`/goal` で Build・任意）: 長時間の無人実行をしたいときは、達成条件を `/goal` の condition として提示し、ユーザーが auto mode で貼る → 評価器がターン終了ごとに達成判定（バックグラウンド作業がある turn は評価が繰り延べられる。詳細は「テスト方針」§）
 - 並列化: 必要なら subagent / agent teams / dynamic workflows / `/batch` を選ぶ（APD は強制しない）
-- 収束判定: 評価器は会話に surface された情報のみ判定するため、AI が turn 内でテスト実行ログ・PR diff を会話に出すことが前提
+- 収束判定: AI が turn 内でテスト実行ログ・PR diff を会話に出す（`/goal` の評価器も会話に surface された情報のみで判定する）
 
 ### 完成後の実機確認
 
@@ -224,14 +239,14 @@ Build で複数タスクを並列実行する場合は git worktree を使う。
 - 何をどうテストするかは Spec の Test Strategy セクションと AC Coverage テーブルで定義する
 - 自動検証できない品質軸（実機限定、人間の主観評価等）は完成後の実機確認で人間が確認する
 
-### Build の収束は `/goal` 評価器が判定する
+### Build の収束判定
 
-`/goal` 評価器は会話に surface された情報のみで判定するため、AI は turn 内で:
+Build の収束は、ビルド AI が達成条件（AC 達成・テスト pass・Handoff 記載）を照合して判定する。`/goal` で Build する場合は評価器が同じ条件を判定する。評価器は会話に surface された情報のみで判定するため、どちらの場合も AI は turn 内で:
 
 - テスト実行ログを出力する
 - 実装変更内容を要約する
 - PR diff や PR 本文を surface する
 
-これにより評価器が AC 達成・テスト pass・Handoff 記載を判定できる。
+これによりユーザー（と `/goal` の評価器）が AC 達成・テスト pass・Handoff 記載を確かめられる。
 
-評価のタイミングには例外がある。subagent やバックグラウンドシェルが動いたまま turn が終わった場合、その turn は評価されず、バックグラウンド作業のない次の turn 終了時に判定される。バックグラウンド作業が 30 分以上 goal を待たせると Claude Code が自動で check-in を入れる（既定では 30 分 → 1 時間 → 以降 2 時間ごとで、初回間隔の 4 倍が上限）。turn 終端で配送される check-in に回数制限はないが、対話セッションで Claude Code が自らターンを起こして配送する idle check-in は 1 goal あたりユーザーのプロンプト間で最大 3 回で、3 回目に「次のプロンプトまで停止する」と告知される。
+`/goal` 使用時の評価のタイミングには例外がある。subagent やバックグラウンドシェルが動いたまま turn が終わった場合、その turn は評価されず、バックグラウンド作業のない次の turn 終了時に判定される。バックグラウンド作業が 30 分以上 goal を待たせると Claude Code が自動で check-in を入れる（既定では 30 分 → 1 時間 → 以降 2 時間ごとで、初回間隔の 4 倍が上限）。turn 終端で配送される check-in に回数制限はないが、対話セッションで Claude Code が自らターンを起こして配送する idle check-in は 1 goal あたりユーザーのプロンプト間で最大 3 回で、3 回目に「次のプロンプトまで停止する」と告知される。

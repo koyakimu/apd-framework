@@ -6,7 +6,8 @@
 |---------|---------|---------|--------|------------|
 | **Intent** | 人間+AI | 対話で Design 文書作成 | `docs/apd/design.md` | 人間の合意 |
 | **Spec** | 人間+AI | AI ドラフト → 人間確認 | `docs/apd/spec-*.md` + `docs/apd/decisions.md` | 人間の合意 |
-| **Build** | AI 自律 | 実装 + テスト + PR | `src/` + `tests/` + PR（試し方記載済み） | `/goal` 評価器の収束 |
+| **Plan** | 人間+AI | Spec を作らない変更の設計を会話に提示 → 人間確認 | 会話 + PR 本文 | 人間の合意 |
+| **Build** | AI 自律 | 実装 + テスト + PR | `src/` + `tests/` + PR（試し方記載済み） | 達成条件の充足（`/goal` 使用時は評価器の収束） |
 | **実機確認** | 人間 | 実機で触る | merge or 差し戻し | 人間の判断 |
 
 ## スキル使用フロー
@@ -16,15 +17,17 @@
    └→ GitHub issue を起票（gh 環境）or todo.md に追記
       └→ 必要なら /apd:design で Design 文書を作成・更新
 
-② Spec
-   └→ /apd:spec [full|add|bugfix] で Spec ドラフト生成
+② 設計（コードを書く前に区分を判定。依頼するだけで AI が提案する）
+   └→ 振る舞いが変わる → Spec / 変わらない・小さい → Plan / typo・数行 → 設計なし
+   └→ Plan: /apd:plan で会話に設計を提示 → 承認 → ③ Build へ
+   └→ Spec: /apd:spec [full|add|bugfix] で Spec ドラフト生成
    └→ full モードではスコーピング → スコープ外は backlog へ
    └→ 確認依頼箇所のみレビュー → フィードバック → 合意
 
 ③ Build
-   └→ /apd:go <spec ファイル> で /goal condition を組み立て
-   └→ ユーザーが /goal に condition を貼って実行 → AI 自律ループ開始（途中で止まらない）
-   └→ auto mode で /goal を実行する（規約。/goal は permission mode を変えない）
+   └→ 「この方向で実装して」と承認 → AI がその場で実装開始（途中で止まらない。コマンド不要）
+   └→ auto mode で実行する（規約）
+   └→ 長時間の無人実行をしたいときだけ /apd:go で /goal condition を組み立てて貼る
    └→ 並列化が必要なら subagent / agent teams / dynamic workflows / /batch を使う
    └→ 完了時に PR 本文に「試し方」が記載される
 
