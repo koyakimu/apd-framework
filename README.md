@@ -58,6 +58,16 @@ Build      ← AI 自律完走（途中で止まらない）
 
 詳細は `QUICKREF.md`、設計原理は `APD-FRAMEWORK.md` を参照。
 
+## 評価シナリオ
+
+`evals/` に、設計の区分が期待どおりに働くかを確かめる 6 ケースがある。依頼に対して設計から始めるか（`new-feature` / `devtool-plan` / `test-infra-plan`）、承認後にその場で実装するか（`approved-build`）、typo や質問に割り込まないか（`typo` / `question`）を見る。各ケースは APD あり・なしの 2 arm で回り、差（Δ）が APD の効果になる。プラグインのルートで次を実行する（1 回で 36 run と採点が走る）:
+
+```bash
+claude plugin eval . --scaffold --allow-tools Write Edit --threshold 0.8 --max-cost-usd 10
+```
+
+モデルを変えて試すときは `--model` を付ける。fixture を変えたら `evals/_fixture/fixture.sh` を直して `scripts/sync-eval-fixtures.sh` で各ケースにコピーする。
+
 ## プラグイン構成
 
 | パス | 内容 |
@@ -65,6 +75,7 @@ Build      ← AI 自律完走（途中で止まらない）
 | `.claude-plugin/plugin.json` | プラグインマニフェスト |
 | `skills/` | スラッシュコマンド（`init`, `design`, `spec`, `plan`, `go`, `status`, `migrate`） |
 | `hooks/` | SessionStart フック（設計の区分を context に注入する。`cat` のみ） |
+| `evals/` | `claude plugin eval` の評価シナリオ |
 | `rules/apd/` | フレームワーク方針（`/apd:init` でプロジェクトにコピー） |
 | `templates/` | ドキュメントテンプレート |
 

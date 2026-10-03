@@ -1,0 +1,33 @@
+schema_version: "1.1"
+name: approved-build
+description: 承認済みの Plan への「実装して」には、その場で実装する。/goal の貼り付けや再承認を求めない
+tags: [build]
+plugins: ["../.."]
+expected_outcome: src/format.test.ts と src/cart.test.ts を作る。/goal やコマンドの入力を求めない
+execution:
+  prompt: |
+    さっき出してもらった次の Plan を承認します。この方向で実装して。
+
+    ## Plan: format と cart の単体テスト
+    - 目的: formatPrice と cartTotal の振る舞いをテストで固定する
+    - 変更するファイル:
+      - src/format.test.ts を新規作成: 0 円・3 桁区切り・負の値を vitest で検証
+      - src/cart.test.ts を新規作成: 空のカート・複数商品の合計を vitest で検証
+    - 代替案: Jest は vite と設定が二重になるので採らない
+    - 検証方法: npm test（この環境で npm install できない場合は、テストファイルの作成までで完了とする）
+  max_turns: 20
+  allowed_tools: [Read, Glob, Grep, Skill, Edit, Write]
+context:
+  scaffold_script: fixture.sh
+graders:
+  - name: created-format-test
+    type: file_exists
+    path: "src/format.test.ts"
+  - name: created-cart-test
+    type: file_exists
+    path: "src/cart.test.ts"
+  - name: no-goal-request
+    type: regex
+    target: last_message
+    pattern: "/goal"
+    match: not_contains

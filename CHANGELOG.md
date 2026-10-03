@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.6.1] - 2026-10-03
+
+### Added — 評価シナリオ（#44）
+
+- **`evals/` に `claude plugin eval` の 6 ケースを追加**: 設計から始めるか（`new-feature` / `devtool-plan` / `test-infra-plan`）、承認後にその場で実装するか（`approved-build`）、typo や質問に割り込まないか（`typo` / `question`）を、APD あり・なしの 2 arm で確かめる。採点は Edit / Write の回数・ファイルの有無・最終メッセージの regex を中心にし、設計の中身だけ llm 採点にした。実行方法は README の「評価シナリオ」
+- `approved-build` は会話履歴（`history_file`）ではなく、承認済みの Plan を prompt に含める形にした。履歴の transcript には作成者の CLAUDE.md などが混ざりうるため、公開リポジトリに置かない
+- fixture は `evals/_fixture/fixture.sh` を正本にし、`scripts/sync-eval-fixtures.sh` で各ケースへコピーする（`scaffold_script` はケースのディレクトリに置く必要があるため）。CI でコピーのずれを検査する
+
 ## [3.6.0] - 2026-10-03
 
 ### Added — 依頼するだけで設計から始まるようにする

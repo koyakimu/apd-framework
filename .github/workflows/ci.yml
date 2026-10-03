@@ -47,6 +47,14 @@ jobs:
             exit 1
           fi
 
+      - name: Eval fixtures are in sync
+        run: |
+          fail=0
+          for f in evals/*/fixture.sh; do
+            cmp -s evals/_fixture/fixture.sh "$f" || { echo "::error file=$f::evals/_fixture/fixture.sh と不一致（scripts/sync-eval-fixtures.sh を実行する）"; fail=1; }
+          done
+          exit $fail
+
       - name: ShellCheck
         run: shellcheck scripts/*.sh
 
