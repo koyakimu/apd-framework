@@ -4,8 +4,9 @@ description: >
   Initializes APD in this project. Copies framework rules to
   `.claude/rules/apd/` and creates the `docs/apd/` document
   directory. Use when the user asks to initialize APD, set up
-  APD, or run /apd:init ("APD を初期化", "APD をセットアップ").
-disable-model-invocation: true
+  APD, or run /apd:init ("APD を初期化", "APD をセットアップ"), or
+  when the user agrees to a proposal to initialize APD. Never run it
+  without the user's explicit agreement.
 ---
 
 # APD Init — プロジェクト初期化

@@ -22,7 +22,7 @@ argument-hint: "[--dry-run]"
 - Decision は per-file をやめて単一 `decisions.md` に集約
 - Preview は任意
 - 人間の確認面は GitHub（PR + issue）
-- 用語・コマンド・フックは現行（3.x）に統一: **完成後の実機確認** / `/apd:go` / プラグインは Stop・SessionStart フックを持たない
+- 用語・コマンド・フックは現行（3.x）に統一: **完成後の実機確認** / `/apd:go` / プラグインは Stop フックを持たない（SessionStart フックは 3.6.0 から、設計の区分を注入するためだけに持つ）
 - **CLAUDE.md は「プロジェクト固有のことだけ」**。APD 汎用ルールの正本は `.claude/rules/apd/`（自動ロード）に一本化する
 
 検証は `scripts/verify-migration.sh` で行う（プラグイン同梱）。

@@ -3,10 +3,14 @@ name: spec
 description: >
   Generates or updates Spec documents from the Design document.
   Supports three modes: full (initial generation), add (new feature
-  spec), and bugfix (edit an existing spec in place). Use when the
-  user asks to generate specs, add a feature spec, fix a bug spec,
-  or run /apd:spec ("Spec を生成", "仕様書を作成", "機能追加の Spec",
-  "バグ修正").
+  spec), and bugfix (edit an existing spec in place). Use before
+  writing code when the user asks to implement a new feature or
+  change user-visible behavior and no Spec covers it yet, even if
+  the user did not ask for a spec; if APD is not initialized, propose
+  initializing it (apd:init) first (for small changes in such repos, apd:plan is
+  enough). Also use when the user asks to generate specs, add a
+  feature spec, fix a bug spec, or run /apd:spec ("Spec を生成",
+  "仕様書を作成", "機能追加の Spec", "バグ修正").
 argument-hint: "[full|add|bugfix] [issue#?]"
 ---
 
@@ -101,7 +105,7 @@ full モードの出力に加え:
 まず原因を判定する:
 
 - **Spec 起因**（仕様漏れ・曖昧さ）→ 既存 Spec を編集する
-- **Build 起因**（実装が Spec と合っていない）→ 「Build 起因です。実装修正のみで対応可能です。`/apd:go` で達成条件を作り `/goal` に貼って修正を開始してください」と報告
+- **Build 起因**（実装が Spec と合っていない）→ 「Build 起因です。Spec は変えずに実装だけ直します」と報告し、ユーザーの了承を得たら `apd:go` の手順でその場で修正に入る
 
 ### Spec 起因の場合
 
@@ -146,7 +150,7 @@ Spec 生成と並行して、主要な技術選定を `docs/apd/decisions.md` �
 - **Refs**: {関連 spec / issue}
 ```
 
-フォーマットの正本は `templates/decision.md`。AI Recommendation は参考情報で、決定権は人間にある。
+フォーマットの正本は `${CLAUDE_PLUGIN_ROOT}/templates/decision.md`。AI Recommendation は参考情報で、決定権は人間にある。
 
 ### ユーザーへの提示と承認
 
@@ -194,4 +198,4 @@ Spec が完成したら、以下のチェックリストを提示する:
 - [ ] decisions.md の各判断について Decision と Reason を記入したか
 - [ ] What Not に含まれるものが Spec に紛れ込んでいないか
 
-承認されたら「`/apd:go` で達成条件を作り、その出力を `/goal` に貼って実装を開始してください（ここから先、実装中は止まりません。`/goal` は permission mode を変えないので、auto mode で実行してください）」と案内する。修正が必要な場合はフィードバックを受けてドラフトを更新する。
+承認（「この方向で実装して」等）が出たら、`apd:go` の手順でその場で Build に入る。ユーザーにコマンドの入力を求めない。ユーザーが長時間の無人実行を望んだ場合だけ、`/goal` 用の condition を提示する。修正が必要な場合はフィードバックを受けてドラフトを更新する。

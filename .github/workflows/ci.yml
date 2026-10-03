@@ -18,6 +18,7 @@ jobs:
         run: |
           jq empty .claude-plugin/plugin.json
           jq empty .claude-plugin/marketplace.json
+          jq empty hooks/hooks.json
 
       - name: Check version consistency (plugin.json / marketplace.json / CHANGELOG)
         run: |
