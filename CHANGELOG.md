@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.6.2] - 2026-10-03
+
+### Changed — skill を公式のベストプラクティスに合わせる
+
+公式の Skill authoring best practices と Claude Code の skills の doc（原文）と照合した。
+
+- **重要な指示を先頭に置いた**: compact 後は各 skill の先頭 5,000 トークンしか残らないため、各 skill に「常に守ること」を置き、承認までコードを書かない・承認後はその場で Build する、などを移した。spec では Build への引き渡しが末尾にあり、長い会話で切り落とされうる位置だった。migrate は安全原則を先頭に移した
+- **go を分けた**: `/goal` 専用の内容（condition の渡し方・評価器の判定・うまくいかないとき）を `skills/go/goal.md` に移し、`/goal` を選んだときだけ読むようにした。既定の「その場で Build」では使わない内容が、一度呼ばれると毎ターン context に残っていた。並列化の既定を subagent に決めた
+- **コマンドの入力を求める案内を除いた**: design の「`/apd:spec` で進んでください」、init の「`/apd:design` で作成」を、そのまま次の手順に進む形にした。init は Spec / Design から呼ばれたら元の流れに戻る
+- **理由の説明を削り、指示だけにした**（design / spec / init / migrate）。「`CLAUDE.md` を読む」の指示も除いた
+- **status**: 3.1.0 で廃止したフックへの言及を除き、判定表に Plan を加えた。表記を「Build」にそろえた
+- **migrate**: `disable-model-invocation: true` では description が Claude の context に入らないため、モデル向けの発火条件（「プラグイン更新直後に使う」）を除いた
+
 ## [3.6.1] - 2026-10-03
 
 ### Added — 評価シナリオ（#44）

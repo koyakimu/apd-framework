@@ -16,19 +16,19 @@ argument-hint: "[full|add|bugfix] [issue#?]"
 
 # APD Spec — 仕様書の生成・更新
 
-Spec フェーズの担当として、Design 文書から Spec を生成、または既存 Spec を更新する。Spec フェーズは「人間の時間」だが、AI がドラフトを生成し、人間がサマリーと確認依頼箇所だけレビューする。
+AI が Spec のドラフトを作り、人間はサマリーと確認依頼箇所だけをレビューする。
 
-**ドキュメントは生きた 1 枚**。差分を別ファイルで積まず、既存 Spec を直接編集して `version` を上げる。履歴は git が持つ。
+## 常に守ること
+
+- Spec の承認を得るまでコードを書かない
+- 承認（「この方向で実装して」等）が出たら、`apd:go` の手順でその場で Build に入る。ユーザーにコマンドの入力を求めない。`/goal` 用の condition は、ユーザーが長時間の無人実行を望んだときだけ出す
+- `decisions.md` の全ての判断にユーザーの Decision と Reason が入るまで、Spec の確認を完了にしない
+- Design の What Not に含まれるものは Spec に入れない
+- 既存 Spec は直接編集して `version` を上げる。差分を別ファイルに積まない
 
 ## 事前準備
 
-以下を読み込む:
-
-1. `CLAUDE.md` — プロジェクト設定（技術スタック、プロジェクト固有の規約等）
-2. `docs/apd/design.md` — Design 文書
-3. `docs/apd/spec-*.md` — 既存 Spec（あれば）
-4. `docs/apd/decisions.md` — 既存の判断ログ（あれば）
-5. 対象の GitHub issue（あれば。`gh issue view {number}` で内容を取得）
+次を読む: `docs/apd/design.md`、既存の `docs/apd/spec-*.md` と `docs/apd/decisions.md`（あれば）、対象の GitHub issue（あれば `gh issue view {number}`）。
 
 ## モード判定
 
@@ -56,8 +56,7 @@ Design 文書の **What** セクションに記載された全機能を確認し
 ### 生成ルール
 
 1. スコープ内の機能について Spec を作成する（機能ごと 1 ファイル）
-2. **What Not** に含まれるものは絶対に Spec に入れない
-3. 各 Spec は以下を含む:
+2. 各 Spec は以下を含む:
    - `spec_id`: コンテキスト略称 + 連番（例: AUTH-001）
    - `issue_ref`: 関連 GitHub issue 番号（あれば）
    - `version: 1`
@@ -68,8 +67,8 @@ Design 文書の **What** セクションに記載された全機能を確認し
    - **テスト戦略**（AC Coverage テーブル）
    - **成果物プレビュー記述**（任意。必要なときだけ）
    - **非機能要件**：測定可能なものは AC（AC-NFR-xxx）として Given/When/Then 形式で書く。測定可能な形で書けないもの（セキュリティ等）は「委譲する非機能要件」セクションに委譲先（/security-review 等）を明記する
-4. コンテキスト間のデータフローが複雑な場合は `docs/apd/cross-context-scenarios.md` にまとめる（`spec-*.md` とは別名にし、ビルド対象の Spec と混同させない）
-5. 判断が必要だった箇所は `docs/apd/decisions.md` に追記する
+3. コンテキスト間のデータフローが複雑な場合は `docs/apd/cross-context-scenarios.md` にまとめる（`spec-*.md` とは別名にする）
+4. 判断が必要だった箇所は `docs/apd/decisions.md` に追記する
 
 ### 出力
 
@@ -86,7 +85,7 @@ Design 文書の **What** セクションに記載された全機能を確認し
 
 1. 既存 Spec との整合性を確認し、矛盾があれば報告する
 2. 新機能は **新規 Spec ファイル** として作成する（`docs/apd/spec-{slug}.md`）
-3. 既存 Spec に影響がある場合は、その**既存 Spec を直接編集**して `version` を上げる（別ファイルの差分を作らない）
+3. 既存 Spec に影響がある場合は、その既存 Spec を直接編集して `version` を上げる
 4. コンテキスト間データフローに影響がある場合、`cross-context-scenarios.md` を編集する
 
 ### 出力
@@ -113,14 +112,14 @@ full モードの出力に加え:
 
 1. 該当 AC を修正、または新しい AC を追加する
 2. frontmatter の `version` を上げる
-3. 変更理由は git のコミットメッセージに書く（別ファイルの差分は作らない）
+3. 変更理由は git のコミットメッセージに書く
 4. 仕様判断が必要なら `docs/apd/decisions.md` に追記する
 
 ---
 
 ## 技術選定（decisions.md）
 
-Spec 生成と並行して、主要な技術選定を `docs/apd/decisions.md` に追記し、ユーザーの判断を仰ぐ。技術選定は Build フェーズの前提条件となるため、Spec フェーズで確定させる。
+Spec 生成と並行して、主要な技術選定を `docs/apd/decisions.md` に追記し、ユーザーの判断を仰ぐ。
 
 ### 判断が必要な技術選定の特定
 
@@ -150,13 +149,11 @@ Spec 生成と並行して、主要な技術選定を `docs/apd/decisions.md` �
 - **Refs**: {関連 spec / issue}
 ```
 
-フォーマットの正本は `${CLAUDE_PLUGIN_ROOT}/templates/decision.md`。AI Recommendation は参考情報で、決定権は人間にある。
+フォーマットの正本は `${CLAUDE_PLUGIN_ROOT}/templates/decision.md`。
 
 ### ユーザーへの提示と承認
 
 判断ドラフトを全て提示し、各項目について `Decision` と `Reason` の記入を求める。
-
-**全ての判断にユーザーの記入が済むまで、Spec の確認を完了できない。**
 
 ### CLAUDE.md で確定済みの場合
 
@@ -198,4 +195,4 @@ Spec が完成したら、以下のチェックリストを提示する:
 - [ ] decisions.md の各判断について Decision と Reason を記入したか
 - [ ] What Not に含まれるものが Spec に紛れ込んでいないか
 
-承認（「この方向で実装して」等）が出たら、`apd:go` の手順でその場で Build に入る。ユーザーにコマンドの入力を求めない。ユーザーが長時間の無人実行を望んだ場合だけ、`/goal` 用の condition を提示する。修正が必要な場合はフィードバックを受けてドラフトを更新する。
+修正の指示があればドラフトを更新して再提示する。
