@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.3] - 2026-10-17
+
+### Added — 英語の README と説明文
+
+- **`README.en.md` を追加**: 公式プラグインディレクトリなど英語圏の利用者向けに、README の内容を英訳した。skill・rules・テンプレート本体は日本語のままで、Claude は利用者の言語で応答する旨を明記した。`README.md` と相互にリンクした
+- **`plugin.json` / `marketplace.json` の description を英日併記にした**。`plugin.json` に `homepage` を加え、keywords に `spec-driven` / `workflow` / `claude-code` を追加した
+
 ## [3.6.2] - 2026-10-03
 
 ### Changed — skill を公式のベストプラクティスに合わせる

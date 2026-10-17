@@ -1,5 +1,7 @@
 # APD Plugin — Autopilot Development Framework
 
+日本語 | [English](README.en.md)
+
 > **人間は意思決定だけ、AI が自律で完走する**
 
 Autopilot Development（APD）は、AI エージェントが自律的にソフトウェアを開発し、人間は「意図を決める」と「完成後の実機確認」の2点のみで関わる開発フレームワークです。Claude Code プラグインとして提供されます。
