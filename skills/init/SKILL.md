@@ -21,7 +21,7 @@ Check the following:
 
 - Whether `.claude/rules/apd/` already exists
 - Whether `docs/apd/` already exists
-- Which issue tracker the project uses as its backlog, following `rules/apd/03-documents.md` › Backlog (CLAUDE.md → what the user says → GitHub issues if `origin` is on GitHub and `gh` is installed → none). Do not read credentials or run `gh auth status` to decide
+- Which issue tracker the project uses as its backlog, following `rules/apd/03-documents.md` › Backlog (CLAUDE.md → what the user says → GitHub issues if `origin` is on GitHub and `gh` is installed → none). Do not read credentials or check sign-in status to decide
 
 If APD is already initialized, ask the user "Update the rule files to the latest version?"
 
