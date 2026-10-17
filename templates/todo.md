@@ -1,15 +1,15 @@
-<!-- ToDo テンプレート: サイクル横断のバックログ -->
+<!-- ToDo template: cross-cycle backlog -->
 
 ---
-project_name: "{プロジェクト名}"
+project_name: "{project name}"
 ---
 
 # ToDo
 
-<!-- append-only: 項目は追加・status更新のみ。削除しない。 -->
+<!-- append-only: only add items and update status. Do not delete. -->
 
-## T-001: {タイトル}
+## T-001: {title}
 - **status**: open
-- **起源**: {Intent 対話中 / Spec 生成中 / Build 中 など}
-- **経緯**: {なぜこのToDoが生まれたか。対話や作業の中での文脈}
+- **origin**: {during Intent dialogue / during Spec generation / during Build, etc.}
+- **background**: {why this ToDo came about; the context in the dialogue or work}
 - **resolved_by**: null

@@ -1,252 +1,252 @@
 # Autopilot Development (APD)
 
-> **人間は意思決定だけ、AI が自律で完走する**
+> **Humans only make decisions; AI runs autonomously to completion**
 
-Autopilot Development（APD）は、AI エージェントが自律的にソフトウェアを開発し、人間が「意図を決める」と「動く成果物を受け入れる」の2点のみで関わる開発フレームワークである。自動運転のメタファーに基づき、人間が目的地とルートを決め、AI が Autopilot で走り、到着時に人間が「ここで合っている」と確認する。
+Autopilot Development (APD) is a development framework in which AI agents develop software autonomously and humans are involved at only two points: "deciding the intent" and "accepting the working deliverable". It is based on the self-driving metaphor: the human decides the destination and the route, the AI drives on Autopilot, and on arrival the human confirms "yes, this is the right place".
 
 ---
 
-## 設計原則
+## Design principles
 
-### AI に任せられる部分を限りなく増やす
+### Maximize what can be left to the AI
 
-AI フェーズの途中では人間の介入をゼロにする。モック・ユーザーストーリー・テストを含め、人間が意図した通りの機能実装が AI で完走する。人間の介入が必要で実装が止まることを避ける。
+Human intervention during the AI phase is zero. Including mocks, user stories and tests, the AI implements the feature exactly as the human intended, through to completion. Avoid implementation stopping because human intervention is needed.
 
-Build は設計の承認を受けて、その場で auto mode のまま完走する。auto mode がツール許可を担うので実装中の介入はゼロになる。長時間の無人実行には `/goal`（ターンの継続を担う）を併用してよい。auto mode でも止まる場面（classifier の連続ブロック、`permissions.ask`、作業ディレクトリ外の初回読み取り）は残り、それは止まって当然の場面として扱う。
+Once the design is approved, Build runs on the spot to completion, staying in auto mode. auto mode handles tool permissions, so there is zero intervention during implementation. For long unattended runs you may also use `/goal` (which handles turn continuation). Some situations still stop even in auto mode (consecutive classifier blocks, `permissions.ask`, the first read outside the working directory); treat those as situations where stopping is expected.
 
-### 「人間の時間」と「AI の時間」の分離
+### Separate "human time" from "AI time"
 
-- **Intent / Spec / Plan = 人間の時間**: 対話し、意思決定を注入する。承認より前にコードを書かない
-- **Build = AI の時間**: 自律実行（途中で止まらない）
-- **実機確認 = 人間の時間（軽量）**: 完成後に動く成果物を実機で触り、受け入れる
+- **Intent / Spec / Plan = human time**: dialogue and inject decisions. Do not write code before approval
+- **Build = AI time**: autonomous execution (does not stop midway)
+- **Hands-on check = human time (lightweight)**: after completion, try the working deliverable on a real device and accept it
 
-### 人間は意図を決め、動く成果物を受け入れる
+### Humans decide the intent and accept the working deliverable
 
-- **上流（Intent / Spec）**: 意図を決める — プロダクトビジョン、仕様、技術選定を判断する
-- **下流（完成後の実機確認）**: 動く成果物が意図通りかを実機で確認する
-- **コードレビューは求めない** — 品質検証は AI 自身のループ（達成条件の照合、subagent、テスト、`/goal` 使用時はその評価器）が担保する
+- **Upstream (Intent / Spec)**: decide the intent — make decisions on product vision, specification and technology choices
+- **Downstream (hands-on check after completion)**: check on a real device that the working deliverable matches the intent
+- **No code review is required** — quality is assured by the AI's own loop (checking the completion condition, subagents, tests, and, when using `/goal`, its evaluator)
 
-### 薄い規約レイヤに留まる
+### Stay a thin convention layer
 
-APD は **Design / Spec / Plan / Decision の規約と最小限のスキル** だけを提供する。Claude Code 本体に存在する機能は再実装しない:
+APD provides only **the Design / Spec / Plan / Decision conventions and a minimal set of skills**. It does not reimplement features that exist in Claude Code itself:
 
-| やりたいこと | 使う Claude Code 機能 |
+| What you want to do | Claude Code feature to use |
 |------|-----------|
-| 長時間の無人 Build | `/goal`（session-scoped、condition 達成までターン継続。permission mode は変えないので、auto mode で実行する。任意） |
-| サイドタスク分離 | subagent（`isolation: "worktree"` でファイル隔離可） |
-| 複数セッション協調 | agent teams（experimental・既定で無効。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` で有効化。teammate の許可プロンプトはリーダーセッションに出る） |
-| 大規模並列化 | `/batch`（5〜30 ユニット、各 subagent が worktree 隔離で実装・テスト・PR まで。git リポジトリ必須。分解後に計画の承認を求めて一度止まる） |
-| スクリプト化した大規模ファンアウト | dynamic workflows（監査・大量移行・相互検証。1 run 最大 1,000 エージェント・同時実行は最大 16・run 中はユーザーの入力を受け付けず、run を止めうるのはエージェントの許可プロンプトだけ） |
-| in-session todo | Task ツール（`TaskCreate` 等）。Opus 4.8 / Sonnet 5 / Fable 5 / Mythos 5 以降では既定で提供されず、モデル自身が多段作業を追跡する |
-| 累積知識 | auto memory |
-| ファイル変更追跡・rewind | checkpointing |
-| GitHub 連携 | `gh` CLI（ローカル中心、十分）。チーム運用や非同期トリガーが必要なら GitHub Actions / routines を任意で追加 |
-| backlog | GitHub issue（あれば一次）/ `docs/apd/todo.md`（フォールバック） |
+| Long unattended Build | `/goal` (session-scoped; continues turns until the condition is met. It does not change the permission mode, so run in auto mode. Optional) |
+| Isolating side tasks | subagent (file isolation available with `isolation: "worktree"`) |
+| Multi-session coordination | agent teams (experimental, disabled by default; enable with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Teammates' permission prompts appear in the leader session) |
+| Large-scale parallelization | `/batch` (5–30 units; each subagent implements, tests and opens a PR in an isolated worktree. Requires a git repository. Stops once after decomposition to ask for approval of the plan) |
+| Scripted large-scale fan-out | dynamic workflows (audits, bulk migrations, cross-verification. Up to 1,000 agents per run, up to 16 running concurrently; a run accepts no user input, and only agent permission prompts can stop it) |
+| In-session todo | Task tools (`TaskCreate` etc.). Not provided by default on Opus 4.8 / Sonnet 5 / Fable 5 / Mythos 5 and later; the model tracks multi-step work itself |
+| Accumulated knowledge | auto memory |
+| File change tracking / rewind | checkpointing |
+| GitHub integration | `gh` CLI (local-centred, sufficient). If team operation or asynchronous triggers are needed, optionally add GitHub Actions / routines |
+| backlog | GitHub issue (primary, if available) / `docs/apd/todo.md` (fallback) |
 
 ---
 
-## フェーズ
+## Phases
 
 ```
-Intent     ── 人間 + AI 対話
-  成果物: Design 文書（北極星、滅多に変わらない）
+Intent     ── Human + AI dialogue
+  Deliverable: Design document (north star, rarely changes)
 
-Spec       ── AI ドラフト + 人間レビュー・承認
-  成果物: Spec（AC + 検証方針 + 成果物プレビュー記述）+ Decision Records
+Spec       ── AI draft + human review and approval
+  Deliverable: Spec (AC + verification approach + deliverable preview description) + Decision Records
 
-Plan       ── AI ドラフト + 人間レビュー・承認（Spec を作らない変更）
-  成果物: 会話と PR 本文に残る設計（目的・方針・代替案・検証方法）
+Plan       ── AI draft + human review and approval (changes that get no Spec)
+  Deliverable: design kept in the conversation and PR body (goal, approach, alternatives, verification method)
 
-Build      ── AI 自律完走（途中で止まらない）
-  成果物: 実装 + テスト全パス + PR（試し方記載済み）
-  実装: 承認を受けてその場で実装（長時間の無人実行は /goal に委譲）
+Build      ── AI runs autonomously to completion (does not stop midway)
+  Deliverable: implementation + all tests passing + PR (with "How to try it")
+  Implementation: implement on the spot once approved (long unattended runs are delegated to /goal)
 
-完成後の実機確認 ── 人間
-  PR の「試し方」に沿って実機で触り、受け入れ判断する
+Hands-on check after completion ── Human
+  Follow the PR's "How to try it", try it on a real device, and decide on acceptance
 ```
 
 ### Intent (Design)
 
-プロダクトのビジョン・誰のための何か・スコープ外を Amazon PR/FAQ 形式で文書化する。「北極星」として全サイクル共通で参照される。
+Document the product vision, who it is for and what it is, and what is out of scope, in Amazon PR/FAQ format. It is referenced across all cycles as the "north star".
 
-- 場所: `docs/apd/design.md`
-- スキル: `/apd:design`
-- 進め方: ヒアリング → ドラフト → 信頼度明示 → フィードバックループ
-- 制約: 技術選定を含めない、What Not を最低 5 項目、FAQ 最低 10 問
+- Location: `docs/apd/design.md`
+- Skill: `/apd:design`
+- Process: interview → draft → state confidence levels → feedback loop
+- Constraints: no technology choices, at least 5 What Not items, at least 10 FAQ questions
 
 ### Spec
 
-Design を実装可能な単位に分割し、各機能について受け入れ条件（AC）と検証方針を定める。
+Split the Design into implementable units and define acceptance criteria (AC) and a verification approach for each feature.
 
-- 場所: `docs/apd/spec-{feature}.md`（`{feature}` は issue 番号や短い名前）
-- スキル: `/apd:spec [full|add|bugfix]`
-- 3 モード:
-  - **full**: 初回フル Spec 生成（Design スコーピング込み）
-  - **add**: 機能追加 Spec（新規 spec ファイル）
-  - **bugfix**: 既存 Spec を直接編集して `version` を上げる
-- 各 Spec の構成: User Story、Acceptance Criteria（Given/When/Then）、UI 記述、Context Boundary、Test Strategy（AC Coverage）、Deliverable Previews
+- Location: `docs/apd/spec-{feature}.md` (`{feature}` is an issue number or a short name)
+- Skill: `/apd:spec [full|add|bugfix]`
+- 3 modes:
+  - **full**: generate the first full Spec (including Design scoping)
+  - **add**: Spec for an added feature (new spec file)
+  - **bugfix**: edit the existing Spec directly and bump `version`
+- Structure of each Spec: User Story, Acceptance Criteria (Given/When/Then), UI description, Context Boundary, Test Strategy (AC Coverage), Deliverable Previews
 
 ### Plan
 
-Spec を作るほどでない変更（振る舞いが変わらないリファクタ・内部の技術変更・開発基盤・infra・設定・スクリプト・複数ファイルの修正）の軽い設計。ファイルは作らず、会話に出して承認を得たら Build に入り、PR 本文の冒頭に同じ設計を載せる。
+A light design for changes that do not warrant a Spec (refactors that do not change behaviour, internal technical changes, development tooling, infra, configuration, scripts, multi-file fixes). No file is created: present it in the conversation, enter Build once approved, and put the same design at the top of the PR body.
 
-- スキル: `/apd:plan`（依頼内容から AI が自分で選ぶ。`/apd:init` していないリポジトリでも使える）
-- 中身: 目的 / 変更するファイルと方針 / 検討した代替案と採らない理由 / 検証方法
-- 技術判断を含む場合は `docs/apd/decisions.md` に追記する
+- Skill: `/apd:plan` (the AI chooses it itself from the request. Usable even in repositories without `/apd:init`)
+- Contents: goal / files to change and approach / alternatives considered and why they were not taken / verification method
+- If it involves a technical decision, append it to `docs/apd/decisions.md`
 
-### 区分の判定
+### Deciding the classification
 
-何かを作る・変える依頼を受けたら、AI はコードを書く前に Design / Spec / Plan / 設計なし のどれかを判定して宣言する（基準は `rules/apd/02-cycle-flow.md`）。プラグインの SessionStart フックがこの基準を毎セッション context に入れるので、ユーザーがコマンドを打たなくても設計から始まる。
+When asked to build or change something, the AI decides and declares one of Design / Spec / Plan / No design before writing code (criteria in `rules/apd/02-cycle-flow.md`). The plugin's SessionStart hook puts these criteria into context every session, so work starts from the design even if the user types no command.
 
 ### Build
 
-承認済みの Spec または Plan から実装する。
+Implement from an approved Spec or Plan.
 
-- スキル: `/apd:go <spec ファイル>`（Spec の場合。承認の返事だけで AI が選ぶ）
-- 動作（その場で Build・既定）:
-  1. Spec を読み、AC・テスト戦略・成果物プレビュー要件を抽出
-  2. 達成条件を組み立てる（AC 全充足 + テスト pass + PR に「試し方」記載）
-  3. 達成条件を要約して会話に出し、そのまま実装に入る。全条件を満たして PR を出したら完了
-- 動作（`/goal` で Build・任意）: 長時間の無人実行をしたいときは、達成条件を `/goal` の condition として提示し、ユーザーが auto mode で貼る → 評価器がターン終了ごとに達成判定（バックグラウンド作業がある turn は評価が繰り延べられる。詳細は「テスト方針」§）
-- 並列化: 必要なら subagent / agent teams / dynamic workflows / `/batch` を選ぶ（APD は強制しない）
-- 収束判定: AI が turn 内でテスト実行ログ・PR diff を会話に出す（`/goal` の評価器も会話に surface された情報のみで判定する）
+- Skill: `/apd:go <spec file>` (for a Spec. The AI chooses it from just an approval reply)
+- Behaviour (Build on the spot, default):
+  1. Read the Spec and extract the AC, test strategy and deliverable preview requirements
+  2. Assemble the completion condition (all AC met + tests pass + "How to try it" written in the PR)
+  3. Summarize the completion condition in the conversation and go straight into implementation. Done when all conditions are met and the PR is opened
+- Behaviour (Build with `/goal`, optional): when you want a long unattended run, the completion condition is presented as a `/goal` condition and the user pastes it in auto mode → the evaluator judges completion at the end of each turn (evaluation is deferred for turns with background work; see the "Test policy" section for details)
+- Parallelization: choose subagent / agent teams / dynamic workflows / `/batch` if needed (APD does not enforce it)
+- Convergence check: the AI surfaces test run logs and the PR diff in the conversation within the turn (the `/goal` evaluator also judges only from information surfaced in the conversation)
 
-### 完成後の実機確認
+### Hands-on check after completion
 
-PR の「試し方」セクションに沿って人間が実機で触る。
+The human follows the PR's "How to try it" section and tries it on a real device.
 
-- OK → PR merge → issue 自動 close（GitHub 環境）
-- NG → コメントで返す → 次サイクル（Spec を編集、Decision を追記など）
-- AI が自動検証できない AC（実機限定、人間の主観評価等）はここで判定する
+- OK → merge the PR → issue closes automatically (GitHub environment)
+- NG → reply with a comment → next cycle (edit the Spec, append a Decision, etc.)
+- AC the AI cannot verify automatically (real device only, subjective human evaluation, etc.) are judged here
 
 ---
 
-## ドキュメント管理
+## Document management
 
-### 生きたドキュメント + git が正史
+### Living documents + git as the source of truth
 
-ドキュメントは **作ったら同じ場所で編集し続ける**。差分を別ファイル（Amendment / Patch）で積まない。「過去どうだったか」は git log / git blame が正史。
+Once a document is created, **keep editing it in the same place**. Do not stack diffs in separate files (Amendment / Patch). git log / git blame is the source of truth for "what it used to be".
 
-ファイルを移動・追加し続けると移動漏れや不整合が出る。**移動を前提にしない**設計にする。
+Continually moving and adding files leads to missed moves and inconsistencies. Design so that **moves are not assumed**.
 
-### 3 ファイル種別
+### 3 kinds of files
 
 ```
 docs/apd/
-├── design.md            ← 北極星（編集し続ける）
-├── decisions.md         ← 判断の追記ログ（単一ファイル）
-└── spec-{feature}.md    ← 機能ごと 1 枚（編集し続ける）
+├── design.md            ← north star (keep editing)
+├── decisions.md         ← append-only decision log (single file)
+└── spec-{feature}.md    ← one per feature (keep editing)
 ```
 
-- サブディレクトリは作らない
-- ファイルが増えるのは新機能を作るときだけ（本質的な増加なので許容）
-- 機能が削除されたら、その Spec も削除する（これが唯一の「削除」）
-- 成果物プレビューを作る場合のみ `docs/apd/preview-{feature}/` を追加（任意）
+- Do not create subdirectories
+- Files increase only when building a new feature (an essential increase, so it is acceptable)
+- When a feature is removed, remove its Spec too (this is the only "deletion")
+- Add `docs/apd/preview-{feature}/` only when creating deliverable previews (optional)
 
-### 人間の確認面 = GitHub
+### Where the human checks = GitHub
 
-`docs/apd/` の spec 群は **AI の作業材料**であって、人間が日常的にスキャンする場所ではない。人間が見るのは:
+The specs in `docs/apd/` are **working material for the AI**, not a place humans scan routinely. What humans look at:
 
-| 知りたいこと | 見る場所 |
+| What you want to know | Where to look |
 |------------|---------|
-| 進行中・backlog | `gh issue list` |
-| 個別の変更を受け入れたい | PR の「試し方」で実機確認 |
-| プロダクト全体像 | `docs/apd/design.md` |
+| In progress / backlog | `gh issue list` |
+| Accept an individual change | Hands-on check via the PR's "How to try it" |
+| The whole product picture | `docs/apd/design.md` |
 
-`docs/apd/` 内に人間用ダッシュボード（INDEX 等）は置かない。同期対象が増えて移動漏れと同類のリスクになるため、GitHub（issue + PR）を人間のダッシュボードとして使う。
+Do not put human dashboards (INDEX etc.) in `docs/apd/`. They add more things to keep in sync, a risk of the same kind as missed moves, so use GitHub (issue + PR) as the human dashboard.
 
-### Spec の更新と Decision の記録
+### Updating Specs and recording Decisions
 
-- **Spec 修正**: 既存 `spec-{feature}.md` を直接編集し `version` を上げる。変更理由は git のコミットメッセージへ
-- **Decision 記録**: 単一の `docs/apd/decisions.md` に追記する。Spec から特定の判断を引きたい場合は `decisions.md#d-001` のようにアンカー参照
+- **Spec changes**: edit the existing `spec-{feature}.md` directly and bump `version`. The reason for the change goes in the git commit message
+- **Recording Decisions**: append to the single `docs/apd/decisions.md`. To reference a specific decision from a Spec, use an anchor reference such as `decisions.md#d-001`
 
-### Handoff（試し方）はファイル化しない
+### Do not put the Handoff ("How to try it") in a file
 
-Build が完了したら PR 本文の「## 試し方」セクションに記載する。理由:
-- PR 本文は人間が次に見る場所
-- レビュー時に diff と並べて確認できる
-- 同じ機能の再 build で PR が新しく作られると Handoff も自然に最新化
+When Build is complete, write it in the "## How to try it" section of the PR body. Reasons:
+- The PR body is where the human looks next
+- It can be checked side by side with the diff during review
+- When a re-build of the same feature creates a new PR, the Handoff is naturally brought up to date
 
 ### Backlog
 
-`gh auth status` が成功する環境では **GitHub issue を一次 backlog** として使う。1 issue = 1 サイクルが基本。issue 番号と Spec / PR が相互リンクされることでサイクルの trail が自動で残る。**操作はローカルの `gh` CLI で完結する**（issue 作成・閲覧・コメント・PR との link すべて）。GitHub Actions を立てる必要はない。
+In environments where `gh auth status` succeeds, use **GitHub issues as the primary backlog**. One issue = one cycle is the norm. Cross-linking the issue number with the Spec / PR automatically leaves a trail of the cycle. **Everything is done with the local `gh` CLI** (creating, viewing and commenting on issues, linking them to PRs). There is no need to set up GitHub Actions.
 
-`gh` が使えない環境では `docs/apd/todo.md` をフォールバックとして使う（append-only）。
+In environments where `gh` is not available, use `docs/apd/todo.md` as the fallback (append-only).
 
-### GitHub Actions / routines は任意
+### GitHub Actions / routines are optional
 
-チームでの非同期トリガー（PR open で自動レビュー等）が必要なら GitHub Actions や routines を任意で追加できる。ただし個人開発や少人数チームでは **ローカルの `gh` + Claude Code のスキル呼び出しだけで十分** であり、APD は workflow ファイルを同梱しない。
-
----
-
-## エスカレーション
-
-判断が発生したとき:
-
-1. **CLAUDE.md に明記されている** → それに従う
-2. **CLAUDE.md に書かれていない** → リーダーエージェント（AI）が判断する
-3. **リーダーエージェントが判断できない** → Spec に先出しするか、完成後の実機確認で人間が気づき次サイクルで Spec を修正する
-
-頻出の判断は CLAUDE.md に昇格させて自律範囲を広げていく。
-
-Build 中は人間にエスカレーションしない（中断ゼロ）。Spec にない判断（新しいビジネスルール、外部インターフェース変更、セキュリティ・認証、データモデルの破壊的変更など）が必要なら、**Spec に先出し**して人間が事前確認するか、**完成後の実機確認で気づき次サイクルで Spec を修正する**。詳細は `rules/apd/01-phases.md`。
+If asynchronous team triggers are needed (automatic review on PR open, etc.), you can optionally add GitHub Actions or routines. However, for individual development or small teams, **the local `gh` + Claude Code skill invocations are enough**, and APD does not ship workflow files.
 
 ---
 
-## サイクル型統一フロー
+## Escalation
 
-すべての変更を「サイクル」として統一する。修正は新しいサイクルで行う（出戻りではなく前進）。
+When a decision comes up:
 
-| トリガー | フロー |
+1. **It is stated in CLAUDE.md** → follow it
+2. **It is not written in CLAUDE.md** → the leader agent (AI) decides
+3. **The leader agent cannot decide** → raise it up front in the Spec, or the human notices it during the hands-on check after completion and fixes the Spec in the next cycle
+
+Promote frequent decisions to CLAUDE.md to widen the autonomous range.
+
+Do not escalate to the human during Build (zero interruptions). If a decision not in the Spec is needed (new business rules, external interface changes, security/authentication, breaking data model changes, etc.), either **raise it up front in the Spec** so the human checks it in advance, or **notice it during the hands-on check after completion and fix the Spec in the next cycle**. Details in `rules/apd/01-phases.md`.
+
+---
+
+## Unified cycle-based flow
+
+Treat every change uniformly as a "cycle". Fixes are made in a new cycle (moving forward, not going back).
+
+| Trigger | Flow |
 |---------|--------|
-| 新プロダクト / 大きな方向転換 | Intent → Spec → Build → 実機確認 |
-| 新機能追加 | Spec（既存 Design 参照）→ Build → 実機確認 |
-| バグ修正 / 仕様変更 | 既存 Spec を編集 (version↑) → Build → 実機確認 |
-| 技術的変更（リファクタ等）| Decision Record → Build → 実機確認 |
+| New product / major change of direction | Intent → Spec → Build → hands-on check |
+| New feature | Spec (referencing the existing Design) → Build → hands-on check |
+| Bug fix / spec change | Edit the existing Spec (version↑) → Build → hands-on check |
+| Technical change (refactor etc.) | Decision Record → Build → hands-on check |
 
-### バグのトリアージ
+### Bug triage
 
-バグ報告・テスト失敗が来たとき、AI がまず原因を判定する:
+When a bug report or test failure comes in, the AI first determines the cause:
 
-- **Spec 起因**（仕様漏れ・曖昧さ）→ 人間にエスカレーション → 既存 Spec を編集するサイクルへ
-- **Build 起因**（実装が Spec と合っていない）→ AI 自律で修正 → 人間に上げない
-
----
-
-## Git 運用
-
-### ブランチ
-
-- GitHub issue がある: `feat/{issue#}-{slug}` / `fix/{issue#}-{slug}` / `chore/{slug}`
-- issue がない: `{type}/{slug}`
-
-`main` から作成し、サイクル完了時に PR 経由でマージする。
-
-### 並列実行
-
-Build で複数タスクを並列実行する場合は git worktree を使う。Claude Code の subagent は `isolation: "worktree"` でファイル隔離込みで起動できるので、APD 独自の worktree 管理スクリプトは持たない。
-
-### コミット規約
-
-- Conventional Commits 準拠（`feat:`, `fix:`, `refactor:` 等）
-- 関連する Spec ID / issue 番号を本文か footer に含める（例: `Refs: spec-42 / Closes: #42`）
+- **Caused by the Spec** (missing or ambiguous specification) → escalate to the human → cycle that edits the existing Spec
+- **Caused by the Build** (implementation does not match the Spec) → the AI fixes it autonomously → do not raise it to the human
 
 ---
 
-## テスト方針
+## Git practice
 
-- テストが全パスしていることが必須
-- 何をどうテストするかは Spec の Test Strategy セクションと AC Coverage テーブルで定義する
-- 自動検証できない品質軸（実機限定、人間の主観評価等）は完成後の実機確認で人間が確認する
+### Branches
 
-### Build の収束判定
+- With a GitHub issue: `feat/{issue#}-{slug}` / `fix/{issue#}-{slug}` / `chore/{slug}`
+- Without an issue: `{type}/{slug}`
 
-Build の収束は、ビルド AI が達成条件（AC 達成・テスト pass・Handoff 記載）を照合して判定する。`/goal` で Build する場合は評価器が同じ条件を判定する。評価器は会話に surface された情報のみで判定するため、どちらの場合も AI は turn 内で:
+Create from `main` and merge via PR when the cycle is complete.
 
-- テスト実行ログを出力する
-- 実装変更内容を要約する
-- PR diff や PR 本文を surface する
+### Parallel execution
 
-これによりユーザー（と `/goal` の評価器）が AC 達成・テスト pass・Handoff 記載を確かめられる。
+When running multiple tasks in parallel during Build, use git worktree. Claude Code subagents can start with file isolation via `isolation: "worktree"`, so APD has no worktree management scripts of its own.
 
-`/goal` 使用時の評価のタイミングには例外がある。subagent やバックグラウンドシェルが動いたまま turn が終わった場合、その turn は評価されず、バックグラウンド作業のない次の turn 終了時に判定される。バックグラウンド作業が 30 分以上 goal を待たせると Claude Code が自動で check-in を入れる（既定では 30 分 → 1 時間 → 以降 2 時間ごとで、初回間隔の 4 倍が上限）。turn 終端で配送される check-in に回数制限はないが、対話セッションで Claude Code が自らターンを起こして配送する idle check-in は 1 goal あたりユーザーのプロンプト間で最大 3 回で、3 回目に「次のプロンプトまで停止する」と告知される。
+### Commit conventions
+
+- Follow Conventional Commits (`feat:`, `fix:`, `refactor:` etc.)
+- Include the related Spec ID / issue number in the body or footer (e.g. `Refs: spec-42 / Closes: #42`)
+
+---
+
+## Test policy
+
+- All tests passing is mandatory
+- What to test and how is defined in the Spec's Test Strategy section and AC Coverage table
+- Quality axes that cannot be verified automatically (real device only, subjective human evaluation, etc.) are checked by the human during the hands-on check after completion
+
+### Build convergence check
+
+Build convergence is judged by the build AI checking the completion condition (AC met, tests pass, Handoff written). When building with `/goal`, the evaluator judges the same condition. Because the evaluator judges only from information surfaced in the conversation, in either case the AI, within the turn:
+
+- Outputs the test run log
+- Summarizes the implementation changes
+- Surfaces the PR diff and PR body
+
+This lets the user (and the `/goal` evaluator) confirm that the AC are met, tests pass and the Handoff is written.
+
+There is an exception to the timing of evaluation when using `/goal`. If a turn ends while a subagent or background shell is still running, that turn is not evaluated; judgement happens at the end of the next turn with no background work. If background work keeps the goal waiting for 30 minutes or more, Claude Code automatically inserts a check-in (by default 30 minutes → 1 hour → every 2 hours after that, capped at 4 times the first interval). Check-ins delivered at the end of a turn have no limit, but idle check-ins, which Claude Code delivers by starting a turn itself in an interactive session, are limited to at most 3 per goal between user prompts, and the third one announces that it will "stop until the next prompt".

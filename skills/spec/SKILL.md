@@ -14,185 +14,186 @@ description: >
 argument-hint: "[full|add|bugfix] [issue#?]"
 ---
 
-# APD Spec — 仕様書の生成・更新
+# APD Spec — Generate and update specifications
 
-AI が Spec のドラフトを作り、人間はサマリーと確認依頼箇所だけをレビューする。
+The AI drafts the Spec; the human reviews only the summary and the items flagged for confirmation.
 
-## 常に守ること
+## Always
 
-- Spec の承認を得るまでコードを書かない
-- 承認（「この方向で実装して」等）が出たら、`apd:go` の手順でその場で Build に入る。ユーザーにコマンドの入力を求めない。`/goal` 用の condition は、ユーザーが長時間の無人実行を望んだときだけ出す
-- `decisions.md` の全ての判断にユーザーの Decision と Reason が入るまで、Spec の確認を完了にしない
-- Design の What Not に含まれるものは Spec に入れない
-- 既存 Spec は直接編集して `version` を上げる。差分を別ファイルに積まない
+- Do not write code until the Spec is approved
+- Once approval is given (e.g. "go ahead and implement this"), enter Build right away following the `apd:go` procedure. Do not ask the user to type a command. Output a condition for `/goal` only when the user wants a long unattended run
+- Do not mark the Spec review complete until every decision in `decisions.md` has the user's Decision and Reason filled in
+- Do not put anything listed in the Design's What Not into the Spec
+- Edit existing Specs directly and bump `version`. Do not pile up diffs in separate files
+- Converse and write documents in the user's language; keep the templates' section names, IDs and frontmatter keys as they are (`rules/apd/00-principles.md` › Language)
 
-## 事前準備
+## Preparation
 
-次を読む: `docs/apd/design.md`、既存の `docs/apd/spec-*.md` と `docs/apd/decisions.md`（あれば）、対象の GitHub issue（あれば `gh issue view {number}`）。
+Read: `docs/apd/design.md`, existing `docs/apd/spec-*.md` and `docs/apd/decisions.md` (if any), and the target GitHub issue (if any, `gh issue view {number}`).
 
-## モード判定
+## Mode selection
 
-ユーザーの指示またはトリガー種別から、実行モードを判定する:
+Determine the mode from the user's instruction or the trigger type:
 
-- **full** — 初回フル Spec 生成
-- **add** — 機能追加 Spec（新規 spec ファイル）
-- **bugfix** — 既存 Spec の修正（in-place 編集）
+- **full** — initial full Spec generation
+- **add** — feature-addition Spec (new spec file)
+- **bugfix** — fix to an existing Spec (in-place edit)
 
-不明な場合はユーザーに確認する。
+If unclear, ask the user.
 
 ---
 
-## モード: full（初回フル Spec 生成）
+## Mode: full (initial full Spec generation)
 
-### スコーピング
+### Scoping
 
-Design 文書の **What** セクションに記載された全機能を確認し、ユーザーと対話して**今回のサイクルのスコープ**を決定する:
+Review every feature listed in the **What** section of the Design document, and decide **the scope of this cycle** in dialogue with the user:
 
-1. 全機能を一覧化し、**今回のスコープ** と **スコープ外（後続サイクルで実装）** に分類する提案を行う
-2. ユーザーの判断を仰ぎ、スコープを確定する
-3. **スコープ外に分類された機能は backlog に記録する**。GitHub issue が使える環境では `gh issue create` で起票し、`apd:scope-out` ラベルを付ける。使えない環境では `docs/apd/todo.md` に追記する
-4. 確定したスコープ内の機能についてのみ Spec を生成する
+1. List all features and propose classifying them as **in scope this time** and **out of scope (implemented in a later cycle)**
+2. Ask for the user's decision and finalize the scope
+3. **Record out-of-scope features in the backlog**. Where GitHub issues are available, file them with `gh issue create` and add the `apd:scope-out` label. Otherwise, append them to `docs/apd/todo.md`
+4. Generate Specs only for the features in the finalized scope
 
-### 生成ルール
+### Generation rules
 
-1. スコープ内の機能について Spec を作成する（機能ごと 1 ファイル）
-2. 各 Spec は以下を含む:
-   - `spec_id`: コンテキスト略称 + 連番（例: AUTH-001）
-   - `issue_ref`: 関連 GitHub issue 番号（あれば）
+1. Create a Spec for each in-scope feature (one file per feature)
+2. Each Spec includes:
+   - `spec_id`: context abbreviation + sequence number (e.g. AUTH-001)
+   - `issue_ref`: related GitHub issue number (if any)
    - `version: 1`
-   - ユーザーストーリー（誰が・何を・なぜ）
-   - 受け入れ条件（Given/When/Then 形式）
-   - UI 記述またはモック指示（該当する場合）
-   - コンテキスト境界の定義（inputs / outputs / dependencies）
-   - **テスト戦略**（AC Coverage テーブル）
-   - **成果物プレビュー記述**（任意。必要なときだけ）
-   - **非機能要件**：測定可能なものは AC（AC-NFR-xxx）として Given/When/Then 形式で書く。測定可能な形で書けないもの（セキュリティ等）は「委譲する非機能要件」セクションに委譲先（/security-review 等）を明記する
-3. コンテキスト間のデータフローが複雑な場合は `docs/apd/cross-context-scenarios.md` にまとめる（`spec-*.md` とは別名にする）
-4. 判断が必要だった箇所は `docs/apd/decisions.md` に追記する
+   - User story (who, what, why)
+   - Acceptance criteria (Given/When/Then format)
+   - UI description or mock instructions (where applicable)
+   - Context boundary definition (inputs / outputs / dependencies)
+   - **Test strategy** (AC Coverage table)
+   - **Deliverable preview description** (optional; only when needed)
+   - **Non-functional requirements**: write measurable ones as ACs (AC-NFR-xxx) in Given/When/Then format. For those that cannot be written in measurable form (security, etc.), state the delegate (/security-review, etc.) in the "Delegated non-functional requirements" section
+3. If data flow between contexts is complex, summarize it in `docs/apd/cross-context-scenarios.md` (use a name distinct from `spec-*.md`)
+4. Append any points that required a decision to `docs/apd/decisions.md`
 
-### 出力
+### Output
 
-1. **Spec ファイル群** — `docs/apd/spec-{slug}.md`。`{slug}` は issue 番号があれば issue 番号、なければ短い slug
-2. **確認チェックリスト**（下記参照）
-3. **確認依頼リスト**（下記参照）
-4. **判断の追記** — `docs/apd/decisions.md`（判断が発生した場合）
-
----
-
-## モード: add（機能追加 Spec）
-
-### 追加ルール
-
-1. 既存 Spec との整合性を確認し、矛盾があれば報告する
-2. 新機能は **新規 Spec ファイル** として作成する（`docs/apd/spec-{slug}.md`）
-3. 既存 Spec に影響がある場合は、その既存 Spec を直接編集して `version` を上げる
-4. コンテキスト間データフローに影響がある場合、`cross-context-scenarios.md` を編集する
-
-### 出力
-
-full モードの出力に加え:
-
-- 既存 Spec への影響分析
-- 編集が必要な既存 Spec のリスト
+1. **Spec files** — `docs/apd/spec-{slug}.md`. `{slug}` is the issue number if there is one, otherwise a short slug
+2. **Review checklist** (see below)
+3. **Confirmation request list** (see below)
+4. **Appended decisions** — `docs/apd/decisions.md` (if any decisions arose)
 
 ---
 
-## モード: bugfix（既存 Spec の修正）
+## Mode: add (feature-addition Spec)
 
-### トリアージ
+### Addition rules
 
-まず原因を判定する:
+1. Check consistency with existing Specs and report any contradictions
+2. Create the new feature as a **new Spec file** (`docs/apd/spec-{slug}.md`)
+3. If existing Specs are affected, edit those existing Specs directly and bump `version`
+4. If cross-context data flow is affected, edit `cross-context-scenarios.md`
 
-- **Spec 起因**（仕様漏れ・曖昧さ）→ 既存 Spec を編集する
-- **Build 起因**（実装が Spec と合っていない）→ 「Build 起因です。Spec は変えずに実装だけ直します」と報告し、ユーザーの了承を得たら `apd:go` の手順でその場で修正に入る
+### Output
 
-### Spec 起因の場合
+In addition to the full-mode output:
 
-該当する `docs/apd/spec-{slug}.md` を **直接編集** する:
-
-1. 該当 AC を修正、または新しい AC を追加する
-2. frontmatter の `version` を上げる
-3. 変更理由は git のコミットメッセージに書く
-4. 仕様判断が必要なら `docs/apd/decisions.md` に追記する
+- Impact analysis on existing Specs
+- List of existing Specs that need editing
 
 ---
 
-## 技術選定（decisions.md）
+## Mode: bugfix (fix to an existing Spec)
 
-Spec 生成と並行して、主要な技術選定を `docs/apd/decisions.md` に追記し、ユーザーの判断を仰ぐ。
+### Triage
 
-### 判断が必要な技術選定の特定
+First determine the cause:
 
-以下の領域について、CLAUDE.md で既に確定していない項目を洗い出す:
+- **Spec-caused** (missing or ambiguous specification) → edit the existing Spec
+- **Build-caused** (implementation does not match the Spec) → report "This is Build-caused. I'll fix only the implementation without changing the Spec", and once the user agrees, start the fix right away following the `apd:go` procedure
 
-- プログラミング言語 / ランタイム
-- フレームワーク / ライブラリ
-- ビルドツール / バンドラー
-- データベース / ストレージ
-- インフラストラクチャ / デプロイ
-- その他プロジェクト固有の重要な技術選択
+### If Spec-caused
 
-### 追記フォーマット
+**Edit directly** the relevant `docs/apd/spec-{slug}.md`:
 
-`docs/apd/decisions.md` に新しい判断を追記する（新しいものを上に積む）:
+1. Fix the relevant AC, or add a new AC
+2. Bump `version` in the frontmatter
+3. Write the reason for the change in the git commit message
+4. If a specification decision is needed, append it to `docs/apd/decisions.md`
+
+---
+
+## Technology selection (decisions.md)
+
+In parallel with Spec generation, append the major technology choices to `docs/apd/decisions.md` and ask for the user's decision.
+
+### Identifying technology choices that need a decision
+
+For the following areas, list the items not already settled in CLAUDE.md:
+
+- Programming language / runtime
+- Framework / libraries
+- Build tool / bundler
+- Database / storage
+- Infrastructure / deployment
+- Other project-specific important technology choices
+
+### Entry format
+
+Append new decisions to `docs/apd/decisions.md` (newest on top):
 
 ```markdown
-## D-{NNN}: {判断のタイトル}
+## D-{NNN}: {Decision title}
 - **Date**: YYYY-MM-DD
-- **Context**: {なぜこの判断が必要か}
+- **Context**: {Why this decision is needed}
 - **Options**:
-  - A: {選択肢A（AIが提案）}
-  - B: {選択肢B（AIが提案）}
-- **AI Recommendation**: {AIが推奨するOption}: {推奨理由の概要}
-- **Decision**: {何を選んだか — ユーザーが記入}
-- **Reason**: {理由 — ユーザーが記入}
-- **Refs**: {関連 spec / issue}
+  - A: {Option A (proposed by AI)}
+  - B: {Option B (proposed by AI)}
+- **AI Recommendation**: {Option the AI recommends}: {Summary of the reason}
+- **Decision**: {What was chosen — filled in by the user}
+- **Reason**: {Why — filled in by the user}
+- **Refs**: {Related spec / issue}
 ```
 
-フォーマットの正本は `${CLAUDE_PLUGIN_ROOT}/templates/decision.md`。
+The canonical format is `${CLAUDE_PLUGIN_ROOT}/templates/decision.md`.
 
-### ユーザーへの提示と承認
+### Presenting to the user and approval
 
-判断ドラフトを全て提示し、各項目について `Decision` と `Reason` の記入を求める。
+Present all decision drafts and ask the user to fill in `Decision` and `Reason` for each item.
 
-### CLAUDE.md で確定済みの場合
+### When already settled in CLAUDE.md
 
-CLAUDE.md で技術スタックが明示的に指定されている場合、判断の追記をスキップしてよい。ただし「他に検討すべき技術選択はありますか？」とユーザーに確認する。
+If CLAUDE.md explicitly specifies the tech stack, you may skip appending decisions. However, ask the user "Are there any other technology choices we should consider?"
 
 ---
 
-## 共通出力: 確認チェックリスト
+## Common output: Review checklist
 
-以下の充足状況を表形式でサマリーする:
+Summarize the status of the following as a table:
 
-| 確認項目 | 状態 | 備考 |
+| Check item | Status | Notes |
 |---|---|---|
-| 全機能に Spec が存在する | ✅/⚠️/❌ | |
-| 各 Spec にユーザーストーリーがある | ✅/⚠️/❌ | |
-| 各 Spec に受け入れ条件がある | ✅/⚠️/❌ | |
-| 各 Spec に UI 記述がある（該当時） | ✅/⚠️/❌ | |
-| コンテキスト境界が定義されている | ✅/⚠️/❌ | |
-| 各 Spec にテスト戦略（AC Coverage）がある | ✅/⚠️/❌ | |
-| 判断が decisions.md に記録されている（判断発生時） | ✅/⚠️/❌ | |
-| 技術選定に全てユーザー判断が記入されている | ✅/⚠️/❌ | |
+| Every feature has a Spec | ✅/⚠️/❌ | |
+| Each Spec has a user story | ✅/⚠️/❌ | |
+| Each Spec has acceptance criteria | ✅/⚠️/❌ | |
+| Each Spec has a UI description (where applicable) | ✅/⚠️/❌ | |
+| Context boundaries are defined | ✅/⚠️/❌ | |
+| Each Spec has a test strategy (AC Coverage) | ✅/⚠️/❌ | |
+| Decisions are recorded in decisions.md (when decisions arose) | ✅/⚠️/❌ | |
+| Every technology choice has the user's decision filled in | ✅/⚠️/❌ | |
 
-## 共通出力: 確認依頼リスト
+## Common output: Confirmation request list
 
-推論で埋めた箇所、自信がない箇所を明示する:
+Make explicit the parts filled in by inference and the parts you are unsure of:
 
 ```
-## 確認が必要な箇所
-1. [spec_id] [箇所]: [推論内容] ← 確認してください
+## Items needing confirmation
+1. [spec_id] [location]: [what was inferred] ← please confirm
 2. ...
 ```
 
-## 確認
+## Review
 
-Spec が完成したら、以下のチェックリストを提示する:
+When the Spec is complete, present the following checklist:
 
-- [ ] 確認チェックリストが全て ✅ になっているか
-- [ ] 確認依頼リストの各項目について判断を返したか
-- [ ] decisions.md の各判断について Decision と Reason を記入したか
-- [ ] What Not に含まれるものが Spec に紛れ込んでいないか
+- [ ] Is every item in the review checklist ✅?
+- [ ] Have you given a decision on each item in the confirmation request list?
+- [ ] Have you filled in Decision and Reason for each decision in decisions.md?
+- [ ] Has anything listed in What Not slipped into the Spec?
 
-修正の指示があればドラフトを更新して再提示する。
+If corrections are requested, update the draft and present it again.

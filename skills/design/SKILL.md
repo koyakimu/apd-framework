@@ -10,69 +10,70 @@ description: >
   or run /apd:design ("Design 文書を作成", "プロダクトを設計").
 ---
 
-# APD Design — Design 文書の対話的作成
+# APD Design — Creating the Design document through dialogue
 
-プロダクトの Design 文書（北極星）を、ユーザーとの数往復の対話で作る。
+Create the product's Design document (the north star) through a few rounds of dialogue with the user.
 
-## 常に守ること
+## Always
 
-- Design の承認を得るまでコードを書かない
-- 承認が出たら、そのまま `apd:spec` の手順で Spec に進む。ユーザーにコマンドの入力を求めない
-- 技術スタック・実装方法は Design に含めない。ユーザーから出たら「Spec で技術選定として扱います」と伝える
+- Do not write code until the Design is approved
+- Once approved, proceed straight to the Spec following the `apd:spec` steps. Do not ask the user to type a command
+- Do not include the tech stack or implementation approach in the Design. If the user brings them up, tell them "I'll handle that as technology selection in the Spec"
+- Converse and write documents in the user's language; keep the templates' section names, IDs and frontmatter keys as they are (`rules/apd/00-principles.md` › Language)
 
-## 対話の進め方
+## How to run the dialogue
 
-### 1. ヒアリング
+### 1. Gather requirements
 
-プロダクトのアイデアを聞き、不明点を質問する。
+Listen to the product idea and ask about anything unclear.
 
-### 2. ドラフト生成
+### 2. Draft generation
 
-以下の Amazon PR/FAQ 形式で Design 文書のドラフトを一気に生成する:
+Generate the full Design document draft in one go, in the following Amazon PR/FAQ format:
 
-1. **Who（誰のため）**: ターゲットユーザーのペルソナ、課題、コンテキスト
-2. **Why（なぜ今）**: 市場機会、タイミングの根拠、既存ソリューションの限界
-3. **What（何ができるか）**: ユーザー視点での機能・体験の記述（技術サービス名・アーキテクチャ構成は含めない）
-4. **What Not（何をやらないか）**: スコープ外の明示。曖昧な境界を排除する（技術的な制約ではなくプロダクトスコープとして記述する）
-5. **FAQ**: 想定される疑問と回答。ステークホルダー・ユーザー・エンジニア視点を含む（技術実装の詳細は含めず、プロダクト・運用の観点で記述する）
-6. **Success Criteria**: 定量・定性の成功指標
+1. **Who (who it is for)**: target user persona, problem, context
+2. **Why (why now)**: market opportunity, rationale for the timing, limits of existing solutions
+3. **What (what it can do)**: features and experience described from the user's point of view (no technical service names or architecture)
+4. **What Not (what it will not do)**: explicit out-of-scope items. Eliminate ambiguous boundaries (write them as product scope, not technical constraints)
+5. **FAQ**: anticipated questions and answers. Include stakeholder, user, and engineer viewpoints (no technical implementation details; write from a product and operations perspective)
+6. **Success Criteria**: quantitative and qualitative success metrics
 
-### 3. 信頼度の明示
+### 3. State confidence
 
-各セクションについて以下を明示する:
+For each section, state the following:
 
-- **自信がある部分** — ユーザーの入力から明確に導出できた内容
-- **推論で埋めた部分（確認が必要）** — ユーザーの入力からは不明で、AI が補完した内容
-- **Spec フェーズに移管した情報** — ユーザーから提供されたが Design 文書のスコープ外のため、Spec フェーズで扱う技術選定情報（該当がある場合のみ）
+- **Confident** — content clearly derived from the user's input
+- **Filled in by inference (needs confirmation)** — content unclear from the user's input that the AI filled in
+- **Moved to the Spec phase** — technology selection information the user provided that is outside the Design document's scope and will be handled in the Spec phase (only if any)
 
-### 4. フィードバックループ
+### 4. Feedback loop
 
-ユーザーのフィードバックを受けて修正する。数往復で収束させる。
+Revise based on the user's feedback. Converge within a few rounds.
 
-## ToDo 記録
+## Recording ToDos
 
-対話の中で「今回の Design スコープ外だが将来的に検討すべきアイデア」が出た場合は記録する。GitHub issue が使える環境では `gh issue create` で起票する。使えない環境では `docs/apd/todo.md` に追記する。Design 文書本体には含めない。
+If the dialogue produces "ideas outside this Design's scope that should be considered in the future", record them. Where GitHub issues are available, file them with `gh issue create`. Where they are not, append them to `docs/apd/todo.md`. Do not include them in the Design document itself.
 
-## 制約
+## Constraints
 
-- **ドラフトのセクション構成はテンプレート（Who / Why / What / What Not / FAQ / Success Criteria）に厳密に従い、独自セクション（例: ホスティング構成、技術アーキテクチャ等）を追加しない**
-- **What Not は必ず 5 項目以上** 記述する
-- **FAQ は最低 10 問** 設定する
-- **Success Criteria には測定可能な指標** を含める
+- **Follow the template's section structure (Who / Why / What / What Not / FAQ / Success Criteria) strictly in the draft, and do not add your own sections (e.g. hosting setup, technical architecture)**
+- **What Not must have at least 5 items**
+- **FAQ must have at least 10 questions**
+- **Success Criteria must include measurable metrics**
 
-## 出力
+## Output
 
-Design 文書を `docs/apd/design.md` に Markdown 形式（YAML frontmatter 付き）で書き出す。CLAUDE.md に定義されたフォーマットがあればそれに従う。
+Write the Design document to `docs/apd/design.md` in Markdown (with YAML frontmatter). If CLAUDE.md defines a format, follow it.
 
-## 確認
+## Review
 
-Design 文書が完成したら、以下のチェックリストを提示する:
+When the Design document is complete, present the following checklist:
 
-- [ ] Who: ターゲットユーザーが明確に定義されているか
-- [ ] Why: 作る理由と今のタイミングが説得力あるか
-- [ ] What: ユーザー価値が技術用語なしで記述されているか
-- [ ] What Not: スコープ外が十分に明示されているか（最低 5 項目）
-- [ ] FAQ: 主要な疑問が網羅されているか（最低 10 問）
-- [ ] Success Criteria: 測定可能な指標があるか
+- [ ] Who: Is the target user clearly defined?
+- [ ] Why: Are the reason to build it and the timing convincing?
+- [ ] What: Is the user value described without technical terms?
+- [ ] What Not: Is out-of-scope sufficiently explicit (at least 5 items)?
+- [ ] FAQ: Are the main questions covered (at least 10)?
+- [ ] Success Criteria: Are there measurable metrics?
 
-修正の指示があれば対話を続ける。
+If the user asks for revisions, continue the dialogue.

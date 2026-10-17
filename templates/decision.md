@@ -1,18 +1,18 @@
-<!-- decisions.md のセクションテンプレート -->
-<!-- docs/apd/decisions.md に追記する 1 判断ぶんのブロック -->
-<!-- AIが選択肢を生成し、人間が選んだ結果と理由を記入する -->
-<!-- 新しい判断ほど上に積む -->
+<!-- Section template for decisions.md -->
+<!-- One decision's block to append to docs/apd/decisions.md -->
+<!-- The AI generates the options; the human fills in the chosen result and the reason -->
+<!-- Newer decisions go on top -->
 
-## D-{NNN}: {判断のタイトル}
+## D-{NNN}: {decision title}
 - **Date**: YYYY-MM-DD
-- **Context**: {判断が必要になった背景}
+- **Context**: {background that made the decision necessary}
 - **Options**:
-  - A: {選択肢A（AIが提案）}
-  - B: {選択肢B（AIが提案）}
-  - C: {選択肢C（AIが提案）}
-- **AI Recommendation**: {AIが推奨するOption}: {推奨理由の概要}
-- **Decision**: {ユーザーが選んだOption}
-- **Reason**: {理由（一言でよい）}
-- **Refs**: {関連 spec / issue}
+  - A: {option A (proposed by AI)}
+  - B: {option B (proposed by AI)}
+  - C: {option C (proposed by AI)}
+- **AI Recommendation**: {option the AI recommends}: {summary of the reason}
+- **Decision**: {option the user chose}
+- **Reason**: {reason (a few words is fine)}
+- **Refs**: {related spec / issue}
 
-> 最終決定はユーザーが行う。AI の推奨は参考情報。
+> The user makes the final decision. The AI's recommendation is for reference.

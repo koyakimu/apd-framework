@@ -1,59 +1,59 @@
-# APD フェーズ定義
+# APD Phase Definitions
 
-## フェーズ
+## Phases
 
 ```
-Intent ── 人間 + AI 対話
-  成果物: Design（北極星）
+Intent ── human + AI dialogue
+  Deliverable: Design (north star)
 
-Spec ── AI ドラフト + 人間レビュー
-  成果物: Spec（AC + 検証方針 + 成果物プレビュー記述）+ Decision Records
+Spec ── AI drafts + human reviews
+  Deliverable: Spec (AC + verification approach + deliverable preview description) + Decision Records
 
-Plan ── AI ドラフト + 人間レビュー（Spec を作らない変更）
-  成果物: 会話と PR 本文に残る設計（目的・方針・代替案・検証方法）
+Plan ── AI drafts + human reviews (changes that do not get a Spec)
+  Deliverable: a design kept in the conversation and the PR body (goal, approach, alternatives, verification method)
 
-Build ── AI 自律（実装中は止まらない自動完走）
-  成果物: 実装 + テスト全パス + PR（試し方記載済み）
-  → 承認を受けてその場で auto mode のまま実装する。長時間の無人実行には `/goal` を使ってよい。AC 準拠の Spec チェックは Build の達成条件に組み込み、ビルド AI 自身が照合する
-  → 実装中は人間に問い合わせない。判断は Spec に先出しするか完成後の実機確認で次サイクルに回す
+Build ── AI autonomous (runs autonomously to completion; does not stop midway during implementation)
+  Deliverable: implementation + all tests passing + PR (with how-to-try written)
+  → On approval, implement right there in auto mode. `/goal` may be used for long unattended runs. The Spec check for AC compliance is built into Build's completion condition, and the build AI verifies it itself
+  → Do not query the human during implementation. Raise decisions in the Spec up front, or defer them to the next cycle via the post-completion hands-on check
 
-完成後の実機確認 ── 人間
-  人間が PR の「試し方」に沿って実機で触り、受け入れ判断する
-  差異があれば差し戻さず次サイクル（Spec 修正 → Build）へ進む
+Post-completion hands-on check ── human
+  The human tries it on a real device following the PR's "How to try it" and makes the acceptance decision
+  If there are discrepancies, do not send it back; move to the next cycle (fix Spec → Build)
 ```
 
-## 人間が関与する場
-- **Intent**: 意図を決める
-- **Spec / Plan**: 設計を確認し、承認する
-- **完成後の実機確認**: 動く成果物が意図どおりか確認する
+## Where the human is involved
+- **Intent**: decide the intent
+- **Spec / Plan**: review and approve the design
+- **Post-completion hands-on check**: confirm the working deliverable matches the intent
 
-Build フェーズに人間は介入しない。
+The human does not intervene in the Build phase.
 
-## Build の収束判定
+## Build convergence
 
-Build の収束は、達成条件（Spec の AC、テスト pass、PR の Handoff 記載）をビルド AI 自身が照合して判定する。`/goal` で Build する場合は、評価器が同じ条件の達成をターン終了ごとに判定する。以下は主に `/goal` 使用時の注意:
+Build convergence is judged by the build AI itself, by checking the completion condition (the Spec's AC, tests passing, Handoff written in the PR). When building with `/goal`, the evaluator judges whether the same condition is met at the end of each turn. The following notes apply mainly when using `/goal`:
 
-- **評価器はツールを呼ばない**。Claude が turn 内で test 実行ログ・PR diff・実装内容を会話に surface する必要がある
-- **バックグラウンド作業がある turn は評価がスキップされる**。subagent やバックグラウンドシェルが動いたまま turn が終わると、その turn は評価されず、バックグラウンド作業のない次の turn 終了時に判定される。並列化した Build では収束が遅れて見えることがあるが、異常ではない
-- 同一論点でループした場合は condition に明記した上限（turn 数や時間）で停止して報告する
-- AI が自動検証できない AC（実機限定・人間の主観評価等）は、実装と「試し方」ドキュメント化をもって Build 側の完了とみなす（実際の判定は完成後の実機確認に委ねる）
+- **The evaluator does not call tools.** Claude must surface test run logs, the PR diff and the implementation into the conversation within the turn
+- **Turns with background work are skipped for evaluation.** If a turn ends while a subagent or background shell is still running, that turn is not evaluated; the judgement happens at the end of the next turn with no background work. In a parallelized Build, convergence may appear delayed, but this is not abnormal
+- If it loops on the same issue, stop at the limit stated in the condition (number of turns or time) and report
+- For AC the AI cannot verify automatically (real-device only, subjective human evaluation, etc.), the implementation plus documenting "How to try it" counts as completion on the Build side (the actual judgement is left to the post-completion hands-on check)
 
-## Build 中は止まらない
+## Build does not stop midway
 
-実装中はエスカレーションしない。新しいビジネスルールや外部インターフェース変更など Spec にない判断が必要な場合は、**Spec に先出し**（Spec フェーズで人間が確認済み）するか、**完成後の実機確認で気づき次サイクルで Spec を修正する**。
+Do not escalate during implementation. When a decision not covered by the Spec is needed, such as a new business rule or a change to an external interface, either **raise it in the Spec up front** (confirmed by the human in the Spec phase) or **notice it at the post-completion hands-on check and fix the Spec in the next cycle**.
 
-**Build は auto mode で実行する（規約）。** Manual mode では許可されていないツール呼び出しのたびに人間の確認が入り「Build 中は止まらない」が成立しない。`/goal` もターンの継続だけを自動化し、ツール呼び出しの許可は permission mode の責務のまま。auto mode への切り替えは Shift+Tab、起動時の `--permission-mode auto`、またはユーザー設定の `permissions.defaultMode`。プロジェクト設定やプラグインからは強制できないため、`/apd:go` で `/goal` を使う場合は貼る直前に確認を促す。
+**Build runs in auto mode (convention).** In manual mode, every unpermitted tool call requires human confirmation, so "Build does not stop midway" cannot hold. `/goal` also automates only turn continuation; permission for tool calls remains the job of the permission mode. Switch to auto mode with Shift+Tab, `--permission-mode auto` at startup, or `permissions.defaultMode` in user settings. It cannot be forced from project settings or plugins, so when `/apd:go` uses `/goal`, prompt the user to check right before pasting it.
 
-auto mode でも止まる場面は残る。classifier が 3 回連続または累計 20 回ブロックすると通常のプロンプトに戻る、`permissions.ask` に合致する操作は常に確認が入る、作業ディレクトリ外の初回読み取りは確認が入る。これらは止まって当然の場面として扱い、condition で回避しようとしない。auto mode が使えない環境（組織設定で無効、モデル要件を満たさない）では、Build 中に許可プロンプトで止まることを前提に人間が付き添う。
+Even in auto mode, some stops remain: after the classifier blocks 3 times in a row or 20 times in total it falls back to normal prompts, operations matching `permissions.ask` always require confirmation, and the first read outside the working directory requires confirmation. Treat these as expected stops and do not try to work around them in the condition. In environments where auto mode is unavailable (disabled by organization settings, model requirements not met), the human stays alongside on the assumption that Build will stop at permission prompts.
 
-Build の番人は、`/apd:go` が達成条件に組み込む Spec チェック（`/goal` 使用時はその評価器も）。ビルド AI が AC 準拠・テスト pass・Handoff 記載の照合結果を surface し、ずれがあれば自律修正する。
+The gatekeeper of Build is the Spec check that `/apd:go` builds into the completion condition (and its evaluator when using `/goal`). The build AI surfaces the results of checking AC compliance, tests passing and Handoff written, and fixes any gaps autonomously.
 
-## 並列実行
+## Parallel execution
 
-複数タスクを並列実行したい場合は Claude Code の以下を使う:
-- **subagent**: 単一セッション内のサイドタスク委譲（`isolation: "worktree"` でファイル隔離可能）
-- **agent teams** (experimental): リーダー + teammates で複数セッションを協調。既定で無効で `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` が要る。共有 task list は Task ツールを持つセッションでのみ使われ、無い場合はメッセージで協調する。teammate の許可プロンプトはリーダーセッションに出るため、Build フェーズの「止まらない」前提とは相性が悪い
-- **dynamic workflows**: JavaScript のスクリプトが計画を持つ大規模ファンアウト。監査・大量移行・相互検証向き。1 run あたり最大 1,000 エージェント・同時実行は最大 16 で、run の途中ではユーザーの入力を受け付けない（run を止めうるのはエージェントの許可プロンプトだけ）。起動時は Manual / accept edits mode だと毎回承認プロンプトが出る（auto mode は初回のみ）
-- **`/batch`**: 大規模変更を 5〜30 の worktree 隔離 subagent に分割し、各 subagent が実装・テスト実行・PR 作成まで行う（git リポジトリ必須。分解後に計画の承認を求めて一度止まる）
+To run multiple tasks in parallel, use the following Claude Code features:
+- **subagent**: delegate side tasks within a single session (file isolation possible with `isolation: "worktree"`)
+- **agent teams** (experimental): a leader + teammates coordinating multiple sessions. Disabled by default; requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. The shared task list is used only in sessions that have the Task tool; otherwise they coordinate via messages. Teammates' permission prompts appear in the leader session, so this fits poorly with the Build phase's "does not stop midway" premise
+- **dynamic workflows**: large fan-out where a JavaScript script holds the plan. Suited to audits, bulk migrations and cross-verification. Up to 1,000 agents per run with at most 16 running concurrently, and no user input is accepted mid-run (only agents' permission prompts can stop a run). At launch, manual / accept edits mode shows an approval prompt every time (auto mode only the first time)
+- **`/batch`**: splits a large change across 5–30 worktree-isolated subagents, each of which implements, runs tests and creates a PR (requires a git repository; stops once after decomposition to ask for approval of the plan)
 
-APD はこれらの選択を強制しない。Build の規模に応じてリーダーが判断する。
+APD does not force any of these choices. The leader decides based on the size of the Build.

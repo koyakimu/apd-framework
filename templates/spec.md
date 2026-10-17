@@ -1,12 +1,12 @@
-<!-- Specテンプレート: YAML frontmatter + Markdown -->
-<!-- CLAUDE.mdのデフォルトSpecフォーマットに準拠 -->
+<!-- Spec template: YAML frontmatter + Markdown -->
+<!-- Follows the default Spec format in CLAUDE.md -->
 
 ---
-spec_id: "{CONTEXT_ID}-{NNN}"   # 例: OM-001
-context: "{コンテキスト名}"       # 例: order-management
+spec_id: "{CONTEXT_ID}-{NNN}"   # e.g. OM-001
+context: "{context name}"       # e.g. order-management
 version: 1
-issue_ref: "{GitHub issue 番号、なければ null}"
-title: "{機能タイトル}"
+issue_ref: "{GitHub issue number, or null if none}"
+title: "{feature title}"
 decision_refs: []
 # - D-001
 # - D-002
@@ -14,47 +14,47 @@ decision_refs: []
 
 ## User Story
 
-**As a** {誰が}
-**I want** {何を}
-**So that** {なぜ}
+**As a** {who}
+**I want** {what}
+**So that** {why}
 
 ## Acceptance Criteria
 
 ### AC-001
-- **Given**: {前提条件}
-- **When**: {トリガーとなる操作}
-- **Then**: {期待される結果}
+- **Given**: {precondition}
+- **When**: {triggering action}
+- **Then**: {expected result}
 
 ### AC-002
-- **Given**: {前提条件}
-- **When**: {トリガーとなる操作}
-- **Then**: {期待される結果}
+- **Given**: {precondition}
+- **When**: {triggering action}
+- **Then**: {expected result}
 
 ### AC-003 (Error Case)
-- **Given**: {エラーが起きる前提条件}
-- **When**: {操作}
-- **Then**: {エラー時の期待動作}
+- **Given**: {precondition under which the error occurs}
+- **When**: {action}
+- **Then**: {expected behavior on error}
 
-### AC-NFR-001 (Non-Functional / 測定可能な場合のみ)
-- **Given**: {前提（負荷・環境など）}
-- **When**: {操作}
-- **Then**: {測定可能な閾値（例: p95 < 200ms、a11y スコア ≥ 90）}
+### AC-NFR-001 (Non-Functional / only when measurable)
+- **Given**: {precondition (load, environment, etc.)}
+- **When**: {action}
+- **Then**: {measurable threshold (e.g. p95 < 200ms, a11y score ≥ 90)}
 
 ## UI Description
 
-{画面の構成、主要要素、インタラクションの説明}
-{モックツールへの指示がある場合はここに記載}
+{screen layout, main elements, description of interactions}
+{if there are instructions for a mock tool, write them here}
 
 ## Context Boundary
 
 ### Inputs
-- **From**: {入力元コンテキスト or 外部} — {データの説明}
+- **From**: {source context or external} — {description of the data}
 
 ### Outputs
-- **To**: {出力先コンテキスト or 外部} — {データの説明}
+- **To**: {destination context or external} — {description of the data}
 
 ### Dependencies
-- **{依存するコンテキスト}**: {依存理由}
+- **{context depended on}**: {reason for the dependency}
 
 ## Test Strategy
 
@@ -62,19 +62,19 @@ decision_refs: []
 
 | AC ID | Test Type | Description |
 |-------|-----------|-------------|
-| AC-001 | unit / integration / e2e | {テスト内容} |
-| AC-002 | unit / integration / e2e | {テスト内容} |
-| AC-003 | unit / integration / e2e | {テスト内容} |
-| AC-NFR-001 | 計測 / `/security-review` 等の委譲先 | {測定方法・委譲先の合格基準} |
+| AC-001 | unit / integration / e2e | {what is tested} |
+| AC-002 | unit / integration / e2e | {what is tested} |
+| AC-003 | unit / integration / e2e | {what is tested} |
+| AC-NFR-001 | measurement / delegate such as `/security-review` | {measurement method / delegate's pass criteria} |
 
 ## Deliverable Previews
 
-{生成すべきプレビューの種別と説明（該当する場合）}
-{例: アーキテクチャ図、UIモック、API仕様書、データモデル図 など}
+{types and descriptions of previews to generate (if applicable)}
+{e.g. architecture diagram, UI mock, API specification, data model diagram}
 
-## 委譲する非機能要件
-- セキュリティ等、AC に測定可能な形で書けないものは委譲先（/security-review 等）を明記し、その結果を Build の達成条件に含める。
+## Delegated Non-Functional Requirements
+- For things that cannot be written as measurable AC, such as security, state the delegate (/security-review etc.) and include its result in Build's completion condition.
 
 ## Notes
 
-{追加の考慮事項、制約、前提など}
+{additional considerations, constraints, assumptions, etc.}

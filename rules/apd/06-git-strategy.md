@@ -1,22 +1,22 @@
-# APD Git 運用戦略
+# APD Git Strategy
 
-## ブランチ戦略
+## Branch strategy
 
-各サイクルは専用ブランチで作業する。命名は以下のいずれかを推奨:
+Work on each cycle in a dedicated branch. One of the following names is recommended:
 
-- GitHub issue がある: `feat/{issue#}-{slug}` / `fix/{issue#}-{slug}` / `chore/{slug}`
-- issue がない: `{type}/{slug}`（type は feat / fix / chore / refactor 等）
+- With a GitHub issue: `feat/{issue#}-{slug}` / `fix/{issue#}-{slug}` / `chore/{slug}`
+- Without an issue: `{type}/{slug}` (type is feat / fix / chore / refactor etc.)
 
-`main` から作成し、サイクル完了時に PR 経由でマージする。
+Create it from `main` and merge via a PR when the cycle is complete.
 
-## 並列実行と worktree
+## Parallel execution and worktrees
 
-Build フェーズで複数タスクを並列実行する場合は git worktree を使う。Claude Code の subagent は `isolation: "worktree"` でファイル隔離込みで起動できるので、APD 独自の worktree 管理スクリプトは持たない。
+When running multiple tasks in parallel in the Build phase, use git worktrees. Claude Code subagents can be launched with file isolation via `isolation: "worktree"`, so APD has no worktree management scripts of its own.
 
-並列が不要な小規模サイクルでは worktree を作らずブランチ上で直接作業してよい。
+For small cycles that do not need parallelization, you may work directly on the branch without creating a worktree.
 
-## コミット規約
+## Commit conventions
 
-- コミットメッセージは Conventional Commits に準拠する（`feat:`, `fix:`, `refactor:` 等）
-- 関連する Spec ID / issue 番号を本文か footer に含める（例: `Refs: spec-42 / Closes: #42`）
-- 1 タスク = 1 つ以上のコミット（意味のある単位でコミットする）
+- Commit messages follow Conventional Commits (`feat:`, `fix:`, `refactor:` etc.)
+- Include the related Spec ID / issue number in the body or footer (e.g. `Refs: spec-42 / Closes: #42`)
+- 1 task = 1 or more commits (commit in meaningful units)

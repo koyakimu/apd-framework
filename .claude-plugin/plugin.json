@@ -1,7 +1,7 @@
 {
   "name": "apd",
-  "version": "3.6.2",
-  "description": "APD (Autopilot Development) Framework - AI自律開発フレームワーク。人間は意思決定だけ、AIが自律で完走する。",
+  "version": "3.7.0",
+  "description": "APD (Autopilot Development) Framework: humans only make the decisions, and the AI builds autonomously to completion.",
   "author": {
     "name": "koyakimu",
     "url": "https://github.com/koyakimu"
@@ -13,6 +13,10 @@
     "autonomous",
     "development",
     "framework",
-    "ai-driven"
-  ]
+    "ai-driven",
+    "spec-driven",
+    "workflow",
+    "claude-code"
+  ],
+  "homepage": "https://github.com/koyakimu/apd-framework"
 }

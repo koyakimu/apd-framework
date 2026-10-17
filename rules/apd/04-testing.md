@@ -1,14 +1,14 @@
-# APD テスト方針
+# APD Testing Policy
 
-## デフォルトのテスト方針
+## Default testing policy
 
-- テストが全パスしていることが必須
-- 何をどうテストするかは Spec の Test Strategy セクションと AC Coverage テーブルで定義する。プロジェクトレベル設定（CLAUDE.md）がある場合はそれに従う
-- テストの品質評価基準:
-  - テストが受け入れ条件をカバーしているか
-  - 形だけのテスト、何も検証していないアサーションがないか
-  - エラーケース・境界条件のテストがあるか
+- All tests passing is mandatory
+- What to test and how is defined in the Spec's Test Strategy section and AC Coverage table. If there is a project-level setting (CLAUDE.md), follow it
+- Criteria for evaluating test quality:
+  - Do the tests cover the acceptance criteria?
+  - Are there no token tests or assertions that verify nothing?
+  - Are there tests for error cases and boundary conditions?
 
-## 自動検証できない品質軸
+## Quality axes that cannot be verified automatically
 
-実機限定の動作・外部サービス連携・人間の主観評価など、AI が自動検証できない品質軸は **完成後の実機確認で人間が確認する**。Build 側はその AC について実装と「試し方」のドキュメント化までを完了とみなす。
+Quality axes the AI cannot verify automatically, such as real-device-only behavior, external service integration and subjective human evaluation, are **checked by the human at the post-completion hands-on check**. For those AC, the Build side counts implementation plus documenting "How to try it" as completion.
