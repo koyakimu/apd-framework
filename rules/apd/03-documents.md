@@ -26,20 +26,27 @@ docs/apd/
 
 ### Naming guidelines
 
-- `{feature}` in `spec-{feature}.md` is the GitHub issue number if there is one, otherwise a short slug
+- `{feature}` in `spec-{feature}.md` is the issue number (or ID) in the project's issue tracker if there is one, otherwise a short slug
 - The Spec ID is defined separately in the frontmatter (`spec_id: "AUTH-042"` etc.)
 
-## Human review surface = GitHub
+## Human review surface = PRs and issues
 
 The specs in `docs/apd/` are **working material for the AI**. The human is not expected to scan them day to day. What the human looks at:
 
 | What they want to know | Where to look |
 |------------|---------|
-| In progress / backlog | `gh issue list` (updated automatically, no sync needed) |
+| In progress / backlog | The project's issue tracker (e.g. `gh issue list`; updated automatically, no sync needed), or `docs/apd/todo.md` when there is none |
 | Accept an individual change | The "How to try it" section of that PR (post-completion hands-on check) |
 | Overall product picture | `docs/apd/design.md` |
 
-Do not place a "human dashboard (INDEX etc.)" in `docs/apd/`. It adds things to keep in sync, a risk of the same kind as missed moves. Use GitHub (issues + PRs) as the human dashboard.
+Do not place a "human dashboard (INDEX etc.)" in `docs/apd/`. It adds things to keep in sync, a risk of the same kind as missed moves. Use the PRs and the issue tracker as the human dashboard.
+
+## Backlog (issue tracker)
+
+- If the project has an issue tracker, use it as the backlog. Decide which one in this order: (1) what the project's CLAUDE.md states, (2) what the user says, (3) GitHub issues, if the `origin` remote is on GitHub and the `gh` command is installed. Other trackers (GitLab, Linear, Jira, etc.) are used through whatever tool or connector is available
+- If there is none, use `docs/apd/todo.md` (append-only)
+- Do not read credentials or tokens to decide. If a tracker command fails (e.g. not signed in), tell the user and append to `docs/apd/todo.md` instead
+- Where the tracker supports labels, classify items with `apd:todo` / `apd:scope-out`
 
 ## Spec format
 
@@ -50,7 +57,7 @@ Markdown with YAML frontmatter. A Spec is a living document that keeps being edi
 spec_id: "{CONTEXT_ID}-{NNN}"
 context: "{context name}"
 version: 1
-issue_ref: "{GitHub issue number, or null if none}"
+issue_ref: "{issue number or ID in the project's tracker, or null if none}"
 title: ""
 decision_refs: []
 ---

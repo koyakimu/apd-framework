@@ -14,7 +14,7 @@
 
 ```
 ① A change comes up
-   └→ Open a GitHub issue (gh environment) or append to todo.md
+   └→ File an issue in the project's tracker, or append to todo.md if there is none
       └→ If needed, create/update the Design document with /apd:design
 
 ② Design (decide the classification before writing code; just ask and the AI proposes one)
@@ -87,7 +87,7 @@ docs/apd/
 - **Each document is a single living document**. Do not stack diffs in separate files. To change something, edit the existing file and bump `version`. git is the source of truth for history
 - Files increase only when building a new feature
 - Add `docs/apd/preview-{feature}/` only when creating deliverable previews (optional)
-- `{feature}` is the GitHub issue number if there is one (e.g. `spec-42.md`), otherwise a short slug
+- `{feature}` is the issue number in the project's tracker if there is one (e.g. `spec-42.md`), otherwise a short slug
 
 ## Which Claude Code feature to use
 
@@ -100,8 +100,8 @@ docs/apd/
 | Scripted large-scale fan-out | dynamic workflows (start by including `ultracode` in the prompt or asking to do it "with a workflow"; check running runs with `/workflows`) |
 | In-session todo | Task tools (`TaskCreate` etc.). Not provided by default on Opus 4.8 / Sonnet 5 / Fable 5 / Mythos 5 and later; the model tracks multi-step work itself |
 | Accumulated knowledge | auto memory |
-| backlog | GitHub issue (`gh` environment) or `docs/apd/todo.md` |
+| backlog | The project's issue tracker (e.g. GitHub issues) or `docs/apd/todo.md` |
 | GitHub integration | The local `gh` CLI is enough. GitHub Actions/routines are optional |
 | Handoff ("How to try it") | PR body |
-| Where the human checks | GitHub (PR + issue). `docs/apd/` is the AI's workspace; do not scan it routinely |
+| Where the human checks | PRs and issues. `docs/apd/` is the AI's workspace; do not scan it routinely |
 | Document history | git log / git blame (do not stack diff files) |

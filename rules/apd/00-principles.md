@@ -6,7 +6,7 @@
 - **Do not write code before the design is approved.** For any request to build or change something, first decide the classification (Design / Spec / Plan / No design) (`02-cycle-flow.md`)
 - **Zero human intervention during the AI phase.** Once the human approves the design, they step away. On approval, Build runs to completion right there in auto mode. `/goal` may be used for long unattended runs (`01-phases.md`)
 - **Keep editing each document as a single living document.** Do not pile up diffs in separate files. git holds the authoritative history
-- **The human review surface is GitHub (PR + issues).** `docs/apd/` is working material for the AI, not a place the human scans day to day
+- **The human review surface is the PRs and issues** (e.g. on GitHub). `docs/apd/` is working material for the AI, not a place the human scans day to day
 - **When unsure, do not decide on your own; ask the leader agent (AI).** This is not a query to the human (do not query the human during Build). Asking too much is safer than running out of control
 - **Stay a thin convention layer.** APD provides only the Design / Spec / Plan / Decision conventions and a minimal set of skills. Loops, parallelization, task management and GitHub integration are delegated to Claude Code's built-in features (`/goal`, subagents, agent teams, dynamic workflows, hooks, the Task tool)
 - **APD does not rewrite the user's CLAUDE.md.** APD's conventions live in `.claude/rules/apd/` (auto-loaded). Do not write usage declarations such as "developed with APD" or version numbers into CLAUDE.md (they go stale and create double maintenance). CLAUDE.md holds only project-specific matters

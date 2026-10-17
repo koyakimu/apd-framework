@@ -42,7 +42,7 @@ This will:
 
 - Copy the framework rules into `.claude/rules/apd/` (loaded automatically by Claude Code)
 - Create the `docs/apd/` directory (flat structure)
-- Where `gh` is available, point you to GitHub issues as the primary backlog; otherwise create `docs/apd/todo.md` as a fallback
+- Use your project's issue tracker as the backlog (GitHub issues are detected automatically; tell Claude if you use another such as GitLab, Linear or Jira); if there is none, create `docs/apd/todo.md`
 
 ## Skills
 
@@ -56,7 +56,7 @@ This will:
 | `/apd:status`  | Show where you are and the next step (judged from file state plus conversation context) |
 | `/apd:migrate` | Migrate an existing project to the current document structure (see [MIGRATION.md](MIGRATION.md)) |
 
-`docs/apd/` consists of **three living kinds of file**: `design.md` (the north star), `decisions.md` (decision log), and `spec-{feature}.md` (one per feature). Documents keep being edited, and git holds the history. The human review surface is GitHub (pull requests and issues).
+`docs/apd/` consists of **three living kinds of file**: `design.md` (the north star), `decisions.md` (decision log), and `spec-{feature}.md` (one per feature). Documents keep being edited, and git holds the history. The human review surface is the pull requests and issues.
 
 See `QUICKREF.md` for details and `APD-FRAMEWORK.md` for the design principles.
 

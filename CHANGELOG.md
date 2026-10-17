@@ -1,10 +1,16 @@
 # Changelog
 
-## [3.7.1] - 2026-10-18
+## [3.8.0] - 2026-10-18
+
+### Changed — Backlog is no longer limited to GitHub issues
+
+- **The backlog is the project's issue tracker, whichever it is**: decided in the order CLAUDE.md → what the user says → GitHub issues (if `origin` is on GitHub and `gh` is installed); `docs/apd/todo.md` when there is none. Other trackers (GitLab, Linear, Jira, etc.) are used through whatever tool or connector is available. The canonical rule is the new "Backlog (issue tracker)" section in `rules/apd/03-documents.md`
+- **`/apd:init` no longer runs `gh auth status`**: credentials are not read to decide the backlog. If a tracker command fails (e.g. not signed in), Claude says so and appends to `todo.md` instead
+- Wording that assumed GitHub issues ("GitHub issue number", "human review surface = GitHub") now says the project's tracker / PRs and issues, in the rules, skills (design / spec / status / migrate / init), the Spec template's `issue_ref`, the READMEs and the reference docs
 
 ### Changed — Prepare for the official plugin directory
 
-- **Added a listing icon** at `.claude-plugin/icon.png` (1024×1024 PNG): a decision node joined to a completion check, for "humans decide, the AI runs to completion"
+- **Added a listing icon** at `.claude-plugin/icon.png` (1024×1024 PNG): three forward chevrons, the first in amber for the human's decision and the rest for the AI running on its own
 - **Added `displayName`** ("APD — Autopilot Development") to `plugin.json`, so the listing is not shown under the bare name `apd`. `name` stays `apd`, so installs and `/apd:*` commands are unchanged
 - **Moved this repository's development rules from `CLAUDE.md` to `.claude/CLAUDE.md`**: a `CLAUDE.md` at the plugin root is not loaded for plugin users and triggered a validation warning. Claude Code still loads it when working on this repository
 

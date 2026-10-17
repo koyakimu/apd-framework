@@ -1,7 +1,7 @@
 {
   "name": "apd",
   "displayName": "APD — Autopilot Development",
-  "version": "3.7.1",
+  "version": "3.8.0",
   "description": "APD (Autopilot Development) Framework: humans only make the decisions, and the AI builds autonomously to completion.",
   "author": {
     "name": "koyakimu",

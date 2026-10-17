@@ -14,7 +14,7 @@ Treat every change uniformly as a "cycle". When you receive a request to build o
 
 For Design / Spec / Plan, do not write code until approval is given. After approval, Build does not stop midway. Requests that build nothing, such as chat, investigation or answering questions, are not cycles.
 
-In environments with GitHub issues, the baseline is **1 issue = 1 cycle**. Cross-linking the issue number with the Spec / PR leaves a trail of the cycle automatically. In environments without issues, represent cycles with the files in `docs/apd/` and the git history.
+In projects with an issue tracker (GitHub issues etc.; `03-documents.md` › Backlog), the baseline is **1 issue = 1 cycle**. Cross-linking the issue number with the Spec / PR leaves a trail of the cycle automatically. In projects without one, represent cycles with the files in `docs/apd/` and the git history.
 
 ## Bug triage
 

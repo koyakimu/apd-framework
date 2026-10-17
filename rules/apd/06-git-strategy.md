@@ -4,7 +4,7 @@
 
 Work on each cycle in a dedicated branch. One of the following names is recommended:
 
-- With a GitHub issue: `feat/{issue#}-{slug}` / `fix/{issue#}-{slug}` / `chore/{slug}`
+- With an issue: `feat/{issue#}-{slug}` / `fix/{issue#}-{slug}` / `chore/{slug}`
 - Without an issue: `{type}/{slug}` (type is feat / fix / chore / refactor etc.)
 
 Create it from `main` and merge via a PR when the cycle is complete.

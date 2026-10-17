@@ -5,7 +5,7 @@
 spec_id: "{CONTEXT_ID}-{NNN}"   # e.g. OM-001
 context: "{context name}"       # e.g. order-management
 version: 1
-issue_ref: "{GitHub issue number, or null if none}"
+issue_ref: "{issue number or ID in the project's tracker, or null if none}"
 title: "{feature title}"
 decision_refs: []
 # - D-001
