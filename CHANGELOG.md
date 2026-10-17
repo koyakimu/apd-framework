@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.7.1] - 2026-10-18
+
+### Changed — Prepare for the official plugin directory
+
+- **Added a listing icon** at `.claude-plugin/icon.png` (1024×1024 PNG): a decision node joined to a completion check, for "humans decide, the AI runs to completion"
+- **Added `displayName`** ("APD — Autopilot Development") to `plugin.json`, so the listing is not shown under the bare name `apd`. `name` stays `apd`, so installs and `/apd:*` commands are unchanged
+- **Moved this repository's development rules from `CLAUDE.md` to `.claude/CLAUDE.md`**: a `CLAUDE.md` at the plugin root is not loaded for plugin users and triggered a validation warning. Claude Code still loads it when working on this repository
+
 ## [3.7.0] - 2026-10-17
 
 ### Changed — Write the plugin in English and state that it works in the language of the person giving instructions
