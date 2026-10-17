@@ -5,7 +5,7 @@
 ### Changed — プラグインの記述を英語にし、指示する人の言語で動くことを明記する
 
 - **skill・rules・テンプレート・SessionStart フック・参照ドキュメント（QUICKREF / APD-FRAMEWORK / MIGRATION）を英訳した**: 公式プラグインディレクトリなど英語圏の利用者向け。構造・ID・frontmatter・コマンドは変えていない。skill の description は元から英語で、日本語の発火例も残した。migrate と MIGRATION の、旧プロジェクトの日本語の記述を照合するためのリテラルは日本語のまま残した（`scripts/verify-migration.sh` の検出と対応）
-- **言語のルールを追加した**: 指示する人が使っている言語で会話し、`docs/apd/` の文書・Plan・PR 本文（「How to try it」を含む）・issue もその言語で書く。テンプレートの見出しとプレースホルダは翻訳し、構造・ID・frontmatter は保つ。正本は `rules/apd/00-principles.md` の Language、未初期化のリポジトリでも効くよう `hooks/session-start.md` にも置き、文書を書く skill（design / spec / plan / go / init）から参照した。init がコピーする `todo.md` は利用者の言語に翻訳する
+- **言語のルールを追加した**: 指示する人が使っている言語で会話し、`docs/apd/` の文書・Plan・PR 本文（「How to try it」を含む）・issue もその言語で書く。テンプレートのセクション名（skill が名前で参照する）・構造・ID・frontmatter のキーと構造上の値は残し、本文・プレースホルダ・見出しの説明部分はその言語で書く。CLAUDE.md など `docs/apd/` 外の既存ファイルは、そのファイルの言語に合わせる（migrate の置き換え文も同様）。正本は `rules/apd/00-principles.md` の Language、未初期化のリポジトリでも効くよう `hooks/session-start.md` にも置き、文書を書く skill（design / spec / plan / go / init）から参照した。init がコピーする `todo.md` の本文は利用者の言語にする
 - **`README.md` を英語にし、日本語版を `README.ja.md` に移した**（相互リンク）。両方に言語の節を加えた
 - **`plugin.json` / `marketplace.json` の description を英語にした**。`plugin.json` に `homepage` を加え、keywords に `spec-driven` / `workflow` / `claude-code` を追加した
 - 用語: 「試し方」は「How to try it」、「完成後の実機確認」は「post-completion hands-on check」、「区分」は「classification」、「達成条件」は「completion condition」とした

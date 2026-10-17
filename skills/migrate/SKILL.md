@@ -35,6 +35,7 @@ Verify with `scripts/verify-migration.sh` (bundled with the plugin).
 - **Overwrite rules only after checking the diff**: do not crush local customizations
 - **Read the content before folding a Patch**; **preserve order when consolidating Decisions**
 - **Idempotent**: safe to re-run. Skip anything already current
+- **Write replacement text in the language the target file is already written in** (e.g. a Japanese CLAUDE.md gets Japanese replacements such as 「完成後の実機確認」 for "post-completion hands-on check"). The English wording in this skill gives the meaning, not the literal text
 
 ## Source patterns
 
@@ -46,7 +47,7 @@ Look at the project's current state and apply whichever apply (more than one is 
   - "Acceptance", "Human Checkpoint" → **post-completion hands-on check**
   - `/apd:build` / `/apd:start` → `/apd:go`; `/apd:cycle` / `/apd:progress` are removed (conversation + `gh`)
   - `apd:peer-review` / `apd:checkpoint` agents → removed
-  - **Spec-check Stop hook** (3.0–3.1) → removed. The AI checks ACs against the Build's completion condition
+  - **Spec-check Stop hook** (3.0–3.1) → removed. The AI checks the ACs as part of the Build's completion condition
   - **State-suggestion hook** (3.1) → removed. Guidance comes from the main AI's always-loaded rule (`07-next-step.md`) + `/apd:status`
 
 ## Responsibilities
@@ -100,7 +101,7 @@ Targets to remove or fix (legacy projects contain these in Japanese; match the J
 - **Banner line**: APD usage declarations or lines containing a version, such as 「**APD（Autopilot Development）フレームワーク x.y.z …で開発。詳細ルール: `.claude/rules/apd/`**」 ("Developed with the APD (Autopilot Development) framework x.y.z … Detailed rules: …") → **delete**
 - **Copies of generic rules**: sections duplicating the contents of `.claude/rules/apd/` in CLAUDE.md → **delete**. Typical: 「APD 準拠ルール」 (APD compliance rules), 「並列実行・Git 戦略（…準拠）」 (parallel execution / Git strategy (… compliant)), the generic parts of the testing policy, 「Build の収束判定」 (Build convergence check), general rules on referencing Decisions, general rules on living documents. If there are project-specific parts (test runner, areas where mocks are forbidden, custom branching rules, etc.), keep only those
 - **Stale content**:
-  - Mentions of the 「**Spec チェック Stop フック**」 (Spec-check Stop hook) → removed. Rewrite as "the AI checks ACs against the Build's completion condition" or delete
+  - Mentions of the 「**Spec チェック Stop フック**」 (Spec-check Stop hook) → removed. Rewrite as "the AI checks the ACs as part of the Build's completion condition" or delete
   - The two-list 「**Build 中のエスカレーションポリシー**」 (escalation policy during Build) (人間に渡す (hand to the human) / Build 内で完結 (resolve within Build)) → old model. Delete (current model: "zero intervention during implementation; the post-completion hands-on check feeds the next cycle")
   - Mentions of the state-suggestion hook (状態サジェストフック) → delete (always-loaded rule + `/apd:status`)
 - **Old command and agent names**: `/apd:build` `/apd:start` `/apd:cycle` `/apd:progress` `apd:checkpoint` `apd:peer-review` → rewrite to current ones (`/apd:go` etc.) or delete

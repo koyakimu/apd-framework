@@ -62,7 +62,7 @@ See `QUICKREF.md` for details and `APD-FRAMEWORK.md` for the design principles.
 
 ## Language
 
-The plugin's skills, rules and templates are written in English, but APD works in **your** language: Claude converses in the language you write in, and writes the Design, Specs, decisions, Plans, PR descriptions and issues in that language too, translating the template headings while keeping their structure.
+The plugin's skills, rules and templates are written in English, but APD works in **your** language: Claude converses in the language you write in, and writes the Design, Specs, decisions, Plans, PR descriptions and issues in that language too, keeping the templates' section names (such as `## Acceptance Criteria`), IDs and frontmatter keys as they are. When it edits an existing file such as your CLAUDE.md, it keeps that file's language.
 
 ## Evaluation scenarios
 

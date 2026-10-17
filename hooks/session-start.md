@@ -14,4 +14,4 @@ When you receive a request from the user to build or change something, decide wh
 - Does not apply to requests that build nothing, such as chat, investigation, answering questions or reviews
 - Does not apply to work delegated to you as a subagent (the parent has already done the design)
 
-**Language**: converse in the language the user is writing in, and write designs, `docs/apd/` documents, Plans, PR descriptions and issues in that language too (translate template headings; keep structure, IDs and frontmatter). These instructions being in English is not a reason to use English. This applies to every request, including ones that build nothing.
+**Language**: converse in the language the user is writing in, and write designs, `docs/apd/` documents, Plans, PR descriptions and issues in that language too (keep the templates' section names, IDs and frontmatter keys; write the rest in the user's language). These instructions being in English is not a reason to use English. This applies to every request, including ones that build nothing.

@@ -54,7 +54,7 @@ if ! gh auth status >/dev/null 2>&1; then
 fi
 ```
 
-If you created `docs/apd/todo.md` and the user is writing in a language other than English, translate its headings and text into that language. Write the completion message below in the user's language as well.
+If you created `docs/apd/todo.md` and the user is writing in a language other than English, write its text in that language (keep the section names and frontmatter keys). Write the completion message below in the user's language as well.
 
 ### 5. Completion message
 

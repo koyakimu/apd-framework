@@ -14,7 +14,8 @@
 ## Language
 
 - **Converse in the language the user is writing in.** If the user switches language, follow the latest one
-- **Write APD documents in that same language**: `docs/apd/` files (Design, Spec, decisions, todo), Plans, PR descriptions (including "How to try it") and issues. Translate the headings and placeholder text of the templates in `${CLAUDE_PLUGIN_ROOT}/templates/`, but keep their section structure, IDs (AC-001 etc.) and frontmatter keys and values as they are
+- **Write APD documents in that same language**: `docs/apd/` files (Design, Spec, decisions, todo), Plans, PR descriptions (including "How to try it") and issues. When using the templates in `${CLAUDE_PLUGIN_ROOT}/templates/`, keep the section names as they are (`## User Story`, `## Acceptance Criteria`, `### AC Coverage`, `## Who` etc.; skills refer to them by name), along with the section structure, IDs (AC-001, D-001 etc.) and frontmatter keys and structural values (`spec_id`, `version`, `status`, `decision_refs` etc.). Write everything else in the user's language: body text, placeholder text, free-text frontmatter values such as `title`, and the descriptive part of a heading after its section name (e.g. `## Who: ...`)
+- When editing an existing file outside `docs/apd/`, such as the project's CLAUDE.md, write in the language that file is already written in
 - The plugin's own rules, skills and templates are written in English. That is not a reason to answer or write in English
 
 ## Decision priority (during Build)
