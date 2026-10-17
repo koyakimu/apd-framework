@@ -2,328 +2,329 @@
 
 ## [3.7.0] - 2026-10-17
 
-### Changed — プラグインの記述を英語にし、指示する人の言語で動くことを明記する
+### Changed — Write the plugin in English and state that it works in the language of the person giving instructions
 
-- **skill・rules・テンプレート・SessionStart フック・参照ドキュメント（QUICKREF / APD-FRAMEWORK / MIGRATION）を英訳した**: 公式プラグインディレクトリなど英語圏の利用者向け。構造・ID・frontmatter・コマンドは変えていない。skill の description は元から英語で、日本語の発火例も残した。migrate と MIGRATION の、旧プロジェクトの日本語の記述を照合するためのリテラルは日本語のまま残した（`scripts/verify-migration.sh` の検出と対応）
-- **言語のルールを追加した**: 指示する人が使っている言語で会話し、`docs/apd/` の文書・Plan・PR 本文（「How to try it」を含む）・issue もその言語で書く。テンプレートのセクション名（skill が名前で参照する）・構造・ID・frontmatter のキーと構造上の値は残し、本文・プレースホルダ・見出しの説明部分はその言語で書く。CLAUDE.md など `docs/apd/` 外の既存ファイルは、そのファイルの言語に合わせる（migrate の置き換え文も同様）。正本は `rules/apd/00-principles.md` の Language、未初期化のリポジトリでも効くよう `hooks/session-start.md` にも置き、文書を書く skill（design / spec / plan / go / init）から参照した。init がコピーする `todo.md` の本文は利用者の言語にする
-- **`README.md` を英語にし、日本語版を `README.ja.md` に移した**（相互リンク）。両方に言語の節を加えた
-- **`plugin.json` / `marketplace.json` の description を英語にした**。`plugin.json` に `homepage` を加え、keywords に `spec-driven` / `workflow` / `claude-code` を追加した
-- 用語: 「試し方」は「How to try it」、「完成後の実機確認」は「post-completion hands-on check」、「区分」は「classification」、「達成条件」は「completion condition」とした
+- **Translated the skills, rules, templates, SessionStart hook and reference docs (QUICKREF / APD-FRAMEWORK / MIGRATION) into English**: for English-speaking users, such as those coming from the official plugin directory. Structure, IDs, frontmatter and commands are unchanged. Skill descriptions were already in English, and the Japanese trigger examples are kept. In migrate and MIGRATION, the literals used to match Japanese text in legacy projects remain in Japanese (they correspond to the detection in `scripts/verify-migration.sh`)
+- **Added a language rule**: converse in the language the person giving instructions is using, and write `docs/apd/` documents, Plans, PR bodies (including "How to try it") and issues in that language. Template section names (which skills reference by name), structure, IDs, and frontmatter keys and structural values are kept; body text, placeholders and the descriptive part of headings are written in that language. Existing files outside `docs/apd/`, such as CLAUDE.md, follow that file's language (as do migrate's replacement texts). The source of truth is Language in `rules/apd/00-principles.md`; it is also placed in `hooks/session-start.md` so it applies in uninitialized repositories, and is referenced from the skills that write documents (design / spec / plan / go / init). The body of the `todo.md` that init copies is written in the user's language
+- **Made `README.md` English and moved the Japanese version to `README.ja.md`** (cross-linked). Added a language section to both
+- **Made the descriptions in `plugin.json` / `marketplace.json` English**. Added `homepage` to `plugin.json`, and added `spec-driven` / `workflow` / `claude-code` to keywords
+- **Translated this CHANGELOG into English**, including past entries
+- Terminology: 「試し方」 is now "How to try it", 「完成後の実機確認」 is now "post-completion hands-on check", 「区分」 is now "classification", and 「達成条件」 is now "completion condition"
 
 ## [3.6.2] - 2026-10-03
 
-### Changed — skill を公式のベストプラクティスに合わせる
+### Changed — Align skills with the official best practices
 
-公式の Skill authoring best practices と Claude Code の skills の doc（原文）と照合した。
+Checked against the official Skill authoring best practices and the Claude Code skills doc (original text).
 
-- **重要な指示を先頭に置いた**: compact 後は各 skill の先頭 5,000 トークンしか残らないため、各 skill に「常に守ること」を置き、承認までコードを書かない・承認後はその場で Build する、などを移した。spec では Build への引き渡しが末尾にあり、長い会話で切り落とされうる位置だった。migrate は安全原則を先頭に移した
-- **go を分けた**: `/goal` 専用の内容（condition の渡し方・評価器の判定・うまくいかないとき）を `skills/go/goal.md` に移し、`/goal` を選んだときだけ読むようにした。既定の「その場で Build」では使わない内容が、一度呼ばれると毎ターン context に残っていた。並列化の既定を subagent に決めた
-- **コマンドの入力を求める案内を除いた**: design の「`/apd:spec` で進んでください」、init の「`/apd:design` で作成」を、そのまま次の手順に進む形にした。init は Spec / Design から呼ばれたら元の流れに戻る
-- **理由の説明を削り、指示だけにした**（design / spec / init / migrate）。「`CLAUDE.md` を読む」の指示も除いた
-- **status**: 3.1.0 で廃止したフックへの言及を除き、判定表に Plan を加えた。表記を「Build」にそろえた
-- **migrate**: `disable-model-invocation: true` では description が Claude の context に入らないため、モデル向けの発火条件（「プラグイン更新直後に使う」）を除いた
+- **Put important instructions first**: after compaction only the first 5,000 tokens of each skill remain, so each skill now has an "Always" section, to which items such as "don't write code until approval" and "Build right away after approval" were moved. In spec, the handoff to Build was at the end, a position that could be cut off in long conversations. migrate moved its safety principles to the top
+- **Split go**: content specific to `/goal` (how to pass the condition, the evaluator's verdict, what to do when it doesn't work) moved to `skills/go/goal.md`, read only when `/goal` is chosen. Content unused by the default "Build right away" stayed in context every turn once invoked. Set the default for parallelization to subagents
+- **Removed prompts asking the user to type a command**: design's "Proceed with `/apd:spec`" and init's "Create with `/apd:design`" now continue straight to the next step. When called from Spec / Design, init returns to the original flow
+- **Removed explanations of reasons, leaving only instructions** (design / spec / init / migrate). Also removed the "read `CLAUDE.md`" instruction
+- **status**: removed mentions of hooks retired in 3.1.0 and added Plan to the decision table. Unified the notation to "Build"
+- **migrate**: with `disable-model-invocation: true` the description does not enter Claude's context, so the model-facing trigger condition ("use right after a plugin update") was removed
 
 ## [3.6.1] - 2026-10-03
 
-### Added — 評価シナリオ（#44）
+### Added — Evaluation scenarios (#44)
 
-- **`evals/` に `claude plugin eval` の 6 ケースを追加**: 設計から始めるか（`new-feature` / `devtool-plan` / `test-infra-plan`）、承認後にその場で実装するか（`approved-build`）、typo や質問に割り込まないか（`typo` / `question`）を、APD あり・なしの 2 arm で確かめる。採点は Edit / Write の回数・ファイルの有無・最終メッセージの regex を中心にし、設計の中身だけ llm 採点にした。実行方法は README の「評価シナリオ」
-- `approved-build` は会話履歴（`history_file`）ではなく、承認済みの Plan を prompt に含める形にした。履歴の transcript には作成者の CLAUDE.md などが混ざりうるため、公開リポジトリに置かない
-- fixture は `evals/_fixture/fixture.sh` を正本にし、`scripts/sync-eval-fixtures.sh` で各ケースへコピーする（`scaffold_script` はケースのディレクトリに置く必要があるため）。CI でコピーのずれを検査する
+- **Added 6 `claude plugin eval` cases in `evals/`**: they check, in two arms (with and without APD), whether work starts from design (`new-feature` / `devtool-plan` / `test-infra-plan`), whether implementation happens right away after approval (`approved-build`), and whether it avoids interrupting typos or questions (`typo` / `question`). Grading centers on the number of Edit / Write calls, file presence and a regex on the final message; only the design content is LLM-graded. How to run is in the README's "Evaluation scenarios"
+- `approved-build` includes the approved Plan in the prompt instead of using conversation history (`history_file`). A history transcript could contain the author's CLAUDE.md and the like, so it is not kept in the public repository
+- Fixtures use `evals/_fixture/fixture.sh` as the source of truth and are copied to each case by `scripts/sync-eval-fixtures.sh` (because `scaffold_script` must live in the case directory). CI checks the copies for drift
 
 ## [3.6.0] - 2026-10-03
 
-### Added — 依頼するだけで設計から始まるようにする
+### Added — Start from design just by asking
 
-- **Plan 区分と `/apd:plan` を追加**: Spec を作るほどでない変更（振る舞いが変わらないリファクタ・内部の技術変更・開発基盤・infra・設定・スクリプト・複数ファイルの修正）の軽い設計。目的 / 変更するファイルと方針 / 検討した代替案 / 検証方法 を会話に出し、承認を得たら Build に入り、PR 本文の冒頭に同じ設計を載せる。ファイルを作らないので `/apd:init` していないリポジトリでも使える。これまで「技術的変更 → `decisions.md` に追記 → Build」だった行を置き換えた
-- **SessionStart フックを再導入**: `hooks/session-start.md` の区分表（Design / Spec / Plan / 設計なし）と「承認まではコードを書かない・承認後は止まらない」を、startup / clear / compact で context に入れる。3.1.0 / 3.2.0 で外したフックは毎 Stop で判定やエージェント起動をしていたが、今回は `cat` 1 行だけで判断を持たない。SessionStart はセッションをブロックできず、失敗してもエラー表示が出るだけで続行する。CI で `hooks/hooks.json` の JSON 妥当性も検査する
+- **Added the Plan classification and `/apd:plan`**: a lightweight design for changes that don't warrant a Spec (refactors with no behavior change, internal technical changes, dev tooling, infra, config, scripts, multi-file fixes). It presents Goal / Files to change and approach / Alternatives considered / Verification in the conversation, enters Build once approved, and puts the same design at the top of the PR body. It creates no files, so it works in repositories without `/apd:init`. Replaces the former row "technical change → append to `decisions.md` → Build"
+- **Reintroduced the SessionStart hook**: puts the classification table in `hooks/session-start.md` (Design / Spec / Plan / No design) and "don't write code until approval; don't stop after approval" into context on startup / clear / compact. The hooks removed in 3.1.0 / 3.2.0 made decisions or launched agents on every Stop; this one is a single `cat` line with no logic. SessionStart cannot block the session, and on failure it only shows an error and continues. CI also checks `hooks/hooks.json` for JSON validity
 
 ### Changed
 
-- **skill の description を、モデルが自分から選ぶ書き方に変更**: `spec` / `design` / `plan` は「ユーザーが頼んだとき」に加えて「新機能・振る舞いの変更・新プロダクトの依頼を受けて、それを扱う設計がまだ無いとき（頼まれていなくても）」に使う。これまでは `go` だけが「実装を開始」で発火し、Spec の無い実装に入る経路だけが開いていた
-- **`/apd:go` に入口チェックを追加**: 対象を扱う Spec も承認済み Plan も無ければ Build に入らず、`apd:spec` / `apd:plan` に回す
-- **Build の既定を「承認を受けてその場で実装」に変更**: 承認の返事（「この方向で実装して」等）だけで、AI が達成条件をチェックリストにして実装・テスト・PR まで進める。ユーザーが `/goal` に condition を貼る手順は、長時間の無人実行をしたいときの任意の手段にした。達成条件（Spec チェックを含む）の中身は変えていない
-- **`rules/apd/07-next-step.md` に「押し付けない」の例外を追加**: 設計の無い実装依頼は「設計を飛ばす選択」ではないので、案内で済ませず Spec か Plan の作成から始める。ユーザーが明示的に省略を指示したときと「設計なし」区分は除く
-- **`/apd:init` をモデルからも呼べるようにした**: `disable-model-invocation: true` を外した。ユーザーが初期化の提案に同意したときだけ実行する（同意なしには実行しない旨を description に明記）
-- **`templates/decision.md` の参照を `${CLAUDE_PLUGIN_ROOT}` 付きにした**（`spec` / `plan`）: 利用側リポジトリの相対パスとして読まれうる書き方だった
-- 用語を「達成条件」に統一（`go` の本文で「condition」「完了条件」が混在しないように）
+- **Rewrote skill descriptions so the model selects them on its own**: `spec` / `design` / `plan` are used not only "when the user asks" but also "when asked for a new feature, a behavior change or a new product and no design covering it exists yet (even if not asked)". Previously only `go` triggered, on "start implementation", leaving open only the path into implementation without a Spec
+- **Added an entry check to `/apd:go`**: if there is neither a Spec nor an approved Plan covering the target, it does not enter Build and routes to `apd:spec` / `apd:plan`
+- **Changed the Build default to "implement right away on approval"**: with just an approval reply ("implement it this way", etc.), the AI turns the completion conditions into a checklist and proceeds through implementation, tests and PR. Having the user paste a condition into `/goal` is now an optional method for long unattended runs. The content of the completion conditions (including the Spec check) is unchanged
+- **Added an exception to "don't push (the next step) on the user" in `rules/apd/07-next-step.md`**: an implementation request without a design is not "a choice to skip design", so instead of just giving guidance, start by creating a Spec or Plan. Excludes cases where the user explicitly says to skip it and the "No design" classification
+- **Made `/apd:init` callable by the model too**: removed `disable-model-invocation: true`. It runs only when the user agrees to a suggestion to initialize (the description states it does not run without agreement)
+- **Prefixed references to `templates/decision.md` with `${CLAUDE_PLUGIN_ROOT}`** (`spec` / `plan`): the old wording could be read as a relative path in the consuming repository
+- Unified the term as "completion condition" (so "condition" and "done condition" are not mixed in the body of `go`)
 
 ## [3.5.0] - 2026-09-05
 
-### Changed — Build を auto mode 前提として規約化
+### Changed — Make auto mode a convention for Build
 
-- **「Build は auto mode で `/goal` を実行する」を規約にした**: 3.4.0 では「`/goal` は permission mode を変えない」という事実の提示に留めていたが、これは APD の中核主張である「Build 中は人間の介入ゼロ」の成立条件そのものなので、選択肢ではなく規約に組み込むと決定した。`/goal` はターンの継続を、auto mode はツール呼び出しの許可を担い、両方を揃えて初めて実装中の介入がゼロになる。auto mode への切り替えは Shift+Tab、起動時の `--permission-mode auto`、またはユーザー設定の `permissions.defaultMode`（ほかに Bash の許可プロンプトの **Yes, and switch to auto mode**）で行うが、プロジェクト設定（`.claude/settings.json`）では `auto` が効かず、プラグインが同梱できる `settings.json` のキーは `agent` と `subagentStatusLine` だけなので **APD 側からは強制できない**。そのため担保は `/apd:go` と `/apd:spec` の案内で人間に確認を促す形にした。`rules/apd/01-phases.md`（フェーズ図と「Build 中は止まらない」）、`rules/apd/00-principles.md`（介入ゼロの原則）、`skills/go/SKILL.md`（提示ステップ）、`skills/spec/SKILL.md`（承認後の案内）、`QUICKREF.md`（Build のフロー）、`APD-FRAMEWORK.md`（設計原理・機能表・Build の動作）、`README.md`、`MIGRATION.md` を更新した
-- **auto mode でも止まる場面を明記**: classifier が 3 回連続または累計 20 回ブロックすると auto mode が一時停止して通常の許可プロンプトに戻る（閾値は変更不可）、`permissions.ask` に合致する操作は常に確認が入る、作業ディレクトリ外の初回読み取りは確認が入る。これらは「止まって当然の場面」として扱い、condition の文言で回避しようとしない方針を `rules/apd/01-phases.md` と `APD-FRAMEWORK.md` に書いた。あわせて `skills/go/SKILL.md` の「失敗時の手がかり」に「Build 中に許可プロンプトで止まる → Manual mode のまま `/goal` を貼っている」を追加した（公式の goal クリア条件は Met / Impossible / unrecoverable error / `/goal clear` / `/clear` で、permission mode の切り替えは含まれないため、Shift+Tab で切り替えるだけでよく貼り直しは不要）
-- **調査ノートに auto mode の節と見送り判断 2 件を追記**: `docs/research/claude-code-refresh-2026-09-04.md` に §7「auto mode の要件と残る停止点」を追加し、既定の permission mode・プラン/組織/モデルの利用条件・有効化の経路・残る停止点・`-p` での挙動・subagent への適用を公式ドキュメントの原文とともに記録した。§6 には「並列 Build を dynamic workflow として同梱する」（`/goal` の評価器が使えず収束判定を再実装することになり、中間結果が会話に載らないため検証モデルが成り立たない）と「CI に `claude plugin validate --strict` を入れる」（プラグインルートの CLAUDE.md への警告で落ち、既存 CI への上積みが小さい）の見送り判断を追加した
+- **Made "Build runs `/goal` in auto mode" a convention**: 3.4.0 only presented the fact that "`/goal` does not change the permission mode", but since this is the very precondition for APD's core claim of "zero human intervention during Build", we decided to make it a convention rather than an option. `/goal` handles turn continuation and auto mode handles tool-call permission; only with both is intervention during implementation zero. Switching to auto mode is done with Shift+Tab, `--permission-mode auto` at launch, or `permissions.defaultMode` in user settings (or **Yes, and switch to auto mode** on a Bash permission prompt), but `auto` has no effect in project settings (`.claude/settings.json`), and the only `settings.json` keys a plugin can bundle are `agent` and `subagentStatusLine`, so **APD cannot enforce it**. It is therefore ensured by having the guidance in `/apd:go` and `/apd:spec` prompt the human to check. Updated `rules/apd/01-phases.md` (phase diagram and "don't stop during Build"), `rules/apd/00-principles.md` (zero-intervention principle), `skills/go/SKILL.md` (presentation step), `skills/spec/SKILL.md` (post-approval guidance), `QUICKREF.md` (Build flow), `APD-FRAMEWORK.md` (design rationale, feature table, Build behavior), `README.md` and `MIGRATION.md`
+- **Documented where auto mode still stops**: if the classifier blocks 3 times in a row or 20 times in total, auto mode pauses and returns to normal permission prompts (thresholds cannot be changed); operations matching `permissions.ask` always ask; the first read outside the working directory asks. `rules/apd/01-phases.md` and `APD-FRAMEWORK.md` state the policy of treating these as "places where stopping is expected" and not trying to avoid them through condition wording. Also added "stops on permission prompts during Build → `/goal` was pasted while still in Manual mode" to "Failure clues" in `skills/go/SKILL.md` (the official goal clear conditions are Met / Impossible / unrecoverable error / `/goal clear` / `/clear`, and switching permission mode is not among them, so just switching with Shift+Tab is enough and re-pasting is unnecessary)
+- **Added an auto mode section and two deferral decisions to the research note**: added §7 "auto mode requirements and remaining stop points" to `docs/research/claude-code-refresh-2026-09-04.md`, recording the default permission mode, plan/organization/model availability conditions, ways to enable it, remaining stop points, behavior with `-p`, and application to subagents, together with the original text of the official docs. Added to §6 the decisions to defer "bundling parallel Build as a dynamic workflow" (the `/goal` evaluator can't be used, so convergence checking would have to be reimplemented, and intermediate results don't appear in the conversation, so the verification model doesn't hold) and "adding `claude plugin validate --strict` to CI" (it fails on a warning about the CLAUDE.md at the plugin root, and adds little on top of existing CI)
 
 ## [3.4.0] - 2026-09-04
 
-### Changed — Claude Code 2.1.260 に合わせて仕様記述を更新
+### Changed — Update spec descriptions for Claude Code 2.1.260
 
-- **`/goal` は permission mode を変えないことを明記**: APD の看板である「Build 中は人間の介入ゼロ」は `/goal` 単体では成立せず、auto mode との併用が前提。`/goal` はターンの継続だけを自動化し、ツール呼び出しの許可は permission mode の責務のままで、Manual mode では許可されていないツール呼び出しのたびに人間の確認が入る。`skills/go/SKILL.md` の提示ステップ、`rules/apd/01-phases.md` の「Build 中は止まらない」、`skills/spec/SKILL.md` の承認後の案内、`QUICKREF.md` のフロー、`APD-FRAMEWORK.md` の機能表に追記した
-- **`/goal` の評価タイミングを「毎ターン後」から実際の仕様に修正**: subagent やバックグラウンドシェルが動いたまま turn が終わると、その turn の評価はスキップされ、バックグラウンド作業のない次の turn 終了時に判定される。APD は Build の並列化に subagent を推奨しているため日常的に踏む条件で、知らないと「評価器が動いていない」と誤診して condition をいじる方向に走る。バックグラウンド待ちが 30 分を超えると自動 check-in が入ること（30分 → 1h → 以降 2h ごとで初回間隔の 4 倍が上限。回数制限があるのは対話セッションの idle check-in だけで、1 goal あたりユーザーのプロンプト間で最大 3 回）も併記した
-- **unrecoverable error での goal 自動クリアを `/apd:go` に追記**: 認証失敗・クレジット切れ・auto-compaction で解消できないコンテキスト超過・モデル利用不可のいずれかで turn が落ちると `/goal` は自動的にクリアされる。復旧後に貼り直せるよう、condition の文面を手元に残すことをユーザーに案内するようにした（レート制限などの一時的なエラーでは goal は維持される）
-- **`/goal` が使えないときの確認項目を追加**: 評価器は hooks の仕組みの上に載っているため、Claude Code のバージョンだけでなく workspace の trust、`disableAllHooks`、managed settings の `allowManagedHooksOnly` も利用可否を左右する
-- **進捗なしでのループ停止を `/apd:go` の失敗時の手がかりに追加**: ツールを使わない turn が数回続くと Claude Code がループを止めて warning を出す。goal はセットされたまま制御がユーザーに戻り、次のプロンプトで評価が再開するため、goal を貼り直す必要はない
-- **Task ツールの提供条件を明記**: Claude Code 2.1.233 以降、`TaskCreate` などの Task ツール（TaskCreate/Get/Update/List・TodoWrite）は Opus 4.8 / Sonnet 5 / Fable 5 / Mythos 5 およびそれ以降のモデルでは既定で提供されず（`CLAUDE_CODE_ENABLE_TODO_TOOLS=1` で戻せる）、モデル自身が多段作業を追跡する。「in-session todo は `TaskCreate`」という指示が現行モデルで空振りしていた（`QUICKREF.md` / `APD-FRAMEWORK.md` / `rules/apd/00-principles.md`）
-- **並列化の選択肢に dynamic workflows を追加**: 公式は subagents / agent view / agent teams / dynamic workflows の 4 本立てで整理しており、APD の一覧は 3 本のままだった。あわせて各手段の「人間の介入が入る箇所」を判断材料として併記した —— agent teams は既定で無効（`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` が要る）で teammate の許可プロンプトはリーダーセッションに出る、`/batch` は分解後に計画の承認を求めて一度止まる、dynamic workflows は run 中にユーザーの入力を受け付けず、run を止めうるのはエージェントの許可プロンプトだけ（無人で回すなら auto mode か allow ルールで事前に許可しておく）
-- **`scripts/verify-migration.sh` に 3.4.0 以前のルール文言の検査を追加**: `.claude/rules/apd/` に「毎ターン後」「TaskCreate」が残っていれば FAIL にする（3.2.0 の Stop フック検査と同じ方式。`/apd:migrate` か `/apd:init` で最新版に更新する）
-- **調査ノートを追加**: `docs/research/claude-code-refresh-2026-09-04.md` —— 2.1.218 → 2.1.260 の照合結果、現行仕様のスナップショット、および検討して採用しなかった案とその理由
+- **Documented that `/goal` does not change the permission mode**: APD's headline "zero human intervention during Build" does not hold with `/goal` alone; it presupposes combining it with auto mode. `/goal` only automates turn continuation; tool-call permission remains the responsibility of the permission mode, and in Manual mode a human confirmation is required for every unpermitted tool call. Added to the presentation step in `skills/go/SKILL.md`, "don't stop during Build" in `rules/apd/01-phases.md`, the post-approval guidance in `skills/spec/SKILL.md`, the flow in `QUICKREF.md`, and the feature table in `APD-FRAMEWORK.md`
+- **Corrected `/goal` evaluation timing from "after every turn" to the actual spec**: if a turn ends while a subagent or background shell is still running, evaluation for that turn is skipped and the verdict happens at the end of the next turn with no background work. APD recommends subagents for parallelizing Build, so this is hit routinely, and without knowing it one misdiagnoses "the evaluator isn't running" and starts tweaking the condition. Also noted that an automatic check-in occurs when waiting on background work exceeds 30 minutes (30 min → 1h → then every 2h, capped at 4x the initial interval; only the interactive session's idle check-in has a count limit, at most 3 per goal between user prompts)
+- **Added automatic goal clearing on unrecoverable errors to `/apd:go`**: if a turn fails due to authentication failure, running out of credits, context overflow that auto-compaction cannot resolve, or model unavailability, `/goal` is cleared automatically. The user is now advised to keep the condition text at hand so it can be re-pasted after recovery (the goal is kept on transient errors such as rate limits)
+- **Added checks for when `/goal` is unavailable**: the evaluator sits on top of the hooks mechanism, so availability depends not only on the Claude Code version but also on workspace trust, `disableAllHooks`, and `allowManagedHooksOnly` in managed settings
+- **Added loop stopping without progress to failure clues in `/apd:go`**: when several turns in a row use no tools, Claude Code stops the loop and shows a warning. The goal stays set and control returns to the user; evaluation resumes on the next prompt, so there is no need to re-paste the goal
+- **Documented availability conditions for Task tools**: since Claude Code 2.1.233, Task tools such as `TaskCreate` (TaskCreate/Get/Update/List, TodoWrite) are not provided by default on Opus 4.8 / Sonnet 5 / Fable 5 / Mythos 5 and later models (restorable with `CLAUDE_CODE_ENABLE_TODO_TOOLS=1`), and the model tracks multi-step work itself. The instruction "use `TaskCreate` for in-session todos" was a no-op on current models (`QUICKREF.md` / `APD-FRAMEWORK.md` / `rules/apd/00-principles.md`)
+- **Added dynamic workflows to the parallelization options**: the official docs organize them into four (subagents / agent view / agent teams / dynamic workflows), while APD's list still had three. Also noted, as decision material, "where human intervention occurs" for each — agent teams are disabled by default (requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`) and teammates' permission prompts appear in the leader session; `/batch` stops once after decomposition to ask for plan approval; dynamic workflows accept no user input during a run, and only agents' permission prompts can stop a run (to run unattended, pre-permit with auto mode or allow rules)
+- **Added checks for pre-3.4.0 rule wording to `scripts/verify-migration.sh`**: FAIL if 「毎ターン後」 ("after every turn") or `TaskCreate` remain in `.claude/rules/apd/` (same approach as the 3.2.0 Stop hook check; update to the latest with `/apd:migrate` or `/apd:init`)
+- **Added a research note**: `docs/research/claude-code-refresh-2026-09-04.md` — results of checking 2.1.218 → 2.1.260, a snapshot of the current spec, and ideas considered but not adopted, with reasons
 
 ### Fixed
 
-- **`MIGRATION.md` のロールバック手順を実行可能な形に修正**: `/plugin install apd@apd-marketplace --version 2.0.0` は存在しないオプションで実行できなかった。`/plugin install` にバージョン指定は無く、marketplace の git URL に `#<ref>` を付けて ref を固定する方式が正しい。APD は過去リリース（v0.1.0〜）にも `v{version}` 形式のタグが付いている（3.3.1 で遡及付与し、以降は CI が自動付与）ので、戻したいバージョンのタグをそのまま指定できる
-- **`docs/research/contract-abolishment-2026-03-15.md` にアーカイブ注記を追加**: `docs/` 配下のアーカイブ文書のうちこの 1 本だけ注記が無く（3.3.1 で他 3 本には付与済み）、現行に存在しない Phase 番号で書かれた本文が現行仕様と誤読されうる状態だった
+- **Made the rollback procedure in `MIGRATION.md` executable**: `/plugin install apd@apd-marketplace --version 2.0.0` used a nonexistent option and could not run. `/plugin install` has no version option; the correct approach is to pin a ref by appending `#<ref>` to the marketplace git URL. APD's past releases (v0.1.0 onward) also have `v{version}` tags (applied retroactively in 3.3.1, and added automatically by CI since), so you can specify the tag of the version you want to roll back to directly
+- **Added an archive note to `docs/research/contract-abolishment-2026-03-15.md`**: it was the only archived document under `docs/` without a note (the other 3 got one in 3.3.1), and its body, written with Phase numbers that no longer exist, could be misread as the current spec
 
 ## [3.3.2] - 2026-07-05
 
-### Changed — リポジトリ名を実態に合わせて変更
+### Changed — Rename the repository to match what it is
 
-- **リポジトリを `autopilot-development-boilerplate` → `apd-framework` にリネーム**: 実態は boilerplate（コピーして使う雛形）ではなく Claude Code プラグインとして配布されるフレームワークのため。GitHub が旧名からのリダイレクトを張るので、既存のインストール・`git clone`・`/plugin update` は動き続ける
-- `plugin.json` の `repository`、`marketplace.json` の `homepage`、README のインストールコマンド、MIGRATION.md の issue URL を新名に更新
-- 新しいマーケットプレイス追加コマンド: `/plugin marketplace add koyakimu/apd-framework`
+- **Renamed the repository from `autopilot-development-boilerplate` to `apd-framework`**: it is not actually a boilerplate (a template to copy) but a framework distributed as a Claude Code plugin. GitHub redirects from the old name, so existing installs, `git clone` and `/plugin update` keep working
+- Updated `repository` in `plugin.json`, `homepage` in `marketplace.json`, the install command in the README, and the issue URL in MIGRATION.md to the new name
+- New marketplace add command: `/plugin marketplace add koyakimu/apd-framework`
 
 ## [3.3.1] - 2026-07-05
 
-### Fixed — リポジトリ監査で見つかった不整合の一括修正
+### Fixed — Batch fix of inconsistencies found in a repository audit
 
-- **同梱テンプレートを現行 frontmatter モデルへ更新**: `templates/spec.md` / `design.md` / `cross-context-scenarios.md` に残っていた v2 の `cycle_ref` / `created_at` を除去し、`issue_ref` モデルに統一。従来はテンプレートから作った Spec が `verify-migration.sh` に「未移行」と FAIL 判定される自己矛盾があった
-- **`templates/todo.md` の旧フェーズ表記を修正**: `Phase 0/1/2` → 現行の `Intent / Spec / Build`
-- **cross-context ファイルの命名を統一**: `/apd:spec` が作るファイルを `spec-cross-context.md` → `cross-context-scenarios.md` に変更（テンプレート名と一致させ、`spec-*.md` glob によるビルド対象 Spec との混同を解消）。`rules/apd/03-documents.md` に任意ファイルとして明記
-- **decisions.md フォーマットを三者統一**: `rules/apd/03-documents.md` / `templates/decision.md` / `skills/spec/SKILL.md` で食い違っていたフォーマット（Options / AI Recommendation の有無）と追記順序（「新しい判断ほど上に積む」に確定）を `templates/decision.md` を正本として統一
-- **`skills/spec/SKILL.md` の v2 残骸を除去**: 廃止済み「エスカレーションポリシー」を CLAUDE.md から読む指示を削除
-- **`scripts/bump-version.sh` を堅牢化**: 実行権限を付与（`./` 起動が permission denied だった）、非 semver バージョンでのエラーメッセージ追加、marketplace.json に plugin が見つからない場合のサイレント no-op を修正
-- **`scripts/verify-migration.sh` の grep バグ修正**: ブラケット式 `[^\n]`（POSIX では「n と \ 以外」の意味）を `.` に修正
-- **`MIGRATION.md` の陳腐化を修正**: 期待ファイル一覧の `decision-*.md` → `decisions.md`、ロールバック先の例を `--version 0.5.1` → `2.0.0` に更新（3.x 移行ガイドの直近旧版に合わせる）、backup 救出手順が verify に FAIL する per-file Decision を作らないよう decisions.md 追記方式に変更、例示ブランチ名を 3.x に
-- **歴史的文書にアーカイブ注記を追加**: `docs/apd-v3-redesign.md` / `docs/apd-v3-implementation-plan.md` / `docs/research/harness-engineering-2026-04-29.md` に「実装完了済み・現行仕様の正本は rules/apd と skills」の注記を付与（存在しない hooks 等への dangling 参照の誤読防止）
-- **`examples/templates/` を削除**: どこからも参照されない `templates/` の古い複製（NFR セクション欠落）だった
-- **`README.md` の構成表に `migrate` skill を追加**（同 README 内のスキル表と不一致だった）
-- **`.gitignore` に `.serena/` を追加**
-- **CI を追加**: `.github/workflows/ci.yml` — JSON 妥当性、version 三点一致（plugin.json / marketplace.json / CHANGELOG）、SKILL.md frontmatter、テンプレートの旧 frontmatter 混入、shellcheck、スクリプト実行権限を PR ごとに検査
-- **リリースタグ運用を開始**: main へのマージ後、CI が plugin.json の version から `v{version}` タグを自動付与する（`tag-release` ジョブ）。過去リリース v0.1.0〜v3.3.0 にも遡及してタグを付与した
+- **Updated bundled templates to the current frontmatter model**: removed v2 `cycle_ref` / `created_at` left in `templates/spec.md` / `design.md` / `cross-context-scenarios.md` and unified on the `issue_ref` model. Previously a Spec created from the template was judged "not migrated" (FAIL) by `verify-migration.sh`, a self-contradiction
+- **Fixed old phase notation in `templates/todo.md`**: `Phase 0/1/2` → the current `Intent / Spec / Build`
+- **Unified cross-context file naming**: changed the file created by `/apd:spec` from `spec-cross-context.md` to `cross-context-scenarios.md` (matching the template name and removing confusion with build-target Specs via the `spec-*.md` glob). Documented it as an optional file in `rules/apd/03-documents.md`
+- **Unified the decisions.md format across three places**: the format (with or without Options / AI Recommendation) and append order (settled on "newer decisions on top"), which differed among `rules/apd/03-documents.md` / `templates/decision.md` / `skills/spec/SKILL.md`, were unified with `templates/decision.md` as the source of truth
+- **Removed v2 leftovers from `skills/spec/SKILL.md`**: deleted the instruction to read the retired "escalation policy" from CLAUDE.md
+- **Hardened `scripts/bump-version.sh`**: added execute permission (running via `./` gave permission denied), added an error message for non-semver versions, and fixed a silent no-op when the plugin is not found in marketplace.json
+- **Fixed a grep bug in `scripts/verify-migration.sh`**: changed the bracket expression `[^\n]` (which in POSIX means "anything but n and \") to `.`
+- **Fixed stale content in `MIGRATION.md`**: `decision-*.md` → `decisions.md` in the expected file list; updated the rollback example from `--version 0.5.1` to `2.0.0` (to match the most recent old version for the 3.x migration guide); changed the backup recovery steps to append to decisions.md so they don't create per-file Decisions that FAIL verify; updated example branch names to 3.x
+- **Added archive notes to historical documents**: added a note "implementation complete; the source of truth for the current spec is rules/apd and skills" to `docs/apd-v3-redesign.md` / `docs/apd-v3-implementation-plan.md` / `docs/research/harness-engineering-2026-04-29.md` (to prevent misreading dangling references to nonexistent hooks, etc.)
+- **Deleted `examples/templates/`**: it was an old, unreferenced copy of `templates/` (missing the NFR section)
+- **Added the `migrate` skill to the structure table in `README.md`** (it was inconsistent with the skill table in the same README)
+- **Added `.serena/` to `.gitignore`**
+- **Added CI**: `.github/workflows/ci.yml` — checks on every PR for JSON validity, version match across three places (plugin.json / marketplace.json / CHANGELOG), SKILL.md frontmatter, old frontmatter in templates, shellcheck, and script execute permissions
+- **Started release tagging**: after merging to main, CI automatically adds a `v{version}` tag from the version in plugin.json (`tag-release` job). Tags were also added retroactively to past releases v0.1.0–v3.3.0
 
 ## [3.3.0] - 2026-06-29
 
-### Changed — マイグレーションを完全化（CLAUDE.md 掃除・rules 最新化・3.x 刷新）
+### Changed — Complete the migration (CLAUDE.md cleanup, rules refresh, 3.x overhaul)
 
-- **`/apd:migrate` が CLAUDE.md を掃除するようになった**: APD 由来の注入を first-class で除去。宣伝行（`APD … フレームワーク x.y.z … で開発`）、`.claude/rules/apd/` の丸写し節、陳腐化記述（廃止済みの Spec チェック Stop フック参照・旧エスカレーション二分リスト）、旧コマンド/エージェント名（`/apd:build|start|cycle|progress`、`apd:peer-review|checkpoint`）、旧用語（Acceptance/Human Checkpoint）を対象に、**プロジェクト固有は残して**整理する
-- **`/apd:migrate` が `.claude/rules/apd/` を最新版に更新するようになった**: 差分確認の上でプラグイン同梱版へ更新（独自カスタムは手動レビューへ）。従来「`/apd:init` の責務」として委譲していたのを migrate に統合
-- **2.x → 3.x 移行パターンを追加**: 用語・コマンド・フックの刷新（Stop フック/サジェストフック廃止、`/apd:go`、完成後の実機確認）を移行対象に明記。移行は冪等
-- **`scripts/verify-migration.sh` を拡張**: CLAUDE.md の APD 汚れ（宣伝行・Stop フック参照・旧エスカレーション・旧コマンド）と `.claude/rules/apd/` の鮮度（陳腐化記述・プラグインとの差分）を検査
-- **再注入の防止**: `/apd:init` と `rules/apd/00-principles.md` に「APD はユーザーの CLAUDE.md を書き換えない」ガードを追加
-- `MIGRATION.md` を 3.x（CLAUDE.md 掃除・rules 最新化・新コマンド/用語）に更新
+- **`/apd:migrate` now cleans up CLAUDE.md**: removes APD-originated injections as a first-class step. It targets promotional lines (`APD … フレームワーク x.y.z … で開発` ("developed with the APD … framework x.y.z …")), sections copied verbatim from `.claude/rules/apd/`, stale content (references to the retired 「Spec チェック Stop フック」 (Spec check Stop hook) and the old two-part escalation list), old command/agent names (`/apd:build|start|cycle|progress`, `apd:peer-review|checkpoint`), and old terms (Acceptance/Human Checkpoint), tidying up **while keeping project-specific content**
+- **`/apd:migrate` now updates `.claude/rules/apd/` to the latest version**: after reviewing the diff, updates to the version bundled with the plugin (custom changes go to manual review). Previously delegated as "the responsibility of `/apd:init`"; now integrated into migrate
+- **Added the 2.x → 3.x migration pattern**: the overhaul of terms, commands and hooks (retirement of the Stop hook/suggest hook, `/apd:go`, post-completion hands-on check) is now explicitly a migration target. Migration is idempotent
+- **Extended `scripts/verify-migration.sh`**: checks CLAUDE.md for APD residue (promotional lines, Stop hook references, old escalation, old commands) and `.claude/rules/apd/` for freshness (stale content, diff from the plugin)
+- **Prevented re-injection**: added a guard "APD does not rewrite the user's CLAUDE.md" to `/apd:init` and `rules/apd/00-principles.md`
+- Updated `MIGRATION.md` for 3.x (CLAUDE.md cleanup, rules refresh, new commands/terms)
 
 ## [3.2.0] - 2026-06-28
 
-### Changed — Spec チェックを Stop フックから Build のステップへ移管
+### Changed — Move the Spec check from a Stop hook to a Build step
 
-- **Spec チェックの `type:agent` Stop フックを廃止**: Stop のたびにフルの AI エージェントを起動するため、通常のターン終わりでも毎回数十秒〜（ブロック&リトライで）最悪10分級の待ちが発生していた。`hooks/hooks.json` を削除し、apd プラグインは Stop / SessionStart フックを一切持たなくなった
-- **Spec チェックを Build の達成条件に統合**: `/apd:go` が組み立てる `/goal` の condition に「ビルド AI 自身が各 AC を Spec・Design と照合し、OK/ずれ/未実装を根拠付きで surface し、ずれは自律修正してから完了」を組み込み。チェックは Build 中＝必要な場面でのみ走り、毎 Stop の起動コストはゼロ
-- `rules/apd/01-phases.md` / `02-cycle-flow.md` / `skills/go/SKILL.md` を「Stop フックの番人」から「Build のステップ」に書き換え
-- `docs/apd-v3-redesign.md` に §6/§8 の方針変更を注記
-- トレードオフ: 「別プロセスで自己申告に頼らない」純度は下がるが、毎 Stop の遅さを解消
+- **Retired the `type:agent` Stop hook for the Spec check**: it launched a full AI agent on every Stop, so even ordinary turn endings incurred waits of tens of seconds or more each time, and at worst around 10 minutes (with block & retry). Deleted `hooks/hooks.json`; the apd plugin no longer has any Stop / SessionStart hooks
+- **Integrated the Spec check into the Build completion conditions**: the `/goal` condition assembled by `/apd:go` now includes "the build AI itself checks each AC against the Spec and Design, surfaces OK/drift/not implemented with evidence, and fixes drift autonomously before completing". The check runs only during Build, when it is needed, and the per-Stop launch cost is zero
+- Rewrote `rules/apd/01-phases.md` / `02-cycle-flow.md` / `skills/go/SKILL.md` from "Stop hook gatekeeper" to "Build step"
+- Annotated the policy change in §6/§8 of `docs/apd-v3-redesign.md`
+- Trade-off: the purity of "a separate process that doesn't rely on self-reporting" drops, but the per-Stop slowness is gone
 
 ## [3.1.0] - 2026-06-28
 
-### Changed — 次の一手の案内を「毎 Stop の機械的サジェスト」から「文脈を踏まえた案内」へ
+### Changed — Next-step guidance moves from "mechanical suggestions on every Stop" to "context-aware guidance"
 
-- **毎 Stop の状態サジェストフックを廃止**: `suggest-next.sh` を Stop / SessionStart の両方から外し、スクリプトを削除。ファイル有無しか見ない bash フックが毎ターン案内を出すため、ノイズが多く会話の文脈を理解できなかった
-- **案内役をメイン AI に移管（B）**: `rules/apd/07-next-step.md` を新設。フロー地図と「節目だけ・文脈優先・押し付けない」案内原則を `.claude/rules/apd/` 経由で常駐させ、会話全体を見られるメイン AI が的確に次の一手を案内する
-- **`/apd:status` を追加（C）**: ファイル状態＋会話文脈から「現在地＋次の一手＋根拠」を返すオンデマンドのスキル。push に頼らず、迷ったときに引ける
-- Spec チェック（type:agent Stop フック）は従来どおり維持
+- **Retired the per-Stop state suggestion hook**: removed `suggest-next.sh` from both Stop and SessionStart and deleted the script. A bash hook that only looked at file presence gave guidance every turn, which was noisy and could not understand the conversation's context
+- **Moved the guide role to the main AI (B)**: added `rules/apd/07-next-step.md`. The flow map and the guidance principles "only at milestones, context first, don't push (the next step) on the user" stay resident via `.claude/rules/apd/`, so the main AI, which can see the whole conversation, gives accurate next-step guidance
+- **Added `/apd:status` (C)**: an on-demand skill that returns "current position + next step + rationale" from file state and conversation context. It doesn't rely on push and can be consulted when in doubt
+- The Spec check (type:agent Stop hook) is kept as before
 
 ## [3.0.3] - 2026-06-28
 
 ### Fixed
 
-- **SessionStart フックの実行エラーを修正**: `suggest-next.sh` が `hookEventName` を `"Stop"` 固定で出力していたため、SessionStart として実行されると `Hook returned incorrect event name: expected 'SessionStart' but got 'Stop'` で失敗していた。stdin の `hook_event_name` を読み取り、実際のイベント名を返すように変更
+- **Fixed an execution error in the SessionStart hook**: `suggest-next.sh` always output `hookEventName` as `"Stop"`, so when run as SessionStart it failed with `Hook returned incorrect event name: expected 'SessionStart' but got 'Stop'`. Changed it to read `hook_event_name` from stdin and return the actual event name
 
 ## [3.0.2] - 2026-06-28
 
 ### Fixed
 
-- **Spec チェック Stop フックが非 APD プロジェクトで停止をブロックする問題を修正**: `docs/apd/spec-*.md` が存在しない（APD 未導入/未初期化）リポジトリでも `type:agent` Stop フックが「前提条件未達」で `ok:false` を返し、毎 Stop をブロックしていた。プロンプト冒頭に「`spec-*.md` が1つも無ければ検証対象が無いため `ok:true` で即終了（止めない）」のパススルー条件を追加
+- **Fixed the Spec check Stop hook blocking stops in non-APD projects**: even in repositories where `docs/apd/spec-*.md` does not exist (APD not installed/initialized), the `type:agent` Stop hook returned `ok:false` for "preconditions not met", blocking every Stop. Added a pass-through condition at the start of the prompt: "if there are no `spec-*.md` files, there is nothing to verify, so exit immediately with `ok:true` (don't block)"
 
 ## [3.0.1] - 2026-06-28
 
 ### Fixed
 
-- **プラグインマニフェストの検証エラーを修正**: `plugin.json` の `"hooks": "hooks/hooks.json"` フィールドがスキーマに弾かれ（`hooks: Invalid input`）プラグイン全体がロード失敗していた。フィールドを削除し、`hooks/hooks.json` の自動検出に任せる方式（公式プラグインと同じ）に変更
+- **Fixed a plugin manifest validation error**: the `"hooks": "hooks/hooks.json"` field in `plugin.json` was rejected by the schema (`hooks: Invalid input`), causing the whole plugin to fail to load. Removed the field and switched to relying on automatic detection of `hooks/hooks.json` (as official plugins do)
 
 ## [3.0.0] - 2026-06-28
 
-### Changed (Breaking) — APD v3: 実装中ゼロ介入の自動完走モデル
+### Changed (Breaking) — APD v3: an autonomous run-to-completion model with zero intervention during implementation
 
-- **実装中ゼロ介入の自動完走**: Build フェーズで Claude が中断なく自律的に実装を完走する設計に変更。エスカレーションポリシー（実装中の進捗確認・中断判断フロー）を廃止
-- **Spec チェック導入（`type:agent` Stop フック）**: `hooks/hooks.json` に agent Stop フックを追加し、Build 完了時に自動で Acceptance Criteria 充足を検証する
-- **`/apd:start` → `/apd:go` 改名（breaking）**: スタートコマンドを `/apd:go` に統一。既存ワークフローの `/apd:start` 呼び出しはすべて更新が必要
-- **状態サジェストフック**: 現在のサイクル状態（Design / Spec / Build / Done）を自動推定し、次のアクションをサジェストするフックを追加
-- **Acceptance を「完成後の実機確認」に再定義**: Acceptance Criteria は実装完了後の手動・自動確認手順として記述するように変更。事前仕様の羅列ではなく完成物の検証観点を書く
-- **汎用 peer-review エージェント廃止**: `apd:peer-review` エージェントを削除。レビューは `/code-review` スキルで代替
+- **Autonomous run-to-completion with zero intervention during implementation**: changed the design so that in the Build phase Claude autonomously completes implementation without interruption. Retired the escalation policy (progress checks and interruption decision flow during implementation)
+- **Introduced the Spec check (`type:agent` Stop hook)**: added an agent Stop hook to `hooks/hooks.json` that automatically verifies the Acceptance Criteria are met when Build completes
+- **Renamed `/apd:start` → `/apd:go` (breaking)**: unified the start command as `/apd:go`. All `/apd:start` calls in existing workflows must be updated
+- **State suggestion hook**: added a hook that automatically infers the current cycle state (Design / Spec / Build / Done) and suggests the next action
+- **Redefined Acceptance as the "post-completion hands-on check"**: Acceptance Criteria are now written as manual and automated check steps after implementation is complete. Write the verification points for the finished product, not a list of up-front specs
+- **Retired the generic peer-review agent**: deleted the `apd:peer-review` agent. Review is replaced by the `/code-review` skill
 
 ## [2.0.0] - 2026-05-22
 
-### Changed (Breaking) — 生きたドキュメントモデルへ移行
-- **Patch / Amendment 概念を廃止**。Spec 修正は別ファイルの差分を積まず、**既存 Spec を直接編集して `version` を上げる**。履歴は git が正史
-- **Decision を単一 `docs/apd/decisions.md` に集約**。per-file の `decision-{NNN}.md` を廃止
-- **Preview を任意化**。「原則必須」をやめ、必要なときだけ `docs/apd/preview-{feature}/` を作る
-- **ドキュメント種別を 3 つに**: `design.md` / `decisions.md` / `spec-{feature}.md`
-- **人間の確認面を GitHub (PR + issue) と明記**。`docs/apd/` は AI の作業材料で、人間が日常的にスキャンする場所ではないと位置づけ
-- `rules/apd/00-principles.md`: 「上書きしない」→「git が正史、編集し続ける」に転換
-- `rules/apd/03-documents.md`: 3 種別・decisions.md 集約・GitHub 確認面に全面改訂
-- `rules/apd/05-deliverable-preview.md`: Preview を任意に降格
-- `rules/apd/02-cycle-flow.md`: バグ修正フローを「既存 Spec を編集」に変更
-- `skills/spec`: bugfix モードを「既存 Spec を編集して version 上げ」に変更、decisions.md 追記方式、Patch ファイル生成を削除
-- `skills/migrate`: Patch のSpec畳み込み・Decision の decisions.md 集約に対応（0.x / 1.0.x 両方から移行可能に）
-- `scripts/verify-migration.sh`: Patch ファイル・per-file Decision・`patch_id:` frontmatter の残存チェックを追加
-- `templates/decision.md`: 単一ファイル形式から decisions.md の 1 セクション形式に変更
+### Changed (Breaking) — Move to the living document model
+- **Retired the Patch / Amendment concept**. Spec changes no longer stack diffs in separate files; **edit the existing Spec directly and bump its `version`**. git is the authoritative history
+- **Consolidated Decisions into a single `docs/apd/decisions.md`**. Retired per-file `decision-{NNN}.md`
+- **Made Preview optional**. Dropped "required in principle"; create `docs/apd/preview-{feature}/` only when needed
+- **Reduced document types to three**: `design.md` / `decisions.md` / `spec-{feature}.md`
+- **Stated that the human review surface is GitHub (PRs + issues)**. `docs/apd/` is positioned as working material for the AI, not a place humans routinely scan
+- `rules/apd/00-principles.md`: shifted from "don't overwrite" to "git is the authoritative history; keep editing"
+- `rules/apd/03-documents.md`: fully revised for the three types, decisions.md consolidation, and the GitHub review surface
+- `rules/apd/05-deliverable-preview.md`: demoted Preview to optional
+- `rules/apd/02-cycle-flow.md`: changed the bug fix flow to "edit the existing Spec"
+- `skills/spec`: changed bugfix mode to "edit the existing Spec and bump version", switched to appending to decisions.md, removed Patch file generation
+- `skills/migrate`: supports folding Patches into Specs and consolidating Decisions into decisions.md (migration now possible from both 0.x and 1.0.x)
+- `scripts/verify-migration.sh`: added checks for leftover Patch files, per-file Decisions, and `patch_id:` frontmatter
+- `templates/decision.md`: changed from a single-file format to a format for one section of decisions.md
 
 ### Removed (Breaking)
-- `templates/spec-patch.md` / `examples/templates/spec-patch.md` — Patch ファイルが不要になったため削除
+- `templates/spec-patch.md` / `examples/templates/spec-patch.md` — deleted because Patch files are no longer needed
 
 ### Why
-pup での実投入で `docs/apd/` にファイルが増えすぎて見通しが悪化。「ファイル移動を前提にすると移動漏れが出る」「Claude が書くので人間は repo をほぼ見ない」という実感を踏まえ、**移動を前提にしない・git を正史とする・人間は GitHub を見る**モデルへ転換した。
+In real use on pup, `docs/apd/` accumulated too many files and became hard to navigate. Based on the experience that "assuming files get moved leads to missed moves" and "Claude writes the docs, so humans hardly look at the repo", we switched to a model that **doesn't assume moves, treats git as the authoritative history, and has humans look at GitHub**.
 
 ## [1.0.2] - 2026-05-19
 
 ### Added
-- `skills/migrate/` — `/apd:migrate` スキル。AI 主導で 0.x → 1.x マイグレーションを行う。frontmatter 解釈・本文参照置換・手動レビュー仕分けを AI 判断で実施。`--dry-run` 引数対応
-- `scripts/verify-migration.sh` — マイグレーション結果の検証スクリプト。旧サブディレクトリ・旧命名・旧 frontmatter・旧パス参照の残存を機械的にチェック。書き換えは一切行わない (チェックのみ)
-- `MIGRATION.md` — 旧→新マイグレーションガイド。AI 主導の `/apd:migrate` を主、`verify-migration.sh` を検証手段として位置づけ。手順・ロールバック・トラブルシューティングを記載
+- `skills/migrate/` — the `/apd:migrate` skill. Performs AI-driven 0.x → 1.x migration. Interpreting frontmatter, replacing references in body text, and sorting items for manual review are done by AI judgment. Supports a `--dry-run` argument
+- `scripts/verify-migration.sh` — a script that verifies migration results. Mechanically checks for leftover old subdirectories, old naming, old frontmatter and old path references. It performs no rewrites at all (check only)
+- `MIGRATION.md` — a guide for migrating from old to new. Positions the AI-driven `/apd:migrate` as primary and `verify-migration.sh` as the means of verification. Covers steps, rollback and troubleshooting
 
 ### Notes
-- 一括 shell スクリプトでの自動移行ではなく **AI に判断させる** 方針を採用 (frontmatter の値・本文中の参照・命名規約に合わないファイルの扱いは文脈判断が要るため)
-- スクリプトは検証専門に責務分離
+- Adopted the policy of **letting the AI decide** rather than automatic migration via a batch shell script (frontmatter values, references in body text, and handling of files that don't match naming conventions require contextual judgment)
+- Separated responsibilities so the script does verification only
 
 ## [1.0.1] - 2026-05-19
 
 ### Changed
-- **Skill frontmatter を Anthropic 公式規約に整合**:
-  - `tools:` フィールドを全 4 skill から削除（skills には `allowed-tools` が正規。`tools:` は subagent 用フィールドで no-op だった）
-  - `description` を「[What it does]. Use when ...」順に書き換え（公式ベストプラクティス: 主要ユースケースを先頭に）
-  - `skills/init` に `disable-model-invocation: true` を追加（FS 書き込みの副作用があるため自動起動を抑制）
-  - `skills/spec` に `argument-hint: "[full|add|bugfix] [issue#?]"` を追加
-  - `skills/start` に `argument-hint: "<spec-file or issue#>"` を追加
-- **GitHub Actions の必須印象を軽減**:
-  - `APD-FRAMEWORK.md` / `QUICKREF.md` で「ローカルの `gh` CLI で十分。Actions/routines は任意」と明記
-  - 個人開発・少人数チームでは GitHub Actions を立てる必要がない旨を追加
+- **Aligned skill frontmatter with Anthropic's official conventions**:
+  - Removed the `tools:` field from all 4 skills (`allowed-tools` is correct for skills; `tools:` is a subagent field and was a no-op)
+  - Rewrote `description` in the order "[What it does]. Use when ..." (official best practice: main use case first)
+  - Added `disable-model-invocation: true` to `skills/init` (it has filesystem write side effects, so automatic invocation is suppressed)
+  - Added `argument-hint: "[full|add|bugfix] [issue#?]"` to `skills/spec`
+  - Added `argument-hint: "<spec-file or issue#>"` to `skills/start`
+- **Reduced the impression that GitHub Actions is required**:
+  - Stated in `APD-FRAMEWORK.md` / `QUICKREF.md` that "the local `gh` CLI is enough. Actions/routines are optional"
+  - Added that individual developers and small teams don't need to set up GitHub Actions
 
 ## [1.0.0] - 2026-05-18
 
 ### Removed (Breaking)
-- `skills/build/` — `/apd:build` スキルを廃止（Build フェーズは `/apd:start` + Claude Code `/goal` に移行）
-- `skills/cycle/` — `/apd:cycle` スキルを廃止（サイクル開始は会話 + `gh issue create` で十分）
-- `skills/progress/` — `/apd:progress` スキルを廃止（`gh issue list` + `ls docs/apd/` + `/memory` で代替）
-- `agents/checkpoint.md` — `apd:checkpoint` agent を廃止（Build の収束判定は `/goal` 評価器が担当）
-- `templates/cycle.md` `examples/templates/cycle.md` — サイクル定義ファイルが廃止のためテンプレも削除
+- `skills/build/` — retired the `/apd:build` skill (the Build phase moved to `/apd:start` + Claude Code `/goal`)
+- `skills/cycle/` — retired the `/apd:cycle` skill (starting a cycle is handled by conversation + `gh issue create`)
+- `skills/progress/` — retired the `/apd:progress` skill (replaced by `gh issue list` + `ls docs/apd/` + `/memory`)
+- `agents/checkpoint.md` — retired the `apd:checkpoint` agent (Build convergence is judged by the `/goal` evaluator)
+- `templates/cycle.md` `examples/templates/cycle.md` — deleted the templates since cycle definition files are retired
 
 ### Changed
-- **README.md** を新方針で書き直し（4 スキル構成、Acceptance 用語、Claude Code 機能との分担を明記）
-- **QUICKREF.md** を新方針で書き直し（Intent / Spec / Build / Acceptance の 4 フェーズ早見表、フラットファイル命名）
-- **APD-FRAMEWORK.md** を全面改訂（薄い規約レイヤとして Claude Code 機能に委譲する設計原則を明記）
-- **agents/peer-review.md** のパス参照を新フラット構造に更新
+- **README.md** rewritten for the new approach (4-skill structure, Acceptance terminology, division of roles with Claude Code features)
+- **QUICKREF.md** rewritten for the new approach (quick reference for the 4 phases Intent / Spec / Build / Acceptance, flat file naming)
+- **APD-FRAMEWORK.md** fully revised (states the design principle of being a thin convention layer that delegates to Claude Code features)
+- **agents/peer-review.md** path references updated to the new flat structure
 
 ### Migration Notes
-旧 APD を使っているプロジェクト:
+Projects using the old APD:
 
-1. `/apd:build` → `/apd:start <spec ファイル>` に置き換え + `/goal` で実行
-2. `/apd:cycle` → 会話で「新機能追加します」等で十分、issue があれば `gh issue create`
+1. `/apd:build` → replace with `/apd:start <spec file>` + run with `/goal`
+2. `/apd:cycle` → saying "I'm adding a new feature" or similar in conversation is enough; use `gh issue create` if there is an issue
 3. `/apd:progress` → `gh issue list` + `ls docs/apd/` + `/memory`
-4. `apd:checkpoint` agent → 不要（`/goal` 評価器が担う）
-5. ドキュメントツリーは PR-1 で flat 化済み（`docs/apd/{sub}/` → `docs/apd/*.md`）
+4. `apd:checkpoint` agent → not needed (the `/goal` evaluator takes over)
+5. The document tree was flattened in PR-1 (`docs/apd/{sub}/` → `docs/apd/*.md`)
 
 ## [0.7.0] - 2026-05-18
 
 ### Changed
-- **用語**: `Amendment` → `Spec Patch` に変更（差分ドキュメントの呼称）
-- **ディレクトリ構造**: `docs/apd/` をフラット化。`design/` `specs/` `decisions/` `cycles/` `previews/` サブディレクトリを廃止し、prefix 命名で分類する方針へ（`design.md`, `spec-{slug}.md`, `decision-{NNN}.md`, `preview-{slug}/`）
-- **rules/apd/*.md** を新方針に全面改訂:
-  - `Human Checkpoint 2` → `Acceptance` に用語変更
-  - `AI Checkpoint` 機構を廃止し、Build の収束判定を Claude Code の `/goal` 評価器に委譲
-  - handoff document（コンテキストリセット引き継ぎ用ファイル）の規定を削除
-  - 3 点突合（評価軸 × evidence × toolcall）の規定を削除
-  - サイクル別ディレクトリ構造（`cycles/C-{NNN}/{handoffs,evidence}/`）を廃止
-  - サイクル ID（C-{NNN}）採番規定を削除、issue 番号や slug を推奨
-  - ブランチ命名規約を `apd/C-{NNN}/*` から Conventional Commits 系（`feat/{issue#}-{slug}` 等）へ
-  - 並列実行は Claude Code の subagent / agent teams / `/batch` を使う旨を明記
-- **Handoff の場所**: ファイル化せず PR 本文の「## 試し方」セクションに記載する方針に変更
-- **skills/init**: フラット構造で `docs/apd/` のみ作成。`gh` 検出時は `todo.md` をスキップして GitHub issue を一次 backlog として案内
-- **skills/design**: 出力先を `docs/apd/design/product-design.md` → `docs/apd/design.md` に変更、`Human Checkpoint 0` 用語を削除
-- **skills/spec**: パスを新フラット構造に対応、`Amendment` → `Spec Patch` に変更、最終案内を `/apd:build` → `/apd:start` に変更、issue 番号からの Spec 生成サポート追加（`gh issue view`）
+- **Terminology**: `Amendment` → `Spec Patch` (the name for diff documents)
+- **Directory structure**: flattened `docs/apd/`. Retired the `design/` `specs/` `decisions/` `cycles/` `previews/` subdirectories in favor of classification by prefix naming (`design.md`, `spec-{slug}.md`, `decision-{NNN}.md`, `preview-{slug}/`)
+- **rules/apd/*.md** fully revised for the new approach:
+  - Renamed `Human Checkpoint 2` → `Acceptance`
+  - Retired the `AI Checkpoint` mechanism and delegated Build convergence judgment to Claude Code's `/goal` evaluator
+  - Removed the rules for handoff documents (files for handing over across context resets)
+  - Removed the rules for three-way reconciliation (evaluation criteria × evidence × toolcall)
+  - Retired the per-cycle directory structure (`cycles/C-{NNN}/{handoffs,evidence}/`)
+  - Removed the cycle ID (C-{NNN}) numbering rules; issue numbers or slugs are recommended
+  - Changed the branch naming convention from `apd/C-{NNN}/*` to Conventional Commits style (`feat/{issue#}-{slug}`, etc.)
+  - Stated that parallel execution uses Claude Code's subagents / agent teams / `/batch`
+- **Where handoffs go**: changed to not create files and instead write them in the 「## 試し方」 ("How to try it") section of the PR body
+- **skills/init**: creates only `docs/apd/` with the flat structure. When `gh` is detected, skips `todo.md` and points to GitHub issues as the primary backlog
+- **skills/design**: changed the output path from `docs/apd/design/product-design.md` to `docs/apd/design.md`, removed the `Human Checkpoint 0` term
+- **skills/spec**: supports the new flat structure paths, `Amendment` → `Spec Patch`, changed the final guidance from `/apd:build` to `/apd:start`, added support for generating a Spec from an issue number (`gh issue view`)
 
 ### Removed
-- `templates/amendment.md` → `templates/spec-patch.md` にリネーム
+- `templates/amendment.md` → renamed to `templates/spec-patch.md`
 
 ### Notes
-- 旧スキル `/apd:build` `/apd:cycle` `/apd:progress` および `apd:checkpoint` agent は本 PR では削除せず、PR-3 でまとめて整理する
-- `README.md` `QUICKREF.md` `APD-FRAMEWORK.md` の改訂も PR-3 で実施（旧スキル削除と同時の方が記述に一貫性が出るため）
+- The old skills `/apd:build` `/apd:cycle` `/apd:progress` and the `apd:checkpoint` agent are not deleted in this PR; they will be cleaned up together in PR-3
+- Revisions to `README.md` `QUICKREF.md` `APD-FRAMEWORK.md` will also be done in PR-3 (doing them together with deleting the old skills keeps the descriptions consistent)
 
 ## [0.6.0] - 2026-05-18
 
 ### Added
-- `skills/start/` — `/apd:start` スキルを追加。Spec の Acceptance Criteria から Claude Code の `/goal` コマンド向け condition を組み立て、自律 build ループを `/goal` に委譲する薄いラッパー。既存の `/apd:build` と並存させた状態で新方針 (`/goal` 中心化) の動作を実環境で検証するプロトタイプ
+- `skills/start/` — added the `/apd:start` skill. A thin wrapper that assembles a condition for Claude Code's `/goal` command from the Spec's Acceptance Criteria and delegates the autonomous build loop to `/goal`. A prototype to validate the new approach (centering on `/goal`) in a real environment while coexisting with the existing `/apd:build`
 
 ## [0.4.0] - 2026-03-14
 
 ### Changed
-- **Contract廃止・Phase統合** — Phase 2 (Contract) と Phase 3 (Execute) を Phase 2 (Build) に統合。Contractドキュメントを廃止し、SpecにTest StrategyとDeliverable Previewsセクションを吸収
-- **フェーズ構成を3フェーズに簡素化** — Design → Spec → Build（旧: Design → Spec → Contract → Execute）
-- **成果物プレビューの配置を変更** — `docs/apd/contract/previews/` → `docs/apd/previews/`
-- **tech_changeフローの簡素化** — Contract Amendment → Execute から Decision Record → Build に変更
-- **Checkpointエージェントを簡素化** — Phase 2 (Contract) レビューチェックリストを廃止し、Build用の統合チェックリストに変更
-- **Peer ReviewからContract/Interface Compliance観点を除去** — Spec Complianceに集約
+- **Retired Contract, merged Phases** — merged Phase 2 (Contract) and Phase 3 (Execute) into Phase 2 (Build). Retired the Contract document; the Spec absorbs the Test Strategy and Deliverable Previews sections
+- **Simplified the phase structure to 3 phases** — Design → Spec → Build (previously: Design → Spec → Contract → Execute)
+- **Moved deliverable previews** — `docs/apd/contract/previews/` → `docs/apd/previews/`
+- **Simplified the tech_change flow** — changed from Contract Amendment → Execute to Decision Record → Build
+- **Simplified the Checkpoint agent** — retired the Phase 2 (Contract) review checklist and replaced it with a unified checklist for Build
+- **Removed the Contract/Interface Compliance perspective from Peer Review** — consolidated into Spec Compliance
 
 ### Removed
-- `skills/contract/` — Contractスキルを廃止
-- `skills/execute/` — Executeスキルを廃止（`skills/build/` に統合）
-- `templates/contract.md` — Contractテンプレートを廃止
-- `docs/apd/contract/` — Contractディレクトリをドキュメントツリーから廃止
+- `skills/contract/` — retired the Contract skill
+- `skills/execute/` — retired the Execute skill (merged into `skills/build/`)
+- `templates/contract.md` — retired the Contract template
+- `docs/apd/contract/` — removed the Contract directory from the document tree
 
 ### Added
-- `skills/build/` — Build スキル（旧Contract + Execute の統合）
-- Specテンプレートに `Test Strategy` セクション（AC Coverageテーブル）を追加
-- Specテンプレートに `Deliverable Previews` セクションを追加
+- `skills/build/` — Build skill (merging the former Contract + Execute)
+- Added a `Test Strategy` section (AC Coverage table) to the Spec template
+- Added a `Deliverable Previews` section to the Spec template
 
 ## [0.3.1] - 2026-03-08
 
 ### Removed
-- **SessionStartフック (`check-init.sh`) を削除** — 未初期化プロジェクト検知フックを廃止し、`hooks/hooks.json` を空に変更
+- **Deleted the SessionStart hook (`check-init.sh`)** — retired the hook that detected uninitialized projects and emptied `hooks/hooks.json`
 
 ## [0.3.0] - 2026-03-08
 
 ### Changed
-- **Human Checkpoint 2 (Contract) を廃止** — AI Checkpoint通過後に自動承認する方式に変更。エスカレーション項目がある場合のみ人間に確認
-- **Human Checkpoint 3 を「完成品確認」に変更** — 動く成果物が意図通りか確認する。コードレビューはフレームワークとして求めない
-- **Peer Reviewに対立的検証（Adversarial Testing）を追加** — 積極的に壊しにいく視点で障害ケースを探索する観点を追加
-- **ExecuteスキルにBDDテスト自動生成の指示を追加** — SpecのGiven/When/Then ACから直接テストコードを生成
+- **Retired Human Checkpoint 2 (Contract)** — changed to automatic approval after passing the AI Checkpoint. A human is asked only when there are escalation items
+- **Changed Human Checkpoint 3 to "finished product check"** — checks whether the working deliverable is as intended. The framework does not require code review
+- **Added Adversarial Testing to Peer Review** — added the perspective of actively trying to break things to find failure cases
+- **Added instructions to the Execute skill to auto-generate BDD tests** — generates test code directly from the Spec's Given/When/Then ACs
 
 ### Updated
-- `rules/apd/01-phases.md` — フェーズ定義とCheckpoint原則を新方針に更新
-- `agents/checkpoint.md` — サマリー出力形式を新方針に合わせて更新
-- `agents/peer-review.md` — 対立的検証の観点を追加
-- `APD-FRAMEWORK.md` — 全面改訂（Mermaid図追加、新方針反映）
-- `QUICKREF.md` — 新フロー・ToDo管理を反映
+- `rules/apd/01-phases.md` — updated phase definitions and Checkpoint principles for the new approach
+- `agents/checkpoint.md` — updated the summary output format for the new approach
+- `agents/peer-review.md` — added the adversarial testing perspective
+- `APD-FRAMEWORK.md` — fully revised (added Mermaid diagrams, reflected the new approach)
+- `QUICKREF.md` — reflected the new flow and ToDo management
 
 ## [0.2.0] - 2026-03-08
 
 ### Added
-- **ToDo管理の仕組み** — `docs/apd/todo.md` でサイクル横断のバックログをappend-onlyで管理
-- **スコーピング** — Spec (full mode) でDesignの全機能を今回のスコープ/スコープ外に分類し、スコープ外の機能はToDoに記録
-- **ToDoテンプレート** — `templates/todo.md` を追加
+- **ToDo management** — manage a cross-cycle backlog append-only in `docs/apd/todo.md`
+- **Scoping** — in Spec (full mode), classify all features in the Design as in scope / out of scope for this cycle, and record out-of-scope features in the ToDo
+- **ToDo template** — added `templates/todo.md`
 
 ### Changed
-- Design/Executeスキルに対話・実装中のToDo記録指示を追加
-- Cycleスキルにtodo.md参照を追加（未着手ToDoを提示して次の作業を提案）
-- Initスキルにtodo.md初期化を追加
+- Added instructions to the Design/Execute skills to record ToDos during dialogue and implementation
+- Added a todo.md reference to the Cycle skill (presents open ToDos and suggests the next work)
+- Added todo.md initialization to the Init skill
 
 ## [0.1.0] - 2026-03-08
 
 ### Added
-- **バージョンバンプスクリプト** — `scripts/bump-version.sh` で `plugin.json` と `marketplace.json` を一括更新
-- **CLAUDE.md** — バージョン管理ルールを記載
+- **Version bump script** — `scripts/bump-version.sh` updates `plugin.json` and `marketplace.json` together
+- **CLAUDE.md** — documents the version management rules
 
 ### Changed
-- 初期バージョンを `0.1.0` に設定（`1.0.0` から変更）
+- Set the initial version to `0.1.0` (changed from `1.0.0`)
 
 ### Fixed
-- **Phase 0 Designスキルに技術選定の混入防止ガードレールを追加** — ユーザーから技術スタック情報が提供された場合にDesign文書に含めず、Phase 1に移管する仕組みを導入
+- **Added a guardrail to the Phase 0 Design skill to prevent technology choices from creeping in** — when the user provides tech stack information, it is kept out of the Design document and carried over to Phase 1
