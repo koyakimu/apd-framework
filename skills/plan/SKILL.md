@@ -14,58 +14,58 @@ description: >
   fixes whose cause and fix are both obvious.
 ---
 
-# APD Plan — 軽い設計（Spec を作らない変更）
+# APD Plan — Lightweight design (changes without a Spec)
 
-Spec を作るほどではない変更の設計を会話に出し、承認を得てから Build に入る。ファイルを作らないので、APD を初期化していないリポジトリでも使う。
+Put the design for a change that does not warrant a Spec into the conversation, and enter Build after approval. It creates no files, so use it even in repositories where APD has not been initialized.
 
-## 常に守ること
+## Always
 
-- Plan の承認を得るまでコードを書かない
-- 承認後は実装・テスト・PR まで止まらずに進める。ユーザーにコマンドの入力を求めない
-- 実装中に Plan の前提が崩れたときだけ、止まって Plan を直し、承認を取り直す
+- Do not write code until the Plan is approved
+- After approval, proceed through implementation, tests, and PR without stopping. Do not ask the user to type a command
+- Only if the Plan's assumptions break during implementation, stop, fix the Plan, and get approval again
 
-## 1. 区分を確かめる
+## 1. Confirm the classification
 
-依頼が Plan で足りるかを判定し、1 行で宣言する（例: 「プロダクトの振る舞いは変わらない開発基盤の変更なので、Plan で設計します」）。
+Determine whether a Plan is enough for the request and declare it in one line (e.g. "This is a dev infrastructure change that does not alter product behavior, so I'll design it with a Plan").
 
-| 依頼 | 区分 |
+| Request | Classification |
 |------|------|
-| 新しいプロダクト、大きな方向転換 | Design → `/apd:design` |
-| 外から見える振る舞いが変わる（新機能・仕様変更）。AC が書ける | Spec → `/apd:spec` |
-| 振る舞いは変わらない、または Spec にするほどでない | **Plan（このスキル）** |
-| typo、設定値の変更、数行の修正、原因と直し方が 1 つに決まるバグ修正 | 設計なしで実装 |
+| New product, major change of direction | Design → `/apd:design` |
+| Externally visible behavior changes (new feature, spec change). AC can be written | Spec → `/apd:spec` |
+| Behavior does not change, or too small for a Spec | **Plan (this skill)** |
+| Typo, config value change, few-line fix, bug fix with a single obvious cause and fix | Implement with no design |
 
-`docs/apd/` が無いリポジトリでは Spec の受け皿が無いため、振る舞いが変わる小さな変更も Plan で扱ってよい。大きな新機能なら `/apd:init` から Spec を回すことを提案する。ユーザーが区分を指定したらそれに従う。
+In a repository without `docs/apd/`, there is nowhere to put a Spec, so small changes that alter behavior may also be handled with a Plan. For a large new feature, suggest running a Spec starting from `/apd:init`. If the user specifies a classification, follow it.
 
-## 2. 調べる
+## 2. Investigate
 
-コードベース・既存の `CLAUDE.md`・`docs/apd/decisions.md`（あれば）を読み、設計に必要な事実を集める。意図や要件に不明点があれば、ここで質問する（設計の段階では止まって聞いてよい）。
+Read the codebase, the existing `CLAUDE.md`, and `docs/apd/decisions.md` (if present), and gather the facts needed for the design. If anything about the intent or requirements is unclear, ask here (at the design stage it is fine to stop and ask).
 
-## 3. Plan を提示する
+## 3. Present the Plan
 
-以下を会話に出す。分量は変更の大きさに合わせる。
+Put the following in the conversation. Scale the length to the size of the change.
 
-- **目的**: 何のために、何ができるようになるか
-- **変更するファイルと方針**: ファイルごとに何をどう変えるか
-- **検討した代替案と採らない理由**: 少なくとも 1 案
-- **検証方法**: どのテスト・どのコマンド・どの操作で完了を判定するか
-- **確認したい点**（あれば）: ユーザーの判断が要る論点と、AI の推奨
+- **Goal**: what it is for and what becomes possible
+- **Files to change and approach**: what to change and how, per file
+- **Alternatives considered and why they were not taken**: at least one
+- **How to verify**: which tests, commands, or operations determine completion
+- **Points to confirm** (if any): issues that need the user's judgement, and the AI's recommendation
 
-技術選定など後から参照される判断を含む場合は、承認後に `docs/apd/decisions.md` へ追記する（`docs/apd/` があるリポジトリのみ。フォーマットは `${CLAUDE_PLUGIN_ROOT}/templates/decision.md`）。
+If it includes decisions that will be referred to later, such as technology selection, append them to `docs/apd/decisions.md` after approval (only in repositories that have `docs/apd/`. Format: `${CLAUDE_PLUGIN_ROOT}/templates/decision.md`).
 
-## 4. 承認を待つ
+## 4. Wait for approval
 
-提示したら止まり、ユーザーの返答を待つ。修正指示があれば Plan を直して再提示する。
+After presenting, stop and wait for the user's reply. If they ask for revisions, fix the Plan and present it again.
 
-「この方向で実装して」「OK」「進めて」など承認が出たら Build に入る。
+When approval comes ("go ahead and implement this", "OK", "proceed", etc.), enter Build.
 
 ## 5. Build
 
-- 検証方法に書いた手段で完了を確かめ、結果（テスト実行ログ・確認した操作）を会話に出す
-- PR を出す場合は、本文の冒頭に承認された Plan を載せ、続けて「試し方」を書く
-- Plan に無い範囲のリファクタリングや機能追加をしない。見つけた別問題は issue として起票する
+- Confirm completion using the means written under How to verify, and put the results (test run logs, operations checked) in the conversation
+- If you open a PR, put the approved Plan at the top of the body, followed by "How to try it"
+- Do not refactor or add features outside the Plan. File any other problems you find as issues
 
-## このスキルが意図的にやらないこと
+## What this skill deliberately does not do
 
-- ファイルの生成 — Plan は会話と PR 本文に残す。`docs/apd/` に plan ファイルは作らない
-- AC の定義 — 振る舞いを AC で固定したい変更は Spec にする
+- Generate files — the Plan lives in the conversation and the PR body. Do not create plan files in `docs/apd/`
+- Define AC — changes whose behavior should be pinned down by AC go to a Spec

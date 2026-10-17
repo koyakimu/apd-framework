@@ -9,42 +9,42 @@ description: >
   without the user's explicit agreement.
 ---
 
-# APD Init — プロジェクト初期化
+# APD Init — Project initialization
 
-ルールファイルをコピーし、ドキュメントディレクトリを作る。CLAUDE.md は変更しない。
+Copy the rule files and create the document directory. Do not modify CLAUDE.md.
 
-## 手順
+## Steps
 
-### 1. 既存状態の確認
+### 1. Check the existing state
 
-以下を確認する:
+Check the following:
 
-- `.claude/rules/apd/` が既に存在するか
-- `docs/apd/` が既に存在するか
-- `gh auth status` が成功するか（GitHub issue を一次 backlog として使うか判定）
+- Whether `.claude/rules/apd/` already exists
+- Whether `docs/apd/` already exists
+- Whether `gh auth status` succeeds (to decide whether to use GitHub issues as the primary backlog)
 
-既に APD が初期化されている場合は「ルールファイルを最新版に更新しますか？」とユーザーに確認する。
+If APD is already initialized, ask the user "Update the rule files to the latest version?"
 
-### 2. ルールファイルのコピー
+### 2. Copy the rule files
 
-プラグインに同梱されているルールファイルをプロジェクトにコピーする:
+Copy the rule files bundled with the plugin into the project:
 
 ```bash
 mkdir -p .claude/rules/apd
 cp "${CLAUDE_PLUGIN_ROOT}/rules/apd/"*.md .claude/rules/apd/
 ```
 
-### 3. ドキュメントディレクトリの作成
+### 3. Create the document directory
 
-`docs/apd/` を作る。サブディレクトリは作らない:
+Create `docs/apd/`. Do not create subdirectories:
 
 ```bash
 mkdir -p docs/apd
 ```
 
-### 4. backlog の初期化
+### 4. Initialize the backlog
 
-`gh auth status` が失敗する環境でだけ `docs/apd/todo.md` を作る（成功する環境では GitHub issue を backlog にする）:
+Create `docs/apd/todo.md` only in environments where `gh auth status` fails (where it succeeds, GitHub issues are the backlog):
 
 ```bash
 if ! gh auth status >/dev/null 2>&1; then
@@ -54,32 +54,32 @@ if ! gh auth status >/dev/null 2>&1; then
 fi
 ```
 
-### 5. 完了メッセージ
+### 5. Completion message
 
-以下を出力する:
-
-```
-## APD 初期化完了
-
-コピーされたもの:
-  - .claude/rules/apd/  — APD フレームワーク方針（Claude Code が自動ロード）
-
-作成されたもの:
-  - docs/apd/           — APD ドキュメントの置き場所（フラット構造）
-  {gh が使えない場合: }
-  - docs/apd/todo.md    — ToDo backlog（フォールバック。gh が使える場合は GitHub issue を使う）
-
-backlog の運用:
-  {gh 検出時: }
-  - GitHub issue を一次 backlog として使う
-  - 起票時に apd:todo / apd:scope-out などのラベルを付けて分類する
-  {gh 不在時: }
-  - docs/apd/todo.md に append-only で追記する
+Output the following:
 
 ```
+## APD initialization complete
 
-### 6. 元の流れに戻る
+Copied:
+  - .claude/rules/apd/  — APD framework policy (auto-loaded by Claude Code)
 
-Spec や Design の作成から初期化を提案した場合は、そのまま元の手順（`apd:spec` / `apd:design`）に戻る。初期化だけを頼まれた場合は、Design から始めるかをユーザーに聞く。ユーザーにコマンドの入力を求めない。
+Created:
+  - docs/apd/           — location for APD documents (flat structure)
+  {if gh is unavailable: }
+  - docs/apd/todo.md    — ToDo backlog (fallback. GitHub issues are used when gh is available)
 
-`.claude/rules/apd/` のルールは次のセッションから自動で読み込まれる。
+Backlog operation:
+  {if gh is detected: }
+  - Use GitHub issues as the primary backlog
+  - Classify issues with labels such as apd:todo / apd:scope-out when filing
+  {if gh is absent: }
+  - Append to docs/apd/todo.md (append-only)
+
+```
+
+### 6. Return to the original flow
+
+If initialization was proposed while creating a Spec or Design, return straight to the original steps (`apd:spec` / `apd:design`). If only initialization was requested, ask the user whether to start with the Design. Do not ask the user to type a command.
+
+The rules in `.claude/rules/apd/` are loaded automatically from the next session.

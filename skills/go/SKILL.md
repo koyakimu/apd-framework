@@ -11,51 +11,51 @@ description: >
 argument-hint: "<spec-file or issue#>"
 ---
 
-# APD Go — 承認済み Spec の Build
+# APD Go — Build for an approved Spec
 
-## 常に守ること
+## Always
 
-- 対象を扱う Spec（`docs/apd/spec-*.md`）も、この会話で承認された Plan も無ければ Build しない。Spec なら `apd:spec`、Plan で足りるなら `apd:plan` に進む。承認済み Plan の Build は `apd:plan` の手順で行う
-- 既定はその場で Build する。達成条件を 3〜5 行に要約して会話に出し、確認のために止まらずに実装・テスト・PR まで進める。ユーザーにコマンドの入力を求めない
-- ユーザーが長時間の無人実行を望んだときだけ `/goal` で Build する。手順は [goal.md](goal.md)
-- 実装中は人にエスカレーションしない。Spec に無い判断は、Spec に先出し済みのものに従うか、完成後の実機確認に回す
-- 達成条件の全項目（Spec チェックを含む）を満たして PR を出したら、Build 完了として報告する
+- Do not Build if there is neither a Spec covering the work (`docs/apd/spec-*.md`) nor a Plan approved in this conversation. Go to `apd:spec` for a Spec, or `apd:plan` if a Plan is enough. Build an approved Plan following the `apd:plan` steps
+- By default, Build on the spot. Summarize the completion condition in 3–5 lines in the conversation, then proceed through implementation, tests, and PR without stopping for confirmation. Do not ask the user to type a command
+- Build with `/goal` only when the user wants a long unattended run. Steps: [goal.md](goal.md)
+- Do not escalate to the user during implementation. For decisions not in the Spec, follow what the Spec has already settled in advance, or defer them to the hands-on check after completion
+- When every item of the completion condition (including the Spec check) is met and the PR is open, report Build as complete
 
-## 1. 対象 Spec を特定する
+## 1. Identify the target Spec
 
-引数があればそれを使う。無ければ `docs/apd/spec-*.md` から候補を提示する。
+Use the argument if given. Otherwise, present candidates from `docs/apd/spec-*.md`.
 
-## 2. Spec を読む
+## 2. Read the Spec
 
-Spec 全体と `docs/apd/design.md` を読み、次を拾う: AC の ID と Given/When/Then、AC Coverage のテスト種別、Deliverable Previews の有無、`decision_refs`、委譲した非機能要件（`/security-review` 等）。テストの実行方法はプロジェクトを見て決める。
+Read the whole Spec and `docs/apd/design.md`, and pick out: AC IDs and Given/When/Then, the test types in AC Coverage, whether there are Deliverable Previews, `decision_refs`, and delegated non-functional requirements (`/security-review` etc.). Decide how to run tests by looking at the project.
 
-次が見つかったら、Build の前に warning として伝え、ユーザーの判断を待つ:
+If you find any of the following, report it as a warning before Build and wait for the user's decision:
 
-- `decision_refs` に対応する判断が `docs/apd/decisions.md` に無い
-- Deliverable Previews が記載されているのに成果物が無い
+- A decision referenced in `decision_refs` is missing from `docs/apd/decisions.md`
+- Deliverable Previews are listed but the deliverables do not exist
 
-## 3. 達成条件を組み立てる
+## 3. Assemble the completion condition
 
-Spec の表現を引用し、会話に出した証拠で判定できる書き方にする（「良い品質で」のような抽象表現は使わない）。
+Quote the Spec's wording, and write it so it can be judged from evidence put in the conversation (do not use abstract phrases like "with good quality").
 
-**受け入れ条件**
-- Spec の全 AC を ID と Given/When/Then の要約付きで列挙する
+**Acceptance criteria**
+- List every AC in the Spec with its ID and a summary of its Given/When/Then
 
-**検証**
-- 自動テストが pass し、AC Coverage の方針どおりのテストがあり、既存テストを壊していない
-- Spec チェック: 完了前に各 AC を Spec・Design と照合し、「OK / ずれ / 未実装」を根拠（ファイル:行）付きで会話に出す。ずれ・未実装は直してから完了とする
-- 委譲した非機能要件の実行結果が OK
-- テスト実行ログ・変更内容・成果物の確認結果を会話に出す
+**Verification**
+- Automated tests pass, tests exist as per the AC Coverage policy, and existing tests are not broken
+- Spec check: before completion, check each AC against the Spec and Design, and put "OK / deviation / not implemented" with evidence (file:line) in the conversation. Fix deviations and unimplemented items before calling it complete
+- Results of running delegated non-functional requirements are OK
+- Put test run logs, the changes, and the results of checking deliverables in the conversation
 
 **Handoff**
-- PR を作成または更新し、本文に Spec への参照と「試し方」を書く。「試し方」は各 AC を人が実機で確かめる手順にする
-- 自動検証できない AC（実機限定・外部サービス・主観評価）は、実装と「試し方」の記載で完了とし、その旨を明記する
+- Create or update the PR, and write a reference to the Spec and "How to try it" in the body. "How to try it" gives steps for a person to verify each AC hands-on on a real device
+- For AC that cannot be verified automatically (real-device only, external services, subjective evaluation), treat implementation plus the "How to try it" entry as complete, and state so explicitly
 
-**制約**
-- Spec に無いビジネスルール、Spec 範囲外のリファクタリングを足さない。`decisions.md` の判断に従う
-- 同じ論点でループしたら止めて報告する
-- Spec チェックが通らない状態が続いたら、途中までを draft PR で残して止め、完成後の実機確認に回す
+**Constraints**
+- Do not add business rules not in the Spec or refactoring outside the Spec's scope. Follow the decisions in `decisions.md`
+- If you loop on the same issue, stop and report
+- If the Spec check keeps failing, leave the work so far in a draft PR, stop, and defer to the hands-on check after completion
 
-## 4. Build する
+## 4. Build
 
-並列化は既定で subagent（ファイルを書き換えるなら `isolation: "worktree"`）を使う。
+For parallelization, use subagents by default (with `isolation: "worktree"` if they modify files).
