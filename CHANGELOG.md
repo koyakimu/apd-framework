@@ -1,11 +1,14 @@
 # Changelog
 
-## [3.6.3] - 2026-10-17
+## [3.7.0] - 2026-10-17
 
-### Changed — README と説明文を英語を正にする
+### Changed — プラグインの記述を英語にし、指示する人の言語で動くことを明記する
 
-- **`README.md` を英語にし、日本語版を `README.ja.md` に移した**: 公式プラグインディレクトリなど英語圏の利用者向け。両者は相互にリンクした。skill・rules・テンプレート本体は日本語のままで、Claude は利用者の言語で応答する旨を英語版に明記した
+- **skill・rules・テンプレート・SessionStart フック・参照ドキュメント（QUICKREF / APD-FRAMEWORK / MIGRATION）を英訳した**: 公式プラグインディレクトリなど英語圏の利用者向け。構造・ID・frontmatter・コマンドは変えていない。skill の description は元から英語で、日本語の発火例も残した。migrate と MIGRATION の、旧プロジェクトの日本語の記述を照合するためのリテラルは日本語のまま残した（`scripts/verify-migration.sh` の検出と対応）
+- **言語のルールを追加した**: 指示する人が使っている言語で会話し、`docs/apd/` の文書・Plan・PR 本文（「How to try it」を含む）・issue もその言語で書く。テンプレートの見出しとプレースホルダは翻訳し、構造・ID・frontmatter は保つ。正本は `rules/apd/00-principles.md` の Language、未初期化のリポジトリでも効くよう `hooks/session-start.md` にも置き、文書を書く skill（design / spec / plan / go / init）から参照した。init がコピーする `todo.md` は利用者の言語に翻訳する
+- **`README.md` を英語にし、日本語版を `README.ja.md` に移した**（相互リンク）。両方に言語の節を加えた
 - **`plugin.json` / `marketplace.json` の description を英語にした**。`plugin.json` に `homepage` を加え、keywords に `spec-driven` / `workflow` / `claude-code` を追加した
+- 用語: 「試し方」は「How to try it」、「完成後の実機確認」は「post-completion hands-on check」、「区分」は「classification」、「達成条件」は「completion condition」とした
 
 ## [3.6.2] - 2026-10-03
 

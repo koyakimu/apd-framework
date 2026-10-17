@@ -1,28 +1,28 @@
-# APD 成果物プレビュー（任意）
+# APD Deliverable Previews (optional)
 
-## 概要
+## Overview
 
-実装前に「何ができるか」を可視化し、方向性のズレを早期に検出する手段。**任意**であり、必要なときだけ使う。
+A way to visualize "what it will do" before implementation and catch misalignment in direction early. It is **optional**; use it only when needed.
 
-- **Spec フェーズ**: テキストで完成像の方向性を合意する
-- **Build フェーズ**: 必要なら実装開始前に図・モックを生成する
+- **Spec phase**: agree on the direction of the finished picture in text
+- **Build phase**: if needed, generate diagrams / mocks before starting implementation
 
-UI が複雑・関係者との認識合わせが要る・アーキテクチャが入り組んでいる、といった「先に見せた方が手戻りを防げる」ケースでのみ作る。シンプルな変更では作らなくてよい。
+Create previews only in cases where "showing it first prevents rework", such as a complex UI, a need to align understanding with stakeholders, or an intricate architecture. Simple changes do not need them.
 
-## プレビュー対象（必要なものだけ）
+## Preview targets (only what is needed)
 
-| 種別 | フォーマット | 例 |
+| Type | Format | Examples |
 |------|------------|-----|
-| アーキテクチャ図 | Mermaid | システム構成、コンポーネント関係 |
-| データモデル | Mermaid (ER 図) | テーブル設計、リレーション |
-| シーケンス図 | Mermaid | API 呼び出しフロー、処理順序 |
-| 画面遷移図 | Mermaid (stateDiagram) | ページ間のナビゲーション |
-| UI モック | HTML | 静的 HTML+CSS による画面モック |
-| API 仕様 | Markdown | エンドポイント、リクエスト/レスポンス例 |
+| Architecture diagram | Mermaid | System structure, component relationships |
+| Data model | Mermaid (ER diagram) | Table design, relations |
+| Sequence diagram | Mermaid | API call flow, processing order |
+| Screen transition diagram | Mermaid (stateDiagram) | Navigation between pages |
+| UI mock | HTML | Screen mock in static HTML+CSS |
+| API specification | Markdown | Endpoints, request/response examples |
 
-## 配置
+## Location
 
-作る場合のみ `docs/apd/preview-{feature}/` を追加する:
+Only when creating previews, add `docs/apd/preview-{feature}/`:
 
 ```
 docs/apd/preview-{feature}/
@@ -32,8 +32,8 @@ docs/apd/preview-{feature}/
 └── api-spec.md
 ```
 
-プレビューが 1 つだけなら `docs/apd/preview-{feature}.md` 単一ファイルでよい。
+If there is only one preview, a single file `docs/apd/preview-{feature}.md` is fine.
 
-## 完成後の実機確認でのレビュー
+## Review at the post-completion hands-on check
 
-人間は PR 本文の「試し方」と合わせて、必要に応じてプレビューを目視する。プレビューが期待と大きく外れていれば次サイクルで Spec を編集して方向修正する。
+Along with the "How to try it" in the PR body, the human visually checks the previews as needed. If a preview is far off from expectations, edit the Spec in the next cycle to correct the direction.

@@ -1,87 +1,87 @@
-# APD ドキュメント管理
+# APD Document Management
 
-## 生きたドキュメント + git が正史
+## Living documents + git as the authoritative history
 
-- ドキュメントは **作ったら同じ場所で編集し続ける**。差分を別ファイル（Amendment / Patch）で積まない
-- 「過去どうだったか」は **git log / git blame** が正史
-- AI の作業記録: Git コミットログ + PR 履歴
-- 人間の判断記録: `decisions.md`（単一の追記ログ）
+- Once a document is created, **keep editing it in the same place**. Do not pile up diffs in separate files (Amendment / Patch)
+- For "what it used to be", **git log / git blame** is the authoritative history
+- AI work record: Git commit log + PR history
+- Human decision record: `decisions.md` (a single append-only log)
 
-ファイルを移動・追加し続けると移動漏れや不整合が出る。**移動を前提にしない**設計にする。
+Constantly moving and adding files leads to missed moves and inconsistencies. Design so that **moving files is not assumed**.
 
-## ドキュメントツリー（3 ファイル種別）
+## Document tree (3 file types)
 
 ```
 docs/apd/
-├── design.md            ← 北極星（編集し続ける、滅多に変わらない）
-├── decisions.md         ← 判断の追記ログ（単一ファイル）
-└── spec-{feature}.md    ← 機能ごと 1 枚（編集し続ける）
+├── design.md            ← north star (keep editing; rarely changes)
+├── decisions.md         ← append-only decision log (single file)
+└── spec-{feature}.md    ← one per feature (keep editing)
 ```
 
-- サブディレクトリは作らない
-- ファイルが増えるのは **新機能を作るとき** だけ（本質的な増加なので許容）
-- 機能が削除されたら、その機能の Spec も削除する（これが唯一の「削除」）
-- 成果物プレビューを作る場合のみ `docs/apd/preview-{feature}/` を追加（任意。`05-deliverable-preview.md` 参照）
-- コンテキスト間のデータフローが複雑な場合のみ `docs/apd/cross-context-scenarios.md` を追加（任意。`spec-*.md` とは別名にし、ビルド対象の Spec と混同させない）
+- Do not create subdirectories
+- Files are added **only when building a new feature** (an essential increase, so acceptable)
+- When a feature is removed, remove that feature's Spec too (this is the only "deletion")
+- Add `docs/apd/preview-{feature}/` only when creating deliverable previews (optional; see `05-deliverable-preview.md`)
+- Add `docs/apd/cross-context-scenarios.md` only when data flow between contexts is complex (optional; name it differently from `spec-*.md` so it is not confused with Specs that are build targets)
 
-### 命名の指針
+### Naming guidelines
 
-- `spec-{feature}.md` の `{feature}` は GitHub issue 番号があれば issue 番号、なければ短い slug
-- Spec ID は frontmatter で別途定義する（`spec_id: "AUTH-042"` 等）
+- `{feature}` in `spec-{feature}.md` is the GitHub issue number if there is one, otherwise a short slug
+- The Spec ID is defined separately in the frontmatter (`spec_id: "AUTH-042"` etc.)
 
-## 人間の確認面 = GitHub
+## Human review surface = GitHub
 
-`docs/apd/` の spec 群は **AI の作業材料**。人間が日常的にスキャンする想定ではない。人間が見るのは:
+The specs in `docs/apd/` are **working material for the AI**. The human is not expected to scan them day to day. What the human looks at:
 
-| 知りたいこと | 見る場所 |
+| What they want to know | Where to look |
 |------------|---------|
-| 進行中・backlog | `gh issue list`（自動更新、同期不要） |
-| 個別の変更を受け入れたい | その PR の「試し方」セクション（完成後の実機確認） |
-| プロダクト全体像 | `docs/apd/design.md` |
+| In progress / backlog | `gh issue list` (updated automatically, no sync needed) |
+| Accept an individual change | The "How to try it" section of that PR (post-completion hands-on check) |
+| Overall product picture | `docs/apd/design.md` |
 
-`docs/apd/` 内に「人間用ダッシュボード（INDEX 等）」は置かない。同期対象が増えて移動漏れと同類のリスクになるため。GitHub（issue + PR）を人間のダッシュボードとして使う。
+Do not place a "human dashboard (INDEX etc.)" in `docs/apd/`. It adds things to keep in sync, a risk of the same kind as missed moves. Use GitHub (issues + PRs) as the human dashboard.
 
-## Spec フォーマット
+## Spec format
 
-Markdown 形式（YAML frontmatter付き）。Spec は編集し続ける生きたドキュメントなので、`version` を上げて変更を反映する。
+Markdown with YAML frontmatter. A Spec is a living document that keeps being edited, so bump `version` to reflect changes.
 
 ````markdown
 ---
 spec_id: "{CONTEXT_ID}-{NNN}"
-context: "{コンテキスト名}"
+context: "{context name}"
 version: 1
-issue_ref: "{GitHub issue 番号、なければ null}"
+issue_ref: "{GitHub issue number, or null if none}"
 title: ""
 decision_refs: []
 ---
 
 ## User Story
 
-**As a** {誰が}
-**I want** {何を}
-**So that** {なぜ}
+**As a** {who}
+**I want** {what}
+**So that** {why}
 
 ## Acceptance Criteria
 
 ### AC-001
-- **Given**: {前提条件}
-- **When**: {トリガーとなる操作}
-- **Then**: {期待される結果}
+- **Given**: {precondition}
+- **When**: {triggering action}
+- **Then**: {expected result}
 
 ## UI Description
 
-{モック or UI 記述（該当する場合）}
+{mock or UI description (if applicable)}
 
 ## Context Boundary
 
 ### Inputs
-- **From**: {入力元} — {データの説明}
+- **From**: {source} — {description of the data}
 
 ### Outputs
-- **To**: {出力先} — {データの説明}
+- **To**: {destination} — {description of the data}
 
 ### Dependencies
-- **{依存するコンテキスト}**: {依存理由}
+- **{context depended on}**: {reason for the dependency}
 
 ## Test Strategy
 
@@ -89,45 +89,45 @@ decision_refs: []
 
 | AC ID | Test Type | Description |
 |-------|-----------|-------------|
-| AC-001 | unit / integration / e2e | {テスト内容} |
+| AC-001 | unit / integration / e2e | {what is tested} |
 
 ## Deliverable Previews
 
-{生成すべきプレビューの種別と説明（任意。該当する場合のみ）}
+{types and descriptions of previews to generate (optional; only if applicable)}
 
 ## Notes
 
-{追加の考慮事項、制約、前提など}
+{additional considerations, constraints, assumptions, etc.}
 ````
 
-### Spec の更新
+### Updating a Spec
 
-バグ修正・仕様変更は **既存 Spec を直接編集** する:
+For bug fixes and spec changes, **edit the existing Spec directly**:
 
-1. 該当 AC を修正 or 追加する
-2. frontmatter の `version` を上げる
-3. 変更理由は git のコミットメッセージに書く（別ファイルに差分を残さない）
+1. Fix or add the relevant AC
+2. Bump `version` in the frontmatter
+3. Write the reason for the change in the git commit message (do not leave diffs in a separate file)
 
-## decisions.md フォーマット
+## decisions.md format
 
-技術選定・設計判断は単一の `docs/apd/decisions.md` に追記する。新しい判断ほど上に積む。フォーマットの正本は `templates/decision.md`。
+Append technical choices and design decisions to the single `docs/apd/decisions.md`. Newer decisions go on top. The canonical format is `templates/decision.md`.
 
 ````markdown
 # Decisions
 
-## D-002: {判断のタイトル}
+## D-002: {decision title}
 - **Date**: YYYY-MM-DD
-- **Context**: {なぜこの判断が必要だったか}
+- **Context**: {why this decision was needed}
 - **Options**:
-  - A: {選択肢A（AIが提案）}
-  - B: {選択肢B（AIが提案）}
-- **AI Recommendation**: {AIが推奨するOption}: {推奨理由の概要}
-- **Decision**: {何を選んだか — ユーザーが記入}
-- **Reason**: {理由・トレードオフ}
-- **Refs**: {関連 spec / issue}
+  - A: {option A (proposed by AI)}
+  - B: {option B (proposed by AI)}
+- **AI Recommendation**: {option the AI recommends}: {summary of the reason}
+- **Decision**: {what was chosen — filled in by the user}
+- **Reason**: {reason / trade-offs}
+- **Refs**: {related spec / issue}
 
-## D-001: {判断のタイトル}
+## D-001: {decision title}
 - ...
 ````
 
-Spec から特定の判断を参照したい場合は `decisions.md#d-001` のようにアンカーで引く。
+To reference a specific decision from a Spec, use an anchor such as `decisions.md#d-001`.

@@ -20,6 +20,7 @@ argument-hint: "<spec-file or issue#>"
 - Build with `/goal` only when the user wants a long unattended run. Steps: [goal.md](goal.md)
 - Do not escalate to the user during implementation. For decisions not in the Spec, follow what the Spec has already settled in advance, or defer them to the hands-on check after completion
 - When every item of the completion condition (including the Spec check) is met and the PR is open, report Build as complete
+- Write the PR description (including "How to try it") and any issues in the user's language (`rules/apd/00-principles.md` › Language)
 
 ## 1. Identify the target Spec
 

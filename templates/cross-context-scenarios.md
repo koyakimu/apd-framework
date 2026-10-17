@@ -1,36 +1,36 @@
-<!-- コンテキスト間シナリオテンプレート -->
-<!-- 複数コンテキストにまたがるデータフロー・連携シナリオを定義 -->
+<!-- Cross-context scenario template -->
+<!-- Defines data flows and integration scenarios that span multiple contexts -->
 
 ---
 version: 1
 ---
 
-## Scenario XC-001: {シナリオタイトル}
+## Scenario XC-001: {scenario title}
 
-**Description**: {シナリオの概要}
+**Description**: {scenario summary}
 
-**Contexts**: {コンテキスト1}, {コンテキスト2}
+**Contexts**: {context 1}, {context 2}
 
 ### Flow
 
 #### Step 1
-- **Context**: {コンテキスト名}
-- **Action**: {アクション}
+- **Context**: {context name}
+- **Action**: {action}
 - **Data Out**:
-  - To: {送信先コンテキスト}
-  - Payload: {データの説明}
+  - To: {destination context}
+  - Payload: {description of the data}
 
 #### Step 2
-- **Context**: {コンテキスト名}
-- **Action**: {アクション}
+- **Context**: {context name}
+- **Action**: {action}
 - **Data In**:
-  - From: {受信元コンテキスト}
-  - Payload: {データの説明}
+  - From: {source context}
+  - Payload: {description of the data}
 
 ### Related Specs
 - {SPEC_ID_1}
 - {SPEC_ID_2}
 
 ### Verification Points
-- {検証項目1}
-- {検証項目2}
+- {verification item 1}
+- {verification item 2}

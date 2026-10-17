@@ -25,6 +25,7 @@ The AI drafts the Spec; the human reviews only the summary and the items flagged
 - Do not mark the Spec review complete until every decision in `decisions.md` has the user's Decision and Reason filled in
 - Do not put anything listed in the Design's What Not into the Spec
 - Edit existing Specs directly and bump `version`. Do not pile up diffs in separate files
+- Converse and write documents in the user's language; translate template headings and placeholders, keep structure, IDs and frontmatter (`rules/apd/00-principles.md` › Language)
 
 ## Preparation
 

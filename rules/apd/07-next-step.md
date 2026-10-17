@@ -1,27 +1,27 @@
-# 次の一手の案内
+# Guiding the Next Step
 
-APD のフローと現在地を踏まえ、ユーザーに「次に何をすればいいか」を**的確に・控えめに**案内する。案内役は会話の文脈を持つメインの AI（あなた）が担う。フックやスクリプトはファイルしか見えず文脈を理解できないため、案内ロジックはここ（ルール）に置く。
+Based on the APD flow and the current position, guide the user on "what to do next" **accurately and unobtrusively**. The guide role is taken by the main AI (you), which holds the conversation's context. Hooks and scripts can only see files and cannot understand context, so the guidance logic lives here (in the rules).
 
-## フロー（現在地の地図）
+## Flow (map of the current position)
 
 ```
-/apd:init   → APD 初期化（.claude/rules/apd/ と docs/apd/）
-/apd:design → docs/apd/design.md（プロダクトの軸）
-/apd:spec   → docs/apd/spec-*.md（受け入れ条件 AC）＋承認
-/apd:plan   → Spec を作らない変更の設計（会話に提示）＋承認
-/apd:go     → 承認済み Spec の Build（既定はその場で実装。長時間の無人実行は /goal）
-完成後の実機確認 → 人が触って判断。違えば Spec を直して次サイクル
+/apd:init   → initialize APD (.claude/rules/apd/ and docs/apd/)
+/apd:design → docs/apd/design.md (the product's axis)
+/apd:spec   → docs/apd/spec-*.md (acceptance criteria AC) + approval
+/apd:plan   → design for changes that do not get a Spec (presented in the conversation) + approval
+/apd:go     → Build of an approved Spec (default: implement right there; /goal for long unattended runs)
+Post-completion hands-on check → a person tries it and judges. If it is off, fix the Spec and run the next cycle
 ```
 
-現在地は `docs/apd/` の状態で判る:
-- `design.md` が無い → 次は `/apd:design`
-- `design.md` はあるが `spec-*.md` が無い → 次は `/apd:spec`
-- `spec-*.md` がある → 次は `/apd:go`（または該当 Spec の編集）
+The current position can be told from the state of `docs/apd/`:
+- No `design.md` → next is `/apd:design`
+- `design.md` exists but no `spec-*.md` → next is `/apd:spec`
+- `spec-*.md` exists → next is `/apd:go` (or editing the relevant Spec)
 
-## 案内の原則
+## Guidance principles
 
-- **節目だけ案内する。** 状態が切り替わった直後（Design ができた／Spec を承認した 等）や、ユーザーが迷っている・次を尋ねたときに一言添える。毎ターン繰り返さない。
-- **文脈を最優先。** ユーザーが APD と無関係の作業（保守・調査・雑談）をしているときは案内しない。「ファイル上の次は go」でも、会話の流れが別ならそれに従い黙る。
-- **押し付けない。** 案内は提案であって指示ではない。ユーザーが別の道を選んだらそれに従う。
-- **例外: 設計の無い実装依頼。** 何かを作る・変える依頼で、それを扱う Spec も承認済みの Plan も無いときは、案内で済ませず、区分（`02-cycle-flow.md`）に従って Spec か Plan の作成から始める。実装の依頼は「設計を飛ばす」選択ではない。ユーザーが「Spec 無しでいい」「設計なしで」と明示したとき、および区分が「設計なし」のときは除く。
-- **オンデマンドは `/apd:status`。** 「今どこ？／次なに？」と聞かれたら `/apd:status`（現在地＋次の一手＋根拠）で答える。
+- **Guide only at milestones.** Add a word right after the state changes (the Design is done / the Spec was approved, etc.), or when the user seems lost or asks what is next. Do not repeat it every turn.
+- **Context comes first.** Do not guide when the user is doing work unrelated to APD (maintenance, investigation, chat). Even if "go is next according to the files", if the conversation is going elsewhere, follow it and stay quiet.
+- **Don't push the next step on the user.** Guidance is a suggestion, not an instruction. If the user chooses a different path, follow it.
+- **Exception: implementation requests without a design.** When there is a request to build or change something and there is neither a Spec covering it nor an approved Plan, do not stop at guidance; start by creating a Spec or Plan according to the classification (`02-cycle-flow.md`). A request to implement is not a choice to "skip the design". Excluded: when the user explicitly says "no Spec needed" or "no design", and when the classification is "No design".
+- **On demand: `/apd:status`.** When asked "where are we? / what's next?", answer with `/apd:status` (current position + next step + rationale).

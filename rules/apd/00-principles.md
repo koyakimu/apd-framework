@@ -1,20 +1,26 @@
-# APD基本原則
+# APD Core Principles
 
-## 原則
+## Principles
 
-- **人間の時間とAIの時間を分離する。** Intent/Spec/Plan は人間の時間（対話的）、Build は AI の時間（自律実行）
-- **設計の承認より前にコードを書かない。** 何かを作る・変える依頼は、まず区分（Design / Spec / Plan / 設計なし）を決める（`02-cycle-flow.md`）
-- **AI フェーズの途中で人間の介入をゼロにする。** 人間は設計を承認したら手を離す。Build は承認を受けてその場で auto mode のまま完走する。長時間の無人実行には `/goal` を使ってよい（`01-phases.md`）
-- **ドキュメントは生きた 1 枚として編集し続ける。** 差分を別ファイルで積まない。履歴は git が正史として持つ
-- **人間の確認面は GitHub（PR + issue）。** `docs/apd/` は AI の作業材料であって、人間が日常的にスキャンする場所ではない
-- **判断に迷ったら自己判断せずリーダーエージェント（AI）に聞く。** 人間への問い合わせではない（Build 中は人間に問い合わせない）。聞きすぎるほうが暴走するより安全
-- **薄い規約レイヤに留める。** APD は Design / Spec / Plan / Decision の規約と最小限のスキルだけを提供する。ループ・並列化・タスク管理・GitHub 連携は Claude Code 本体の機能（`/goal`, subagent, agent teams, dynamic workflows, hooks, Task ツール）に委譲する
-- **APD はユーザーの CLAUDE.md を書き換えない。** APD の規約は `.claude/rules/apd/`（自動ロード）に置く。CLAUDE.md に「APD で開発」等の使用宣言・バージョンを書き込まない（腐る・二重管理になる）。CLAUDE.md はプロジェクト固有のことだけ
+- **Separate human time from AI time.** Intent/Spec/Plan are human time (interactive); Build is AI time (autonomous execution)
+- **Do not write code before the design is approved.** For any request to build or change something, first decide the classification (Design / Spec / Plan / No design) (`02-cycle-flow.md`)
+- **Zero human intervention during the AI phase.** Once the human approves the design, they step away. On approval, Build runs to completion right there in auto mode. `/goal` may be used for long unattended runs (`01-phases.md`)
+- **Keep editing each document as a single living document.** Do not pile up diffs in separate files. git holds the authoritative history
+- **The human review surface is GitHub (PR + issues).** `docs/apd/` is working material for the AI, not a place the human scans day to day
+- **When unsure, do not decide on your own; ask the leader agent (AI).** This is not a query to the human (do not query the human during Build). Asking too much is safer than running out of control
+- **Stay a thin convention layer.** APD provides only the Design / Spec / Plan / Decision conventions and a minimal set of skills. Loops, parallelization, task management and GitHub integration are delegated to Claude Code's built-in features (`/goal`, subagents, agent teams, dynamic workflows, hooks, the Task tool)
+- **APD does not rewrite the user's CLAUDE.md.** APD's conventions live in `.claude/rules/apd/` (auto-loaded). Do not write usage declarations such as "developed with APD" or version numbers into CLAUDE.md (they go stale and create double maintenance). CLAUDE.md holds only project-specific matters
 
-## 判断の優先順位（Build 中）
+## Language
 
-1. **CLAUDE.md に明記されている** → それに従う
-2. **CLAUDE.md に書かれていない** → リーダーエージェントに判断を仰ぐ
-3. **リーダーエージェントが判断できない** → Spec に先出しするか、完成後の実機確認で人間に確認し次サイクルで Spec を修正する
+- **Converse in the language the user is writing in.** If the user switches language, follow the latest one
+- **Write APD documents in that same language**: `docs/apd/` files (Design, Spec, decisions, todo), Plans, PR descriptions (including "How to try it") and issues. Translate the headings and placeholder text of the templates in `${CLAUDE_PLUGIN_ROOT}/templates/`, but keep their section structure, IDs (AC-001 etc.) and frontmatter keys and values as they are
+- The plugin's own rules, skills and templates are written in English. That is not a reason to answer or write in English
 
-頻出の判断は CLAUDE.md に昇格させて自律範囲を広げていく。
+## Decision priority (during Build)
+
+1. **Stated in CLAUDE.md** → follow it
+2. **Not stated in CLAUDE.md** → ask the leader agent for a decision
+3. **The leader agent cannot decide** → raise it in the Spec up front, or confirm with the human at the post-completion hands-on check and fix the Spec in the next cycle
+
+Promote frequent decisions into CLAUDE.md to widen the scope of autonomy.

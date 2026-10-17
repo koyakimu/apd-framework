@@ -23,6 +23,7 @@ Put the design for a change that does not warrant a Spec into the conversation, 
 - Do not write code until the Plan is approved
 - After approval, proceed through implementation, tests, and PR without stopping. Do not ask the user to type a command
 - Only if the Plan's assumptions break during implementation, stop, fix the Plan, and get approval again
+- Converse and write documents in the user's language; translate template headings and placeholders, keep structure, IDs and frontmatter (`rules/apd/00-principles.md` › Language)
 
 ## 1. Confirm the classification
 

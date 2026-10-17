@@ -19,6 +19,7 @@ Create the product's Design document (the north star) through a few rounds of di
 - Do not write code until the Design is approved
 - Once approved, proceed straight to the Spec following the `apd:spec` steps. Do not ask the user to type a command
 - Do not include the tech stack or implementation approach in the Design. If the user brings them up, tell them "I'll handle that as technology selection in the Spec"
+- Converse and write documents in the user's language; translate template headings and placeholders, keep structure, IDs and frontmatter (`rules/apd/00-principles.md` › Language)
 
 ## How to run the dialogue
 

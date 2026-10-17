@@ -1,24 +1,24 @@
-# APD サイクル型統一フロー
+# APD Unified Cycle Flow
 
-## サイクル型統一フロー
+## Unified cycle flow
 
-すべての変更を「サイクル」として統一する。何かを作る・変える依頼を受けたら、コードを書く前に区分を決めて 1 行で宣言する。ユーザーが区分を指定したらそれに従う。
+Treat every change uniformly as a "cycle". When you receive a request to build or change something, decide the classification before writing code and declare it in one line. If the user specifies a classification, follow it.
 
-| トリガー | 区分 | フロー |
+| Trigger | Classification | Flow |
 |---------|------|--------|
-| 新プロダクト / 大きな方向転換 | Design | Intent (Design) → Spec → 承認 → Build → 完成後の実機確認 |
-| 新機能追加 | Spec | Spec（既存 Design 参照、新規 spec ファイル）→ 承認 → Build → 完成後の実機確認 |
-| 仕様変更 / Spec 起因のバグ | Spec | 既存 Spec を編集（version を上げる）→ 承認 → Build → 完成後の実機確認 |
-| 振る舞いが変わらない、または Spec にするほどでない変更（リファクタ、内部の技術変更、開発基盤・infra・設定、スクリプト、複数ファイルの修正） | Plan | Plan を会話に提示 → 承認 → Build（技術判断は `decisions.md` に追記）→ 完成後の実機確認 |
-| typo、設定値の変更、数行の修正、原因と直し方が 1 つに決まるバグ修正 | 設計なし | Build |
+| New product / major change of direction | Design | Intent (Design) → Spec → approval → Build → post-completion hands-on check |
+| New feature | Spec | Spec (references existing Design, new spec file) → approval → Build → post-completion hands-on check |
+| Spec change / bug caused by the Spec | Spec | Edit the existing Spec (bump version) → approval → Build → post-completion hands-on check |
+| Changes that do not change behavior, or are not big enough for a Spec (refactoring, internal technical changes, dev foundation / infra / configuration, scripts, multi-file fixes) | Plan | Present the Plan in the conversation → approval → Build (append technical decisions to `decisions.md`) → post-completion hands-on check |
+| Typos, config value changes, few-line fixes, bug fixes where the cause and the fix are unambiguous | No design | Build |
 
-Design / Spec / Plan は、承認を得るまでコードを書かない。承認後の Build は止まらない。雑談・調査・質問への回答など、何も作らない依頼はサイクルにしない。
+For Design / Spec / Plan, do not write code until approval is given. After approval, Build does not stop midway. Requests that build nothing, such as chat, investigation or answering questions, are not cycles.
 
-GitHub issue がある環境では **1 issue = 1 サイクル** を基本とする。issue 番号と Spec / PR を相互リンクすることでサイクルの trail が自動で残る。issue がない環境では `docs/apd/` のファイルと git 履歴でサイクルを表現する。
+In environments with GitHub issues, the baseline is **1 issue = 1 cycle**. Cross-linking the issue number with the Spec / PR leaves a trail of the cycle automatically. In environments without issues, represent cycles with the files in `docs/apd/` and the git history.
 
-## バグのトリアージ
+## Bug triage
 
-バグ報告・テスト失敗が来たとき、AI がまず原因を判定する:
+When a bug report or test failure comes in, the AI first determines the cause:
 
-- **Spec 起因**（仕様漏れ・曖昧さ）→ 完成後の実機確認で気づき、次サイクルで Spec を修正して version を上げる
-- **Build 起因**（実装が Spec と合っていない）→ Build の Spec チェック（達成条件）でビルド AI が検出し、自律修正する
+- **Caused by the Spec** (missing or ambiguous specification) → noticed at the post-completion hands-on check; fix the Spec in the next cycle and bump the version
+- **Caused by Build** (implementation does not match the Spec) → the build AI detects it in Build's Spec check (completion condition) and fixes it autonomously

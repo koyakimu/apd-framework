@@ -58,7 +58,11 @@ This will:
 
 `docs/apd/` consists of **three living kinds of file**: `design.md` (the north star), `decisions.md` (decision log), and `spec-{feature}.md` (one per feature). Documents keep being edited, and git holds the history. The human review surface is GitHub (pull requests and issues).
 
-See `QUICKREF.md` for details and `APD-FRAMEWORK.md` for the design principles (both in Japanese). The skills, rules and templates themselves are written in Japanese; Claude reads them fine and replies in the language you use.
+See `QUICKREF.md` for details and `APD-FRAMEWORK.md` for the design principles.
+
+## Language
+
+The plugin's skills, rules and templates are written in English, but APD works in **your** language: Claude converses in the language you write in, and writes the Design, Specs, decisions, Plans, PR descriptions and issues in that language too, translating the template headings while keeping their structure.
 
 ## Evaluation scenarios
 

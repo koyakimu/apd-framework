@@ -1,74 +1,74 @@
-<!-- Design文書テンプレート: Amazon PR/FAQ ベースの構成 -->
+<!-- Design document template: structure based on Amazon PR/FAQ -->
 
 ---
-project_name: "{プロジェクト名}"
+project_name: "{project name}"
 version: 1
 ---
 
-# {プロジェクト名}
+# {project name}
 
-## Who: 誰のためのプロダクトか
+## Who: Who is the product for
 
-### {ペルソナ名}
+### {persona name}
 
-{ユーザーの属性・状況}
+{user attributes / situation}
 
 **Pain Points**:
-- {課題1}
-- {課題2}
+- {problem 1}
+- {problem 2}
 
-**Current Solutions**: {現在の代替手段}
+**Current Solutions**: {current alternatives}
 
-## Why: なぜ今これを作るのか
+## Why: Why build this now
 
-**Market Opportunity**: {市場機会の説明}
+**Market Opportunity**: {description of the market opportunity}
 
-**Timing**: {なぜ今なのか}
+**Timing**: {why now}
 
-**Existing Limitations**: {既存ソリューションの限界}
+**Existing Limitations**: {limitations of existing solutions}
 
-## What: 何ができるようになるか（ユーザー視点）
+## What: What becomes possible (from the user's perspective)
 
-**Value Proposition**: {一文で表す価値}
+**Value Proposition**: {value in one sentence}
 
 ### Key Features
 
-#### {機能名}
+#### {feature name}
 
-{ユーザー視点での説明（技術用語なし）}
+{description from the user's perspective (no technical terms)}
 
-#### {機能名}
+#### {feature name}
 
-{ユーザー視点での説明}
+{description from the user's perspective}
 
-## What Not: 何をやらないか（スコープ外）
+## What Not: What we will not do (out of scope)
 
-> 最低5項目。曖昧な境界を排除する。
+> At least 5 items. Eliminate ambiguous boundaries.
 
-1. **{やらないこと1}** — {なぜやらないか}
-2. **{やらないこと2}** — {なぜやらないか}
-3. **{やらないこと3}** — {なぜやらないか}
-4. **{やらないこと4}** — {なぜやらないか}
-5. **{やらないこと5}** — {なぜやらないか}
+1. **{thing we will not do 1}** — {why not}
+2. **{thing we will not do 2}** — {why not}
+3. **{thing we will not do 3}** — {why not}
+4. **{thing we will not do 4}** — {why not}
+5. **{thing we will not do 5}** — {why not}
 
 ## FAQ
 
-> 最低10問。ステークホルダー・ユーザー・エンジニア視点から。
+> At least 10 questions. From stakeholder, user and engineer perspectives.
 
 ### Stakeholder Questions
 
-**Q**: {質問}
-**A**: {回答}
+**Q**: {question}
+**A**: {answer}
 
 ### User Questions
 
-**Q**: {質問}
-**A**: {回答}
+**Q**: {question}
+**A**: {answer}
 
 ### Engineering Questions
 
-**Q**: {質問}
-**A**: {回答}
+**Q**: {question}
+**A**: {answer}
 
 ## Success Criteria
 
@@ -76,8 +76,8 @@ version: 1
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
-| {指標名} | {目標値} | {測定方法} |
+| {metric name} | {target value} | {measurement method} |
 
 ### Qualitative
 
-- **{定性的な成功基準}** — Validation: {検証方法}
+- **{qualitative success criterion}** — Validation: {validation method}
