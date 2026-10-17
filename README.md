@@ -1,86 +1,86 @@
 # APD Plugin — Autopilot Development Framework
 
-日本語 | [English](README.en.md)
+English | [日本語](README.ja.md)
 
-> **人間は意思決定だけ、AI が自律で完走する**
+> **Humans make the decisions. The AI builds autonomously to completion.**
 
-Autopilot Development（APD）は、AI エージェントが自律的にソフトウェアを開発し、人間は「意図を決める」と「完成後の実機確認」の2点のみで関わる開発フレームワークです。Claude Code プラグインとして提供されます。
+Autopilot Development (APD) is a development framework in which an AI agent builds software on its own, and the human is involved at only two points: **deciding the intent** and **checking the finished result on a real device**. It is distributed as a Claude Code plugin.
 
-## フロー
+## Flow
 
 ```
-意図・Spec ← 人間+AI（意図を固め、Spec を承認）
+Intent / Spec   ← Human + AI (settle the intent, approve the Spec)
    ↓
-Build      ← AI 自律完走（途中で止まらない）
+Build           ← AI runs autonomously to completion (no stopping midway)
    ↓
-実機確認   ← 人間が実機で触って受け入れ
+Device check    ← Human tries it on a real device and accepts it
 ```
 
-人間は **意図を決める**（Intent / Spec 承認）と **完成後の実機確認** の2点のみ担当する。Build 中の進行管理・並列化・タスク追跡・品質ゲートは Claude Code 本体の機能（`/goal`、subagent、dynamic workflows、hooks、および experimental で既定無効の agent teams）に委譲する。APD は薄い規約レイヤに留まる。Build は承認を受けてその場で auto mode のまま完走し、長時間の無人実行には `/goal` を使ってもよい。
+The human owns only two things: **deciding the intent** (Intent / Spec approval) and **the final hands-on check**. Progress tracking, parallelization, task tracking and quality gates during Build are delegated to Claude Code's own features (`/goal`, subagents, dynamic workflows, hooks, and agent teams, which are experimental and off by default). APD stays a thin layer of conventions. Once approved, Build runs to completion right there in auto mode; for long unattended runs you can also use `/goal`.
 
-コマンドを打たなくても回る。何かを作る・変える依頼をすると、AI が区分（Design / Spec / Plan / 設計なし）を判定して設計を提案し、「この方向で実装して」と承認すれば実装・テスト・PR まで進む。Spec を作るほどでない変更は Plan（会話に出す軽い設計）で扱い、`/apd:init` していないリポジトリでも使える。
+It works without typing commands. When you ask for something to be built or changed, the AI classifies the request (Design / Spec / Plan / no design needed) and proposes a design. Approve it with something like "go ahead and implement this" and it proceeds through implementation, tests and a pull request. Changes too small for a Spec are handled with a Plan (a lightweight design shown in the conversation), which also works in repositories where `/apd:init` has not been run.
 
-## インストール
+## Installation
 
 ```bash
-# マーケットプレース追加
+# Add the marketplace
 /plugin marketplace add koyakimu/apd-framework
 
-# プラグインインストール
+# Install the plugin
 /plugin install apd@apd-marketplace
 ```
 
-## プロジェクトへの初期化
+## Initializing a project
 
-プロジェクトディレクトリで:
+In your project directory:
 
 ```
 /apd:init
 ```
 
-これにより:
+This will:
 
-- `.claude/rules/apd/` にフレームワーク方針がコピーされる（Claude Code が自動ロード）
-- `docs/apd/` ディレクトリが作成される（フラット構造）
-- `gh` が使える環境では GitHub issue を一次 backlog として案内、使えない環境では `docs/apd/todo.md` をフォールバックとして作成
+- Copy the framework rules into `.claude/rules/apd/` (loaded automatically by Claude Code)
+- Create the `docs/apd/` directory (flat structure)
+- Where `gh` is available, point you to GitHub issues as the primary backlog; otherwise create `docs/apd/todo.md` as a fallback
 
-## スキル
+## Skills
 
-| コマンド | 役割 |
+| Command | Role |
 |---------|------|
-| `/apd:init`    | プロジェクト初期化 |
-| `/apd:design`  | Design 文書（北極星）の対話的作成 |
-| `/apd:spec`    | Spec ドラフト生成・更新（full / add / bugfix モード） |
-| `/apd:plan`    | Spec を作らない変更の軽い設計（会話に提示 → 承認 → Build） |
-| `/apd:go`      | 承認済み Spec の Build（既定はその場で実装。長時間の無人実行は `/goal` 用の達成条件を組み立て） |
-| `/apd:status`  | 現在地と次の一手を案内（ファイル状態＋会話文脈から判定） |
-| `/apd:migrate` | 既存プロジェクトを現行のドキュメント構造へ移行（[MIGRATION.md](MIGRATION.md) 参照） |
+| `/apd:init`    | Initialize the project |
+| `/apd:design`  | Create the Design document (the north star) through dialogue |
+| `/apd:spec`    | Generate or update Spec drafts (full / add / bugfix modes) |
+| `/apd:plan`    | Lightweight design for changes that don't need a Spec (shown in conversation → approve → Build) |
+| `/apd:go`      | Build an approved Spec (implements in place by default; for long unattended runs, assembles a completion condition for `/goal`) |
+| `/apd:status`  | Show where you are and the next step (judged from file state plus conversation context) |
+| `/apd:migrate` | Migrate an existing project to the current document structure (see [MIGRATION.md](MIGRATION.md)) |
 
-`docs/apd/` は **生きた 3 ファイル** で構成される: `design.md`（北極星）、`decisions.md`（判断ログ）、`spec-{feature}.md`（機能ごと）。ドキュメントは編集し続け、履歴は git が持つ。人間の確認面は GitHub（PR + issue）。
+`docs/apd/` consists of **three living kinds of file**: `design.md` (the north star), `decisions.md` (decision log), and `spec-{feature}.md` (one per feature). Documents keep being edited, and git holds the history. The human review surface is GitHub (pull requests and issues).
 
-詳細は `QUICKREF.md`、設計原理は `APD-FRAMEWORK.md` を参照。
+See `QUICKREF.md` for details and `APD-FRAMEWORK.md` for the design principles (both in Japanese). The skills, rules and templates themselves are written in Japanese; Claude reads them fine and replies in the language you use.
 
-## 評価シナリオ
+## Evaluation scenarios
 
-`evals/` に、設計の区分が期待どおりに働くかを確かめる 6 ケースがある。依頼に対して設計から始めるか（`new-feature` / `devtool-plan` / `test-infra-plan`）、承認後にその場で実装するか（`approved-build`）、typo や質問に割り込まないか（`typo` / `question`）を見る。各ケースは APD あり・なしの 2 arm で回り、差（Δ）が APD の効果になる。プラグインのルートで次を実行する（1 回で 36 run と採点が走る）:
+`evals/` contains six cases that check whether the design classification behaves as intended: whether a request starts from a design (`new-feature` / `devtool-plan` / `test-infra-plan`), whether it implements in place after approval (`approved-build`), and whether it stays out of the way for a typo or a question (`typo` / `question`). Each case runs in two arms, with and without APD, and the difference (Δ) is APD's effect. Run this at the plugin root (one run executes and grades 36 runs):
 
 ```bash
 claude plugin eval . --scaffold --allow-tools Write Edit --threshold 0.8 --max-cost-usd 10
 ```
 
-モデルを変えて試すときは `--model` を付ける。fixture を変えたら `evals/_fixture/fixture.sh` を直して `scripts/sync-eval-fixtures.sh` で各ケースにコピーする。
+Add `--model` to try a different model. If you change the fixture, edit `evals/_fixture/fixture.sh` and copy it to each case with `scripts/sync-eval-fixtures.sh`.
 
-## プラグイン構成
+## Plugin layout
 
-| パス | 内容 |
-|------|------|
-| `.claude-plugin/plugin.json` | プラグインマニフェスト |
-| `skills/` | スラッシュコマンド（`init`, `design`, `spec`, `plan`, `go`, `status`, `migrate`） |
-| `hooks/` | SessionStart フック（設計の区分を context に注入する。`cat` のみ） |
-| `evals/` | `claude plugin eval` の評価シナリオ |
-| `rules/apd/` | フレームワーク方針（`/apd:init` でプロジェクトにコピー） |
-| `templates/` | ドキュメントテンプレート |
+| Path | Contents |
+|------|----------|
+| `.claude-plugin/plugin.json` | Plugin manifest |
+| `skills/` | Slash commands (`init`, `design`, `spec`, `plan`, `go`, `status`, `migrate`) |
+| `hooks/` | SessionStart hook (injects the design classification into context; `cat` only) |
+| `evals/` | Evaluation scenarios for `claude plugin eval` |
+| `rules/apd/` | Framework rules (copied into the project by `/apd:init`) |
+| `templates/` | Document templates |
 
-## ライセンス
+## License
 
 MIT

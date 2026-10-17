@@ -4,13 +4,13 @@
     "name": "koyakimu"
   },
   "metadata": {
-    "description": "APD (Autopilot Development) Framework: autonomous AI development plugin for Claude Code / AI自律開発フレームワーク"
+    "description": "APD (Autopilot Development) Framework: an autonomous AI development plugin for Claude Code"
   },
   "plugins": [
     {
       "name": "apd",
       "source": "./",
-      "description": "APD (Autopilot Development) Framework: humans only make the decisions, and the AI builds autonomously to completion. / 人間は意思決定だけ、AIが自律で完走する",
+      "description": "APD (Autopilot Development) Framework: humans only make the decisions, and the AI builds autonomously to completion.",
       "version": "3.6.3",
       "author": {
         "name": "koyakimu"
