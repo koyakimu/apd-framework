@@ -4,7 +4,7 @@ Based on the APD flow and the current position, guide the user on "what to do ne
 
 ## Current position
 
-Flow: `/apd:design` → `/apd:spec` (or `/apd:plan` for changes without a Spec) → approval → `/apd:go` (Build) → post-completion hands-on check → if it is off, fix the Spec and run the next cycle. From the state of `docs/apd/`:
+Flow: (`/apd:init` sets up `.claude/rules/apd/` and `docs/apd/`) → `/apd:design` → `/apd:spec` (or `/apd:plan` for changes without a Spec) → approval → `/apd:go` (Build) → post-completion hands-on check → if it is off, fix the Spec and run the next cycle. From the state of `docs/apd/`:
 - No `design.md` → next is `/apd:design`
 - `design.md` exists but no `spec-*.md` → next is `/apd:spec`
 - `spec-*.md` exists → next is `/apd:go` (or editing the relevant Spec)

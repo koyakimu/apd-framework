@@ -50,7 +50,7 @@ Do not place a "human dashboard (INDEX etc.)" in `docs/apd/`. It adds things to 
 
 ## Spec format
 
-Markdown with YAML frontmatter; the canonical format is the plugin's `templates/spec.md` (used by `apd:spec`). Frontmatter: `spec_id`, `context`, `version`, `issue_ref`, `title`, `decision_refs`. Sections: User Story / Acceptance Criteria (AC-001… in Given/When/Then; measurable non-functional ones as AC-NFR-xxx) / UI Description / Context Boundary / Test Strategy (AC Coverage table) / Deliverable Previews / Delegated Non-Functional Requirements / Notes.
+Markdown with YAML frontmatter; the canonical format is `${CLAUDE_PLUGIN_ROOT}/templates/spec.md` (used by `apd:spec`). Frontmatter: `spec_id`, `context`, `version`, `issue_ref`, `title`, `decision_refs`. Sections: User Story / Acceptance Criteria (AC-001… in Given/When/Then; measurable non-functional ones as AC-NFR-xxx) / UI Description / Context Boundary / Test Strategy (AC Coverage table) / Deliverable Previews / Delegated Non-Functional Requirements / Notes.
 
 ### Updating a Spec
 
@@ -62,4 +62,4 @@ For bug fixes and spec changes, **edit the existing Spec directly**:
 
 ## decisions.md format
 
-Append technical choices and design decisions to the single `docs/apd/decisions.md`, newest on top, in the plugin's `templates/decision.md` format: `## D-{NNN}: {title}` with Date / Context / Options (proposed by the AI) / AI Recommendation / Decision and Reason (filled in by the user) / Refs. To reference a decision from a Spec, use an anchor such as `decisions.md#d-001`.
+Append technical choices and design decisions to the single `docs/apd/decisions.md` (starting with a `# Decisions` heading), newest on top, in the `${CLAUDE_PLUGIN_ROOT}/templates/decision.md` format: `## D-{NNN}: {title}` with Date / Context / Options (proposed by the AI) / AI Recommendation / Decision and Reason (filled in by the user) / Refs. To reference a decision from a Spec, use an anchor such as `decisions.md#d-001`.
