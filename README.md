@@ -84,6 +84,8 @@ Add `--model` to try a different model. If you change the fixture, edit `evals/_
 | `evals/` | Evaluation scenarios for `claude plugin eval` |
 | `rules/apd/` | Framework rules (copied into the project by `/apd:init`) |
 | `templates/` | Document templates |
+| `scripts/` | Maintenance scripts (version bump, migration check, eval fixture sync) |
+| `docs/` | Background notes for maintainers and the icon source; not loaded by the plugin |
 
 ## License
 

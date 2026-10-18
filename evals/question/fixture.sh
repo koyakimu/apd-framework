@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# 評価ケース共通の小さな TypeScript リポジトリを、空の workspace に作る。
-# 各ケースの fixture.sh はこのファイルのコピー（scaffold_script はケースのディレクトリに置く必要があるため）。
-# 変更したら scripts/sync-eval-fixtures.sh でコピーをそろえる。
+# Build the small TypeScript repository shared by the eval cases in an empty workspace.
+# Each case's fixture.sh is a copy of this file (scaffold_script must live in the case directory).
+# After editing, run scripts/sync-eval-fixtures.sh to update the copies.
+# The demo content and the case prompts are in Japanese on purpose: they also check that APD replies in the user's language.
 set -euo pipefail
 
 mkdir -p src

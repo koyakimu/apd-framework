@@ -1,8 +1,14 @@
-# APD Framework - 開発ルール
+# APD Framework — development rules
 
-## バージョン管理
+## Versioning
 
-- 機能追加・バグ修正をコミットする際は、必ずバージョンを更新する
-- バージョン更新は `scripts/bump-version.sh` で行う。引数は `major`・`minor`・`patch` のいずれか（`plugin.json` と `marketplace.json` を一括更新）
-- semver に従う: breaking change → major、機能追加 → minor、バグ修正 → patch
-- リリースタグ（`v{version}` 形式、例: `v3.3.1`）は main へのマージ後に CI が自動付与する。手動で打たない
+- Bump the version in every commit that adds a feature or fixes a bug
+- Bump it with `scripts/bump-version.sh`, passing `major`, `minor` or `patch` (it updates `plugin.json` and `marketplace.json` together)
+- Follow semver: breaking change → major, new feature → minor, bug fix → patch
+- Add a matching entry at the top of `CHANGELOG.md` (CI checks that it matches the version)
+- Release tags (`v{version}`, e.g. `v3.3.1`) are added by CI after merging to main. Do not tag by hand
+
+## Language
+
+- The plugin's skills, rules, templates and docs are written in English; the plugin itself works in the user's language (`rules/apd/00-principles.md` › Language)
+- Keep `README.ja.md` in step with `README.md`
