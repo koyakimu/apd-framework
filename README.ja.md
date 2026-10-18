@@ -87,4 +87,4 @@ claude plugin eval . --scaffold --allow-tools Write Edit --threshold 0.8 --max-c
 
 ## ライセンス
 
-MIT
+MIT。[プライバシーポリシー](PRIVACY.md)も参照。
