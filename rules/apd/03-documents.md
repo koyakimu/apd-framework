@@ -50,62 +50,7 @@ Do not place a "human dashboard (INDEX etc.)" in `docs/apd/`. It adds things to 
 
 ## Spec format
 
-Markdown with YAML frontmatter. A Spec is a living document that keeps being edited, so bump `version` to reflect changes.
-
-````markdown
----
-spec_id: "{CONTEXT_ID}-{NNN}"
-context: "{context name}"
-version: 1
-issue_ref: "{issue number or ID in the project's tracker, or null if none}"
-title: ""
-decision_refs: []
----
-
-## User Story
-
-**As a** {who}
-**I want** {what}
-**So that** {why}
-
-## Acceptance Criteria
-
-### AC-001
-- **Given**: {precondition}
-- **When**: {triggering action}
-- **Then**: {expected result}
-
-## UI Description
-
-{mock or UI description (if applicable)}
-
-## Context Boundary
-
-### Inputs
-- **From**: {source} — {description of the data}
-
-### Outputs
-- **To**: {destination} — {description of the data}
-
-### Dependencies
-- **{context depended on}**: {reason for the dependency}
-
-## Test Strategy
-
-### AC Coverage
-
-| AC ID | Test Type | Description |
-|-------|-----------|-------------|
-| AC-001 | unit / integration / e2e | {what is tested} |
-
-## Deliverable Previews
-
-{types and descriptions of previews to generate (optional; only if applicable)}
-
-## Notes
-
-{additional considerations, constraints, assumptions, etc.}
-````
+Markdown with YAML frontmatter; the canonical format is `${CLAUDE_PLUGIN_ROOT}/templates/spec.md` (used by `apd:spec`). Frontmatter: `spec_id`, `context`, `version`, `issue_ref`, `title`, `decision_refs`. Sections: User Story / Acceptance Criteria (AC-001… in Given/When/Then; measurable non-functional ones as AC-NFR-xxx) / UI Description / Context Boundary / Test Strategy (AC Coverage table) / Deliverable Previews / Delegated Non-Functional Requirements / Notes.
 
 ### Updating a Spec
 
@@ -117,24 +62,4 @@ For bug fixes and spec changes, **edit the existing Spec directly**:
 
 ## decisions.md format
 
-Append technical choices and design decisions to the single `docs/apd/decisions.md`. Newer decisions go on top. The canonical format is `templates/decision.md`.
-
-````markdown
-# Decisions
-
-## D-002: {decision title}
-- **Date**: YYYY-MM-DD
-- **Context**: {why this decision was needed}
-- **Options**:
-  - A: {option A (proposed by AI)}
-  - B: {option B (proposed by AI)}
-- **AI Recommendation**: {option the AI recommends}: {summary of the reason}
-- **Decision**: {what was chosen — filled in by the user}
-- **Reason**: {reason / trade-offs}
-- **Refs**: {related spec / issue}
-
-## D-001: {decision title}
-- ...
-````
-
-To reference a specific decision from a Spec, use an anchor such as `decisions.md#d-001`.
+Append technical choices and design decisions to the single `docs/apd/decisions.md` (starting with a `# Decisions` heading), newest on top, in the `${CLAUDE_PLUGIN_ROOT}/templates/decision.md` format: `## D-{NNN}: {title}` with Date / Context / Options (proposed by the AI) / AI Recommendation / Decision and Reason (filled in by the user) / Refs. To reference a decision from a Spec, use an anchor such as `decisions.md#d-001`.

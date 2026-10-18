@@ -1,5 +1,5 @@
 <!-- Spec template: YAML frontmatter + Markdown -->
-<!-- Follows the default Spec format in CLAUDE.md -->
+<!-- Canonical Spec format (referenced from rules/apd/03-documents.md) -->
 
 ---
 spec_id: "{CONTEXT_ID}-{NNN}"   # e.g. OM-001

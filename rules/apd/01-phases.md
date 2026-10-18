@@ -14,8 +14,7 @@ Plan ── AI drafts + human reviews (changes that do not get a Spec)
 
 Build ── AI autonomous (runs autonomously to completion; does not stop midway during implementation)
   Deliverable: implementation + all tests passing + PR (with how-to-try written)
-  → On approval, implement right there in auto mode. `/goal` may be used for long unattended runs. The Spec check for AC compliance is built into Build's completion condition, and the build AI verifies it itself
-  → Do not query the human during implementation. Raise decisions in the Spec up front, or defer them to the next cycle via the post-completion hands-on check
+  → On approval, implement right there in auto mode (`/goal` for long unattended runs). See "Build does not stop midway"
 
 Post-completion hands-on check ── human
   The human tries it on a real device following the PR's "How to try it" and makes the acceptance decision
@@ -27,11 +26,9 @@ Post-completion hands-on check ── human
 - **Spec / Plan**: review and approve the design
 - **Post-completion hands-on check**: confirm the working deliverable matches the intent
 
-The human does not intervene in the Build phase.
-
 ## Build convergence
 
-Build convergence is judged by the build AI itself, by checking the completion condition (the Spec's AC, tests passing, Handoff written in the PR). When building with `/goal`, the evaluator judges whether the same condition is met at the end of each turn. The following notes apply mainly when using `/goal`:
+Build convergence is judged by the build AI itself against the completion condition that `/apd:go` assembles (the Spec's AC, tests passing, Handoff written in the PR); it surfaces the results and fixes any gaps autonomously. When building with `/goal`, the evaluator judges whether the same condition is met at the end of each turn. The following notes apply mainly when using `/goal`:
 
 - **The evaluator does not call tools.** Claude must surface test run logs, the PR diff and the implementation into the conversation within the turn
 - **Turns with background work are skipped for evaluation.** If a turn ends while a subagent or background shell is still running, that turn is not evaluated; the judgement happens at the end of the next turn with no background work. In a parallelized Build, convergence may appear delayed, but this is not abnormal
@@ -45,8 +42,6 @@ Do not escalate during implementation. When a decision not covered by the Spec i
 **Build runs in auto mode (convention).** In manual mode, every unpermitted tool call requires human confirmation, so "Build does not stop midway" cannot hold. `/goal` also automates only turn continuation; permission for tool calls remains the job of the permission mode. Switch to auto mode with Shift+Tab, `--permission-mode auto` at startup, or `permissions.defaultMode` in user settings. It cannot be forced from project settings or plugins, so when `/apd:go` uses `/goal`, prompt the user to check right before pasting it.
 
 Even in auto mode, some stops remain: after the classifier blocks 3 times in a row or 20 times in total it falls back to normal prompts, operations matching `permissions.ask` always require confirmation, and the first read outside the working directory requires confirmation. Treat these as expected stops and do not try to work around them in the condition. In environments where auto mode is unavailable (disabled by organization settings, model requirements not met), the human stays alongside on the assumption that Build will stop at permission prompts.
-
-The gatekeeper of Build is the Spec check that `/apd:go` builds into the completion condition (and its evaluator when using `/goal`). The build AI surfaces the results of checking AC compliance, tests passing and Handoff written, and fixes any gaps autonomously.
 
 ## Parallel execution
 

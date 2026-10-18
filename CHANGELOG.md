@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.8.4] - 2026-10-18
+
+### Changed — Remove duplication from the always-loaded rules (352 → 253 lines)
+
+- **`rules/apd/03-documents.md`: the Spec and decisions.md formats now point to `templates/spec.md` / `templates/decision.md`** instead of repeating them. The copy in the rules had already drifted (it lacked the Delegated Non-Functional Requirements section). `apd:spec` now names `templates/spec.md` as its format
+- **`rules/apd/01-phases.md`**: the "no intervention during Build" and "Spec check as gatekeeper" statements, each said twice, are said once
+- **`rules/apd/07-next-step.md`**: the command map, which repeated `/apd:status` and the README, is one line
+- **`rules/apd/05-deliverable-preview.md`**: the directory tree is one sentence
+- No rule was dropped. This redoes the deduplication part of #42 on the English rules; its size target ("under 200 lines") is a per-file guideline that every rule file already meets
+
 ## [3.8.3] - 2026-10-18
 
 ### Added — Listing links for the official plugin directory
