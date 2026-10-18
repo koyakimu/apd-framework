@@ -10,7 +10,7 @@
 
 ### Changed — Prepare for the official plugin directory
 
-- **Added a listing icon** at `.claude-plugin/icon.png` (1024×1024 PNG): three forward chevrons, the first in amber for the human's decision and the rest for the AI running on its own
+- **Added a listing icon** at `.claude-plugin/icon.png` (1024×1024 PNG, source `docs/assets/icon.svg`): an abstracted jet climbing on its own, with its contrails forming the letter A. Flat, two colours
 - **Added `displayName`** ("APD — Autopilot Development") to `plugin.json`, so the listing is not shown under the bare name `apd`. `name` stays `apd`, so installs and `/apd:*` commands are unchanged
 - **Moved this repository's development rules from `CLAUDE.md` to `.claude/CLAUDE.md`**: a `CLAUDE.md` at the plugin root is not loaded for plugin users and triggered a validation warning. Claude Code still loads it when working on this repository
 
