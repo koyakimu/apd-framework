@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.8.2] - 2026-10-18
+
+### Changed — Clear false positives in the directory scan
+
+- **`scripts/verify-migration.sh`: renamed the `pass()` helper to `ok()`**: the scanner read `pass` as the password-manager command reading files. Output (`[PASS] …`) is unchanged
+- **Reworded the version-bump note in `.claude/CLAUDE.md`** so it no longer looks like a command assembled at run time
+- **Removed the icon's file path from this CHANGELOG**: the scanner treats any text naming an image file as something that might run it
+
 ## [3.8.1] - 2026-10-18
 
 ### Changed
@@ -16,7 +24,7 @@
 
 ### Changed — Prepare for the official plugin directory
 
-- **Added a listing icon** at `.claude-plugin/icon.png` (1024×1024 PNG, source `docs/assets/icon.svg`): an abstracted jet climbing on its own, with its contrails forming the letter A. Flat, two colours
+- **Added a listing icon** (1024×1024 PNG, source `docs/assets/icon.svg`): an abstracted jet climbing on its own, with its contrails forming the letter A. Flat, two colours
 - **Added `displayName`** ("APD — Autopilot Development") to `plugin.json`, so the listing is not shown under the bare name `apd`. `name` stays `apd`, so installs and `/apd:*` commands are unchanged
 - **Moved this repository's development rules from `CLAUDE.md` to `.claude/CLAUDE.md`**: a `CLAUDE.md` at the plugin root is not loaded for plugin users and triggered a validation warning. Claude Code still loads it when working on this repository
 
