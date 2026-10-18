@@ -41,7 +41,7 @@ Reasons:
 | Spec check | Stop hook (3.0–3.1) | **Build's completion condition** (the build AI checks the AC) |
 | Next-command guidance | State-suggestion hook (3.1) | Always-loaded rule `07-next-step.md` + `/apd:status` |
 | Handoff | Cycle definition file | "## How to try it" section of the PR body |
-| Backlog | `docs/apd/todo.md` | GitHub issue (gh environment) / `todo.md` (fallback) |
+| Backlog | `docs/apd/todo.md` | The project's issue tracker (e.g. GitHub issues) / `todo.md` (if there is none) |
 | Where the human checks | Scan docs/apd/ | **GitHub (PR + issue)**. docs/apd/ is the AI's workspace |
 | Terminology | "Amendment" / "Acceptance" / "Human Checkpoint" | (abolished) / **hands-on check after completion** |
 | CLAUDE.md | Generic APD rules copied verbatim, promotional line | **Project-specific only**. Generic rules live in `.claude/rules/apd/` |

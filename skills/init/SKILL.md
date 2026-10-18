@@ -21,7 +21,7 @@ Check the following:
 
 - Whether `.claude/rules/apd/` already exists
 - Whether `docs/apd/` already exists
-- Whether `gh auth status` succeeds (to decide whether to use GitHub issues as the primary backlog)
+- Which issue tracker the project uses as its backlog, following `rules/apd/03-documents.md` › Backlog (CLAUDE.md → what the user says → GitHub issues if `origin` is on GitHub and `gh` is installed → none). Do not read credentials or check sign-in status to decide
 
 If APD is already initialized, ask the user "Update the rule files to the latest version?"
 
@@ -44,15 +44,15 @@ mkdir -p docs/apd
 
 ### 4. Initialize the backlog
 
-Create `docs/apd/todo.md` only in environments where `gh auth status` fails (where it succeeds, GitHub issues are the backlog):
+Create `docs/apd/todo.md` only if the project has no issue tracker (from step 1):
 
 ```bash
-if ! gh auth status >/dev/null 2>&1; then
-  if [ ! -f docs/apd/todo.md ]; then
-    cp "${CLAUDE_PLUGIN_ROOT}/templates/todo.md" docs/apd/todo.md
-  fi
+if [ ! -f docs/apd/todo.md ]; then
+  cp "${CLAUDE_PLUGIN_ROOT}/templates/todo.md" docs/apd/todo.md
 fi
 ```
+
+If the user names a tracker that CLAUDE.md does not mention (GitLab, Linear, Jira, etc.), use it and suggest recording it in CLAUDE.md as a project-specific setting.
 
 If you created `docs/apd/todo.md` and the user is writing in a language other than English, write its text in that language (keep the section names and frontmatter keys). Write the completion message below in the user's language as well.
 
@@ -68,14 +68,14 @@ Copied:
 
 Created:
   - docs/apd/           — location for APD documents (flat structure)
-  {if gh is unavailable: }
-  - docs/apd/todo.md    — ToDo backlog (fallback. GitHub issues are used when gh is available)
+  {if there is no issue tracker: }
+  - docs/apd/todo.md    — ToDo backlog
 
 Backlog operation:
-  {if gh is detected: }
-  - Use GitHub issues as the primary backlog
-  - Classify issues with labels such as apd:todo / apd:scope-out when filing
-  {if gh is absent: }
+  {if there is an issue tracker: }
+  - Use {tracker name, e.g. GitHub issues} as the backlog
+  - Classify items with labels such as apd:todo / apd:scope-out where supported
+  {if there is none: }
   - Append to docs/apd/todo.md (append-only)
 
 ```

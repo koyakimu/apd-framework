@@ -42,7 +42,7 @@ Build      ← AI 自律完走（途中で止まらない）
 
 - `.claude/rules/apd/` にフレームワーク方針がコピーされる（Claude Code が自動ロード）
 - `docs/apd/` ディレクトリが作成される（フラット構造）
-- `gh` が使える環境では GitHub issue を一次 backlog として案内、使えない環境では `docs/apd/todo.md` をフォールバックとして作成
+- プロジェクトの issue トラッカーを backlog にする（GitHub issues は自動で判定。GitLab・Linear・Jira など他を使う場合は Claude に伝える）。無ければ `docs/apd/todo.md` を作成
 
 ## スキル
 
@@ -56,7 +56,7 @@ Build      ← AI 自律完走（途中で止まらない）
 | `/apd:status`  | 現在地と次の一手を案内（ファイル状態＋会話文脈から判定） |
 | `/apd:migrate` | 既存プロジェクトを現行のドキュメント構造へ移行（[MIGRATION.md](MIGRATION.md) 参照） |
 
-`docs/apd/` は **生きた 3 ファイル** で構成される: `design.md`（北極星）、`decisions.md`（判断ログ）、`spec-{feature}.md`（機能ごと）。ドキュメントは編集し続け、履歴は git が持つ。人間の確認面は GitHub（PR + issue）。
+`docs/apd/` は **生きた 3 ファイル** で構成される: `design.md`（北極星）、`decisions.md`（判断ログ）、`spec-{feature}.md`（機能ごと）。ドキュメントは編集し続け、履歴は git が持つ。人間の確認面は PR と issue。
 
 詳細は `QUICKREF.md`、設計原理は `APD-FRAMEWORK.md` を参照。
 

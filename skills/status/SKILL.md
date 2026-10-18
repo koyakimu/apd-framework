@@ -17,7 +17,7 @@ Determine and report the current position in the APD flow and the next step, fro
 
 - Whether `docs/apd/design.md` exists
 - Whether `docs/apd/spec-*.md` exist, and the list (if any, look at each Spec's `status` / `version`)
-- Open PRs / issues (in environments where `gh pr list` / `gh issue list` are available)
+- Open PRs / issues (where available, e.g. `gh pr list` / `gh issue list`, or the project's tracker)
 - The content of the recent conversation (whether this is new development with APD, or other work such as maintenance or investigation)
 
 ### 2. Determine the current position

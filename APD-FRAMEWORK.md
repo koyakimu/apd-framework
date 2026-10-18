@@ -41,7 +41,7 @@ APD provides only **the Design / Spec / Plan / Decision conventions and a minima
 | Accumulated knowledge | auto memory |
 | File change tracking / rewind | checkpointing |
 | GitHub integration | `gh` CLI (local-centred, sufficient). If team operation or asynchronous triggers are needed, optionally add GitHub Actions / routines |
-| backlog | GitHub issue (primary, if available) / `docs/apd/todo.md` (fallback) |
+| backlog | The project's issue tracker (e.g. GitHub issues) / `docs/apd/todo.md` (if there is none) |
 
 ---
 
@@ -169,9 +169,9 @@ When Build is complete, write it in the "## How to try it" section of the PR bod
 
 ### Backlog
 
-In environments where `gh auth status` succeeds, use **GitHub issues as the primary backlog**. One issue = one cycle is the norm. Cross-linking the issue number with the Spec / PR automatically leaves a trail of the cycle. **Everything is done with the local `gh` CLI** (creating, viewing and commenting on issues, linking them to PRs). There is no need to set up GitHub Actions.
+If the project has an issue tracker, use it as **the backlog**: whatever CLAUDE.md or the user names (GitLab, Linear, Jira, etc.), otherwise GitHub issues when `origin` is on GitHub and `gh` is installed. Credentials are not read to decide. One issue = one cycle is the norm. Cross-linking the issue number with the Spec / PR automatically leaves a trail of the cycle. **Everything is done with the local `gh` CLI** (creating, viewing and commenting on issues, linking them to PRs). There is no need to set up GitHub Actions.
 
-In environments where `gh` is not available, use `docs/apd/todo.md` as the fallback (append-only).
+Without an issue tracker, use `docs/apd/todo.md` (append-only).
 
 ### GitHub Actions / routines are optional
 
@@ -217,7 +217,7 @@ When a bug report or test failure comes in, the AI first determines the cause:
 
 ### Branches
 
-- With a GitHub issue: `feat/{issue#}-{slug}` / `fix/{issue#}-{slug}` / `chore/{slug}`
+- With an issue: `feat/{issue#}-{slug}` / `fix/{issue#}-{slug}` / `chore/{slug}`
 - Without an issue: `{type}/{slug}`
 
 Create from `main` and merge via PR when the cycle is complete.

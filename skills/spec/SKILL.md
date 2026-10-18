@@ -29,7 +29,7 @@ The AI drafts the Spec; the human reviews only the summary and the items flagged
 
 ## Preparation
 
-Read: `docs/apd/design.md`, existing `docs/apd/spec-*.md` and `docs/apd/decisions.md` (if any), and the target GitHub issue (if any, `gh issue view {number}`).
+Read: `docs/apd/design.md`, existing `docs/apd/spec-*.md` and `docs/apd/decisions.md` (if any), and the target issue in the project's tracker (if any, e.g. `gh issue view {number}`).
 
 ## Mode selection
 
@@ -51,7 +51,7 @@ Review every feature listed in the **What** section of the Design document, and 
 
 1. List all features and propose classifying them as **in scope this time** and **out of scope (implemented in a later cycle)**
 2. Ask for the user's decision and finalize the scope
-3. **Record out-of-scope features in the backlog**. Where GitHub issues are available, file them with `gh issue create` and add the `apd:scope-out` label. Otherwise, append them to `docs/apd/todo.md`
+3. **Record out-of-scope features in the backlog**. If the project has an issue tracker (`rules/apd/03-documents.md` › Backlog), file them there with the `apd:scope-out` label (e.g. `gh issue create`). Otherwise, append them to `docs/apd/todo.md`
 4. Generate Specs only for the features in the finalized scope
 
 ### Generation rules
@@ -59,7 +59,7 @@ Review every feature listed in the **What** section of the Design document, and 
 1. Create a Spec for each in-scope feature (one file per feature)
 2. Each Spec includes:
    - `spec_id`: context abbreviation + sequence number (e.g. AUTH-001)
-   - `issue_ref`: related GitHub issue number (if any)
+   - `issue_ref`: related issue number or ID in the project's tracker (if any)
    - `version: 1`
    - User story (who, what, why)
    - Acceptance criteria (Given/When/Then format)

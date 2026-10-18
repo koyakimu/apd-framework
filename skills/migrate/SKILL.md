@@ -21,7 +21,7 @@ Bring an existing APD project's `docs/apd/`, CLAUDE.md, and `.claude/rules/apd/`
 - Patch files are abolished → fold them into the parent Spec
 - Decisions are no longer per-file; consolidate them into a single `decisions.md`
 - Preview is optional
-- The human review surface is GitHub (PR + issue)
+- The human review surface is the PRs and issues (e.g. on GitHub)
 - Terms, commands, and hooks are unified to the current (3.x) ones: **post-completion hands-on check** / `/apd:go` / the plugin has no Stop hook (since 3.6.0 it has a SessionStart hook, used only to inject the design classification)
 - **CLAUDE.md holds "only project-specific things"**. The single source of truth for generic APD rules is `.claude/rules/apd/` (auto-loaded)
 

@@ -52,7 +52,7 @@ Revise based on the user's feedback. Converge within a few rounds.
 
 ## Recording ToDos
 
-If the dialogue produces "ideas outside this Design's scope that should be considered in the future", record them. Where GitHub issues are available, file them with `gh issue create`. Where they are not, append them to `docs/apd/todo.md`. Do not include them in the Design document itself.
+If the dialogue produces "ideas outside this Design's scope that should be considered in the future", record them. If the project has an issue tracker (`rules/apd/03-documents.md` › Backlog), file them there (e.g. `gh issue create`). If it does not, append them to `docs/apd/todo.md`. Do not include them in the Design document itself.
 
 ## Constraints
 
