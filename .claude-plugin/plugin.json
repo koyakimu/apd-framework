@@ -1,7 +1,7 @@
 {
   "name": "apd",
   "displayName": "APD — Autopilot Development",
-  "version": "3.8.2",
+  "version": "3.8.3",
   "description": "APD (Autopilot Development) Framework: humans only make the decisions, and the AI builds autonomously to completion.",
   "author": {
     "name": "koyakimu",
@@ -19,5 +19,9 @@
     "workflow",
     "claude-code"
   ],
-  "homepage": "https://github.com/koyakimu/apd-framework"
+  "homepage": "https://github.com/koyakimu/apd-framework",
+  "documentationUrl": "https://github.com/koyakimu/apd-framework#readme",
+  "supportUrl": "https://github.com/koyakimu/apd-framework/issues",
+  "privacyPolicyUrl": "https://github.com/koyakimu/apd-framework/blob/main/PRIVACY.md",
+  "termsOfServiceUrl": "https://github.com/koyakimu/apd-framework/blob/main/LICENSE"
 }

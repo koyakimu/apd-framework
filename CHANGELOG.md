@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.8.3] - 2026-10-18
+
+### Added — Listing links for the official plugin directory
+
+- **Added `PRIVACY.md`**: the plugin collects and sends no data; actions run locally with the user's own tools
+- **Added `documentationUrl`, `supportUrl`, `privacyPolicyUrl` and `termsOfServiceUrl` to `plugin.json`**: the README, GitHub issues, `PRIVACY.md` and the MIT `LICENSE`
+
 ## [3.8.2] - 2026-10-18
 
 ### Changed — Clear false positives in the directory scan

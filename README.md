@@ -87,4 +87,4 @@ Add `--model` to try a different model. If you change the fixture, edit `evals/_
 
 ## License
 
-MIT
+MIT. See also the [privacy policy](PRIVACY.md).
