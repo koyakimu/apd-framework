@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.8.1] - 2026-10-18
+
+### Changed
+
+- **Icon: separated the A's crossbar from the legs** with the same gap as between the jet and the contrails. Previously the bar's square ends met the slanted legs and left a small ledge
+
 ## [3.8.0] - 2026-10-18
 
 ### Changed — Backlog is no longer limited to GitHub issues
