@@ -57,7 +57,7 @@ Review every feature listed in the **What** section of the Design document, and 
 ### Generation rules
 
 1. Create a Spec for each in-scope feature (one file per feature)
-2. Each Spec includes:
+2. Each Spec follows `${CLAUDE_PLUGIN_ROOT}/templates/spec.md` and includes:
    - `spec_id`: context abbreviation + sequence number (e.g. AUTH-001)
    - `issue_ref`: related issue number or ID in the project's tracker (if any)
    - `version: 1`

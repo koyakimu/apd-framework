@@ -2,18 +2,9 @@
 
 Based on the APD flow and the current position, guide the user on "what to do next" **accurately and unobtrusively**. The guide role is taken by the main AI (you), which holds the conversation's context. Hooks and scripts can only see files and cannot understand context, so the guidance logic lives here (in the rules).
 
-## Flow (map of the current position)
+## Current position
 
-```
-/apd:init   → initialize APD (.claude/rules/apd/ and docs/apd/)
-/apd:design → docs/apd/design.md (the product's axis)
-/apd:spec   → docs/apd/spec-*.md (acceptance criteria AC) + approval
-/apd:plan   → design for changes that do not get a Spec (presented in the conversation) + approval
-/apd:go     → Build of an approved Spec (default: implement right there; /goal for long unattended runs)
-Post-completion hands-on check → a person tries it and judges. If it is off, fix the Spec and run the next cycle
-```
-
-The current position can be told from the state of `docs/apd/`:
+Flow: `/apd:design` → `/apd:spec` (or `/apd:plan` for changes without a Spec) → approval → `/apd:go` (Build) → post-completion hands-on check → if it is off, fix the Spec and run the next cycle. From the state of `docs/apd/`:
 - No `design.md` → next is `/apd:design`
 - `design.md` exists but no `spec-*.md` → next is `/apd:spec`
 - `spec-*.md` exists → next is `/apd:go` (or editing the relevant Spec)

@@ -22,17 +22,7 @@ Create previews only in cases where "showing it first prevents rework", such as 
 
 ## Location
 
-Only when creating previews, add `docs/apd/preview-{feature}/`:
-
-```
-docs/apd/preview-{feature}/
-├── architecture.md
-├── screens/
-│   └── {screen-name}.html
-└── api-spec.md
-```
-
-If there is only one preview, a single file `docs/apd/preview-{feature}.md` is fine.
+Only when creating previews, add `docs/apd/preview-{feature}/` (e.g. `architecture.md`, `screens/{screen-name}.html`, `api-spec.md`). For a single preview, `docs/apd/preview-{feature}.md` is fine.
 
 ## Review at the post-completion hands-on check
 
