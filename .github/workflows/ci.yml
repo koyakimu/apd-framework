@@ -26,24 +26,24 @@ jobs:
           MARKET_VER=$(jq -r '.plugins[] | select(.name == "apd") | .version' .claude-plugin/marketplace.json)
           CHANGELOG_VER=$(grep -m1 -oE '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | tr -d '#[] ')
           echo "plugin.json=$PLUGIN_VER marketplace.json=$MARKET_VER CHANGELOG=$CHANGELOG_VER"
-          [[ "$PLUGIN_VER" == "$MARKET_VER" ]] || { echo "::error::plugin.json と marketplace.json の version が不一致"; exit 1; }
-          [[ "$PLUGIN_VER" == "$CHANGELOG_VER" ]] || { echo "::error::CHANGELOG.md の先頭エントリが version と不一致"; exit 1; }
+          [[ "$PLUGIN_VER" == "$MARKET_VER" ]] || { echo "::error::version differs between plugin.json and marketplace.json"; exit 1; }
+          [[ "$PLUGIN_VER" == "$CHANGELOG_VER" ]] || { echo "::error::the first CHANGELOG.md entry does not match the version"; exit 1; }
 
       - name: Check SKILL.md frontmatter
         run: |
           fail=0
           for f in skills/*/SKILL.md; do
-            head -1 "$f" | grep -q '^---$' || { echo "::error file=$f::frontmatter がない"; fail=1; }
-            grep -q '^name:' "$f" || { echo "::error file=$f::'name:' がない"; fail=1; }
-            grep -q '^description:' "$f" || { echo "::error file=$f::'description:' がない"; fail=1; }
+            head -1 "$f" | grep -q '^---$' || { echo "::error file=$f::missing frontmatter"; fail=1; }
+            grep -q '^name:' "$f" || { echo "::error file=$f::missing 'name:'"; fail=1; }
+            grep -q '^description:' "$f" || { echo "::error file=$f::missing 'description:'"; fail=1; }
           done
           exit $fail
 
       - name: Check templates match current frontmatter model
         run: |
-          # verify-migration.sh が FAIL 判定する旧フィールドが同梱テンプレートに残っていないこと
+          # The bundled templates must not contain old fields that verify-migration.sh reports as FAIL
           if grep -nE '^(cycle_ref|created_at|amendment_id|patch_id):' templates/*.md; then
-            echo "::error::templates/ に旧 frontmatter フィールドが残っている（verify-migration.sh と矛盾）"
+            echo "::error::templates/ still has old frontmatter fields (contradicts verify-migration.sh)"
             exit 1
           fi
 
@@ -51,7 +51,7 @@ jobs:
         run: |
           fail=0
           for f in evals/*/fixture.sh; do
-            cmp -s evals/_fixture/fixture.sh "$f" || { echo "::error file=$f::evals/_fixture/fixture.sh と不一致（scripts/sync-eval-fixtures.sh を実行する）"; fail=1; }
+            cmp -s evals/_fixture/fixture.sh "$f" || { echo "::error file=$f::differs from evals/_fixture/fixture.sh (run scripts/sync-eval-fixtures.sh)"; fail=1; }
           done
           exit $fail
 
@@ -61,11 +61,11 @@ jobs:
       - name: Scripts are executable
         run: |
           for f in scripts/*.sh; do
-            [[ -x "$f" ]] || { echo "::error file=$f::実行権限がない (chmod +x)"; exit 1; }
+            [[ -x "$f" ]] || { echo "::error file=$f::not executable (chmod +x)"; exit 1; }
           done
 
-  # main にマージされたバージョンへ v{version} タグを自動付与する。
-  # bump-version.sh はコミット前に走るためタグを打てず、人手運用は忘れられるので CI が持つ。
+  # Tag each version merged into main as v{version}.
+  # bump-version.sh runs before the commit exists and cannot tag, and manual tagging gets forgotten, so CI does it.
   tag-release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: validate

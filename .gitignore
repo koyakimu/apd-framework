@@ -19,5 +19,5 @@ Thumbs.db
 # Claude Code worktrees
 .claude/worktrees/
 
-# claude plugin eval の結果
+# claude plugin eval results
 evals/results/

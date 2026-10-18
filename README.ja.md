@@ -84,6 +84,8 @@ claude plugin eval . --scaffold --allow-tools Write Edit --threshold 0.8 --max-c
 | `evals/` | `claude plugin eval` の評価シナリオ |
 | `rules/apd/` | フレームワーク方針（`/apd:init` でプロジェクトにコピー） |
 | `templates/` | ドキュメントテンプレート |
+| `scripts/` | 保守用スクリプト（バージョン更新・移行チェック・評価 fixture の同期） |
+| `docs/` | 保守者向けの経緯資料とアイコンの元データ（プラグインからは読み込まない） |
 
 ## ライセンス
 

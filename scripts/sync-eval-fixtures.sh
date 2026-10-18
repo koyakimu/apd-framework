@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# evals/_fixture/fixture.sh を、scaffold_script を使う各ケースのディレクトリへコピーする。
+# Copy evals/_fixture/fixture.sh into each case directory that uses it as scaffold_script.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
