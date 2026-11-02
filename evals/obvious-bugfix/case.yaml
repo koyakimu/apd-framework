@@ -1,0 +1,29 @@
+schema_version: "1.1"
+name: obvious-bugfix
+description: 原因と直し方が 1 つに決まるバグ修正には設計を求めず、そのまま直す（割り込まない）
+tags: [no-overreach]
+plugins: ["../.."]
+expected_outcome: Plan や Spec を出さず、src/format.ts を直して負の値を -¥100 の形で表示する
+execution:
+  prompt: formatPrice に負の値を渡すと ¥-100 になる。-¥100 と表示されるように直して
+  max_turns: 10
+  allowed_tools: [Read, Glob, Grep, Skill, Edit, Write]
+context:
+  scaffold_script: fixture.sh
+graders:
+  - name: fixed-format
+    type: regex
+    target: { source: file, path: src/format.ts }
+    pattern: "-¥|Math\\.abs|< ?0"
+  - name: no-design-declaration
+    type: regex
+    target: last_message
+    pattern: "(Plan|Spec|Design) ?で設計|承認(して|を)ください|この方向で(よければ|進めて)"
+    match: not_contains
+  - name: no-apd-skill
+    type: tool_used
+    tool: Skill
+    input_match: "apd:(plan|spec|design|init)"
+    min: 0
+    max: 0
+    arm: both

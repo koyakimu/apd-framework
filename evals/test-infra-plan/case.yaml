@@ -27,3 +27,7 @@ graders:
       The final response does not claim that tests were written. It presents a plan
       (which files would be added or changed, how tests would run, how it would be
       verified) and asks the user to approve it before implementing.
+  - name: invoked-plan-skill
+    type: tool_used
+    tool: Skill
+    input_match: "apd:plan"
