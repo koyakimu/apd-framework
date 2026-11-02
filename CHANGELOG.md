@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.8.5] - 2026-11-02
+
+### Added — Eval cases for the classification boundaries
+
+- **Three cases in `evals/`**: whether a new-product request starts from Design (`new-product`), whether a request that would normally be a Spec follows the user's "a Plan is enough" (`plan-override`), and whether a bug fix with one obvious cause and fix is fixed without a design step (`obvious-bugfix`). With APD all three scored 100%. `new-product` scored 56% without APD (Δ +0.44: the baseline scaffolded the app); `plan-override` and `obvious-bugfix` scored 100% without APD too (Δ 0), so they serve as regression checks on the classification
+- **`test-infra-plan` now has an `apd:plan` plugin-fired indicator**, as `devtool-plan` does, so a pass can be told apart from the model being careful on its own
+
 ## [3.8.4] - 2026-10-18
 
 ### Changed — Remove duplication from the always-loaded rules (352 → 253 lines)

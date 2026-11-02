@@ -66,13 +66,13 @@ Build      ← AI 自律完走（途中で止まらない）
 
 ## 評価シナリオ
 
-`evals/` に、設計の区分が期待どおりに働くかを確かめる 6 ケースがある。依頼に対して設計から始めるか（`new-feature` / `devtool-plan` / `test-infra-plan`）、承認後にその場で実装するか（`approved-build`）、typo や質問に割り込まないか（`typo` / `question`）を見る。各ケースは APD あり・なしの 2 arm で回り、差（Δ）が APD の効果になる。プラグインのルートで次を実行する（1 回で 36 run と採点が走る）:
+`evals/` に、設計の区分が期待どおりに働くかを確かめる 9 ケースがある。依頼に対して設計から始めるか（`new-product` / `new-feature` / `devtool-plan` / `test-infra-plan`）、ユーザーが指定した区分に従うか（`plan-override`）、承認後にその場で実装するか（`approved-build`）、typo・質問・原因の明らかなバグ修正に割り込まないか（`typo` / `question` / `obvious-bugfix`）を見る。各ケースは APD あり・なしの 2 arm で回り、差（Δ）が APD の効果になる。プラグインのルートで次を実行する（1 回で 54 run と採点が走る）:
 
 ```bash
 claude plugin eval . --scaffold --allow-tools Write Edit --threshold 0.8 --max-cost-usd 10
 ```
 
-モデルを変えて試すときは `--model` を付ける。fixture を変えたら `evals/_fixture/fixture.sh` を直して `scripts/sync-eval-fixtures.sh` で各ケースにコピーする。
+モデルを変えて試すときは `--model` を付ける。1 ケースだけ回すときは `--case <name>` を付ける（複数回指定しても最後の 1 つだけが効く）。fixture を変えたら `evals/_fixture/fixture.sh` を直して `scripts/sync-eval-fixtures.sh` で各ケースにコピーする。
 
 ## プラグイン構成
 

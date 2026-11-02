@@ -66,13 +66,13 @@ The plugin's skills, rules and templates are written in English, but APD works i
 
 ## Evaluation scenarios
 
-`evals/` contains six cases that check whether the design classification behaves as intended: whether a request starts from a design (`new-feature` / `devtool-plan` / `test-infra-plan`), whether it implements in place after approval (`approved-build`), and whether it stays out of the way for a typo or a question (`typo` / `question`). Each case runs in two arms, with and without APD, and the difference (Δ) is APD's effect. Run this at the plugin root (one run executes and grades 36 runs):
+`evals/` contains nine cases that check whether the design classification behaves as intended: whether a request starts from a design (`new-product` / `new-feature` / `devtool-plan` / `test-infra-plan`), whether it follows a classification the user names (`plan-override`), whether it implements in place after approval (`approved-build`), and whether it stays out of the way for a typo, a question, or a bug fix with one obvious cause and fix (`typo` / `question` / `obvious-bugfix`). Each case runs in two arms, with and without APD, and the difference (Δ) is APD's effect. Run this at the plugin root (one run executes and grades 54 runs):
 
 ```bash
 claude plugin eval . --scaffold --allow-tools Write Edit --threshold 0.8 --max-cost-usd 10
 ```
 
-Add `--model` to try a different model. If you change the fixture, edit `evals/_fixture/fixture.sh` and copy it to each case with `scripts/sync-eval-fixtures.sh`.
+Add `--model` to try a different model. Add `--case <name>` to run one case (if given more than once, only the last one applies). If you change the fixture, edit `evals/_fixture/fixture.sh` and copy it to each case with `scripts/sync-eval-fixtures.sh`.
 
 ## Plugin layout
 
